@@ -59,3 +59,8 @@ typings/
 
 # next.js build output
 .next
+
+# buidler-project
+test/buidler-truffle-project/artifacts
+test/buidler-truffle-project/cache
+
