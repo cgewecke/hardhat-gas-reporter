@@ -1,13 +1,13 @@
-# :fuelpump: buidler-gas-reporter 
+# buidler-gas-reporter 
 
-[eth-gas-reporter](http://getbuidler.com) plugin for [buidler](http://getbuidler.com).
+[eth-gas-reporter](http://getbuidler.com) plugin for [buidler](http://getbuidler.com). :fuelpump: 
 
 ## What
 
 A mocha utility for Ethereum test suites which reports:
 + Gas usage per unit test.
 + Average gas usage per method call / contract deployment.
-+ Real-time national currency costs for using and deploying your contract system.
++ Real-time national currency costs for using and deploying your contract system. :euro:
 
 ## Installation
 
