@@ -2,7 +2,7 @@
 
 # buidler-gas-reporter 
 
-[eth-gas-reporter](http://getbuidler.com) plugin for [buidler](http://getbuidler.com). :fuelpump: 
+[eth-gas-reporter](https://github.com/cgewecke/eth-gas-reporter) plugin for [buidler](http://getbuidler.com). :fuelpump: 
 
 ## What
 
