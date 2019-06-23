@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cgewecke/buidler-gas-reporter.svg?branch=master)](https://travis-ci.org/cgewecke/buidler-gas-reporter)
+
 # buidler-gas-reporter 
 
 [eth-gas-reporter](http://getbuidler.com) plugin for [buidler](http://getbuidler.com). :fuelpump: 
