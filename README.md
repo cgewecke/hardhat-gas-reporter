@@ -56,7 +56,7 @@ npx buidler test
 ## Options
 | Option            | Type       | Default                              | Description                                                                                                                                                                               |
 | ----------------- | ---------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| enabled | _Boolean_ | true | Always generate a gas report when running unit tests. |
+| enabled | _Boolean_ | true | Toggle gas reporter on/off. |
 | currency          | _String_   | 'EUR'                                | National currency to represent gas costs in. Exchange rates loaded at runtime from the `coinmarketcap` api. Available currency codes can be found [here](https://coinmarketcap.com/api/). |
 | gasPrice          | _Number_   | (varies)                             | Denominated in `gwei`. Default is loaded at runtime from the `eth gas station` api                                                                                                        |
 | outputFile        | _String_   | stdout                               | File path to write report output to                                                                                                                                                       |
