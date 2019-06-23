@@ -29,6 +29,7 @@
   ],
   "devDependencies": {
     "@nomiclabs/buidler": "^1.0.0-beta.8",
+    "@nomiclabs/buidler-ethers": "^1.0.0-beta.8",
     "@nomiclabs/buidler-truffle5": "^1.0.0-beta.8",
     "@nomiclabs/buidler-web3": "^1.0.0-beta.8",
     "@types/chai": "^4.1.7",

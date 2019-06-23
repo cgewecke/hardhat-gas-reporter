@@ -1,4 +1,4 @@
-export interface GasReporterConfig {
+export interface EthGasReporterConfig {
   currency?: string;
   gasPrice?: number;
   outputFile?: string;

@@ -1,4 +1,4 @@
-usePlugin("@nomiclabs/buidler-truffle5");
+usePlugin("@nomiclabs/buidler-ethers");
 
 // We load the plugin here.
 // We recommend using loadPluginFile in tests, as using usePlugin from within
@@ -8,19 +8,6 @@ loadPluginFile(__dirname + "/../../src/index");
 
 module.exports = {
   solc: {
-    version: "0.5.5",
-    optimizer: {
-      enabled: true,
-      runs: 100
-    }
-  },
-  networks: {
-    develop: {
-      gas: 7000000,
-      url: "http://localhost:8545"
-    }
-  },
-  gasReporter: {
-    onlyCalledMethods: false
+    version: "0.5.8"
   }
 };

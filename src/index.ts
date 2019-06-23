@@ -7,23 +7,21 @@ import {
   HttpNetworkConfig
 } from "@nomiclabs/buidler/types";
 
-import { GasReporterConfig } from "./types";
+import { EthGasReporterConfig } from "./types";
 
 ensurePluginLoadedWithUsePlugin();
 
-function getDefaultConfig(
+function getDefaultOptions(
   config: ResolvedBuidlerConfig,
   args: BuidlerArguments
- ): GasReporterConfig {
+): EthGasReporterConfig {
+  const defaultUrl = "http://localhost:8545";
+  let url: string;
 
-  const defaultUrl = 'http://localhost:8545'
-  let url : string;
-
-  if (config.networks[args.network]){
+  if (config.networks[args.network]) {
     url = (<HttpNetworkConfig>config.networks[args.network]).url || defaultUrl;
   } else {
-    // There's a type complaint about config.defaultNetwork here
-    // Not published as of beta.8 ...
+    // config.defaultNetwork is not Typed as of beta.8 ...
     // url = (<HttpNetworkConfig>config.networks[config.defaultNetwork]).url;
     url = defaultUrl;
   }
@@ -46,25 +44,28 @@ function getDefaultConfig(
   };
 }
 
-function getConfig(config: ResolvedBuidlerConfig, args: BuidlerArguments): any {
-  const defaultConfig = getDefaultConfig(config, args);
-  return { ...defaultConfig, ...(<any>config).gasReporter };
+function getOptions(
+  config: ResolvedBuidlerConfig,
+  args: BuidlerArguments
+): any {
+  return { ...getDefaultOptions(config, args), ...(<any>config).gasReporter };
 }
 
 export default function() {
-  internalTask(TASK_TEST_RUN_MOCHA_TESTS)
-    .setAction(async (args : any, { config }, runSuper) => {
-      const options = getConfig(config, args);
+  internalTask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
+    async (args: any, { config }, runSuper) => {
+      const options = getOptions(config, args);
 
-      if (options.enabled){
+      if (options.enabled) {
         const mochaConfig = config.mocha || {};
 
-        mochaConfig.reporter = 'eth-gas-reporter';
+        mochaConfig.reporter = "eth-gas-reporter";
         mochaConfig.reporterOptions = options;
 
         config.mocha = mochaConfig;
       }
 
-      await runSuper(args);
-    });
+      await runSuper();
+    }
+  );
 }
