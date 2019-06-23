@@ -11,6 +11,15 @@ import { EthGasReporterConfig } from "./types";
 
 ensurePluginLoadedWithUsePlugin();
 
+/**
+ * Sets reporter options to pass to eth-gas-reporter:
+ * > url to connect to client with
+ * > artifact format (buidler)
+ * > solc compiler info
+ * @param  {ResolvedBuidlerConfig} config [description]
+ * @param  {BuidlerArguments}      args   [description]
+ * @return {EthGasReporterConfig}         [description]
+ */
 function getDefaultOptions(
   config: ResolvedBuidlerConfig,
   args: BuidlerArguments
@@ -44,6 +53,12 @@ function getDefaultOptions(
   };
 }
 
+/**
+ * Merges GasReporter defaults with user's GasReporter config
+ * @param  {ResolvedBuidlerConfig} config
+ * @param  {BuidlerArguments}      args   command line args (e.g network)
+ * @return {any}
+ */
 function getOptions(
   config: ResolvedBuidlerConfig,
   args: BuidlerArguments
@@ -51,6 +66,11 @@ function getOptions(
   return { ...getDefaultOptions(config, args), ...(<any>config).gasReporter };
 }
 
+/**
+ * Overrides TASK_TEST_RUN_MOCHA_TEST to (conditionally) use eth-gas-reporter as
+ * the mocha test reporter and passes mocha relevant options. These are listed
+ * on the `gasReporter` of the user's config.
+ */
 export default function() {
   internalTask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
     async (args: any, { config }, runSuper) => {

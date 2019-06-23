@@ -1,0 +1,10 @@
+dist: trusty
+sudo: required
+group: beta
+language: node_js
+node_js:
+  - "10"
+install:
+  - npm install
+script:
+  - npm test
