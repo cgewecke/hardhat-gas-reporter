@@ -1,3 +1,5 @@
+### :construction: This plugin isn't published yet... :construction: 
+
 [![Build Status](https://travis-ci.org/cgewecke/buidler-gas-reporter.svg?branch=master)](https://travis-ci.org/cgewecke/buidler-gas-reporter)
 
 # buidler-gas-reporter 
@@ -20,7 +22,7 @@ npm install buidler-gas-reporter --save-dev
 And add the following to your `buidler.config.js`:
 
 ```js
-usePlugin("@nomiclabs/buidler-gas-reporter");
+usePlugin("buidler-gas-reporter");
 ```
 
 ## Configuration 
