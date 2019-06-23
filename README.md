@@ -8,10 +8,12 @@
 
 ## What
 
-A mocha utility for Ethereum test suites which reports:
+A mocha reporter which displays:
 + Gas usage per unit test.
 + Average gas usage per method call / contract deployment.
-+ Real-time national currency costs for using and deploying your contract system. :euro:
++ Real-time national currency costs of using / deploying your contract system. :euro:
+
+![Screen Shot 2019-06-23 at 2 10 19 PM](https://user-images.githubusercontent.com/7332026/59982003-c30a4380-95c0-11e9-9d93-e3af979df227.png)
 
 ## Installation
 
