@@ -63,4 +63,5 @@ typings/
 # buidler-project
 test/buidler-truffle-project/artifacts
 test/buidler-truffle-project/cache
+dist/
 

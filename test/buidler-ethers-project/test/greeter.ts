@@ -2,7 +2,7 @@
 import { assert } from "chai";
 
 describe.skip("Greeter contract", function() {
-  it("Should shoud be deployable with different greetings", async function() {
+  /*it("Should shoud be deployable with different greetings", async function() {
     const Greeter = await this.env.ethers.getContract("Greeter");
     const greeter1 = await Greeter.deploy("Hi");
     assert.equal(await greeter1.functions.greeting(), "Hi");
@@ -16,5 +16,5 @@ describe.skip("Greeter contract", function() {
     const greeter1 = await Greeter.deploy("Hi");
 
     assert.equal(await greeter1.functions.greet(), "Hi");
-  });
+  });*/
 });
