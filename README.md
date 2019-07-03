@@ -1,3 +1,4 @@
+[![npm version](https://badge.fury.io/js/buidler-gas-reporter.svg)](https://badge.fury.io/js/buidler-gas-reporter)
 [![Build Status](https://travis-ci.org/cgewecke/buidler-gas-reporter.svg?branch=master)](https://travis-ci.org/cgewecke/buidler-gas-reporter)
 
 # buidler-gas-reporter
