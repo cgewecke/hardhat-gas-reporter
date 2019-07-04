@@ -1,6 +1,8 @@
+import { readFileSync } from "fs";
 import { TASK_TEST_RUN_MOCHA_TESTS } from "@nomiclabs/buidler/builtin-tasks/task-names";
 import { internalTask } from "@nomiclabs/buidler/config";
 import { ensurePluginLoadedWithUsePlugin } from "@nomiclabs/buidler/plugins";
+
 import {
   ResolvedBuidlerConfig,
   BuidlerArguments,
@@ -10,6 +12,29 @@ import {
 import { EthGasReporterConfig } from "./types";
 
 ensurePluginLoadedWithUsePlugin();
+
+/**
+ * Method passed to eth-gas-reporter to resolve artifact resources. Loads
+ * and processes JSON artifacts
+ * @param  {string} artifactPath `config.paths.artifacts`
+ * @param  {string} contractName parsed contract name
+ * @return {any}                 object w/ abi and bytecode
+ */
+function artifactor(artifactPath: string, contractName : string) : any {
+  let _artifact: any = {};
+  let file : string = `${artifactPath}/${contractName}.json`;
+
+  try {
+    _artifact = JSON.parse(readFileSync(file, "utf-8"));
+  } catch(err){
+    throw err;
+  }
+
+  return {
+    abi: _artifact.abi,
+    bytecode: `0x${_artifact.bytecode}`
+  }
+}
 
 /**
  * Sets reporter options to pass to eth-gas-reporter:
@@ -25,18 +50,22 @@ function getDefaultOptions(
   args: BuidlerArguments
 ): EthGasReporterConfig {
   const defaultUrl = "http://localhost:8545";
-  let url: string;
+  const defaultNetwork = (<any>config).defaultNetwork;
 
+  let url: any;
+  let artifactType: any;
+
+  // Resolve URL
   if (config.networks[args.network]) {
     url = (<HttpNetworkConfig>config.networks[args.network]).url || defaultUrl;
+  } else if (defaultNetwork) {
+    url = (<HttpNetworkConfig>config.networks[defaultNetwork]).url;
   } else {
-    // config.defaultNetwork is not Typed as of beta.8 ...
-    // url = (<HttpNetworkConfig>config.networks[config.defaultNetwork]).url;
     url = defaultUrl;
   }
 
   return {
-    artifactType: "buidler-v1",
+    artifactType: artifactor.bind(null, config.paths.artifacts),
     enabled: true,
     url: <string>url,
     metadata: {
