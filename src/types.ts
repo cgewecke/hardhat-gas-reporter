@@ -14,6 +14,6 @@ export interface EthGasReporterConfig {
   // Buidler (required)
   enabled: boolean;
   metadata: any;
-  artifactType: string;
+  artifactType: any;
   url: string;
 }
