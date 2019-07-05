@@ -63,5 +63,7 @@ typings/
 # buidler-project
 test/buidler-truffle-project/artifacts
 test/buidler-truffle-project/cache
+test/buidler-ethers-project/artifacts
+test/buidler-ethers-project/cache
 dist/
 
