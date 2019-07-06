@@ -15,5 +15,8 @@
   "include": [
     "./test",
     "./src"
+  ],
+  "files": [
+    "node_modules/@nomiclabs/buidler-ethers/src/type-extensions.d.ts"
   ]
 }

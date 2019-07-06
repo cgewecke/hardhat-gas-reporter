@@ -4,6 +4,9 @@ import { assert } from "chai";
 
 import { useEnvironment } from "./helpers";
 
+// Only one of these tests can be run for now. TASK_TEST kills the process
+// after running mocha. This should be fixed in Buidler v1.0.0-beta.9
+
 describe("Gas Reporter (Truffle plugin)", function() {
   useEnvironment(__dirname + "/buidler-truffle-project");
 
@@ -12,9 +15,6 @@ describe("Gas Reporter (Truffle plugin)", function() {
   });
 });
 
-// This test has a typescript compilation error complaining that
-// it can't resolve ethers from @nomiclabs/buidler. Base project
-// (ethers-example) works fine on its own though.
 describe.skip("Gas Reporter (Ethers plugin)", function() {
   useEnvironment(__dirname + "/buidler-ethers-project");
 
