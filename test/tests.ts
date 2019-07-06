@@ -15,7 +15,7 @@ describe("Gas Reporter (Truffle plugin)", function() {
   });
 });
 
-describe("Gas Reporter (Ethers plugin)", function() {
+describe.skip("Gas Reporter (Ethers plugin)", function() {
   useEnvironment(__dirname + "/buidler-ethers-project");
 
   it("no options", async function() {
