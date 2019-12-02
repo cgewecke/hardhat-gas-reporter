@@ -6,7 +6,8 @@ import { ensurePluginLoadedWithUsePlugin } from "@nomiclabs/buidler/plugins";
 import {
   ResolvedBuidlerConfig,
   BuidlerArguments,
-  HttpNetworkConfig
+  HttpNetworkConfig,
+  NetworkConfig
 } from "@nomiclabs/buidler/types";
 
 import { EthGasReporterConfig } from "./types";
@@ -32,7 +33,8 @@ function artifactor(artifactPath: string, contractName : string) : any {
 
   return {
     abi: _artifact.abi,
-    bytecode: `0x${_artifact.bytecode}`
+    bytecode: _artifact.bytecode,
+    deployedBytecode: _artifact.deployedBytecode
   }
 }
 
@@ -47,19 +49,16 @@ function artifactor(artifactPath: string, contractName : string) : any {
  */
 function getDefaultOptions(
   config: ResolvedBuidlerConfig,
-  args: BuidlerArguments
+  networkConfig: NetworkConfig
 ): EthGasReporterConfig {
   const defaultUrl = "http://localhost:8545";
-  const defaultNetwork = (<any>config).defaultNetwork;
 
   let url: any;
   let artifactType: any;
 
   // Resolve URL
-  if (config.networks[args.network]) {
-    url = (<HttpNetworkConfig>config.networks[args.network]).url || defaultUrl;
-  } else if (defaultNetwork) {
-    url = (<HttpNetworkConfig>config.networks[defaultNetwork]).url;
+  if ((<HttpNetworkConfig>networkConfig).url) {
+    url = (<HttpNetworkConfig>networkConfig).url;
   } else {
     url = defaultUrl;
   }
@@ -90,9 +89,9 @@ function getDefaultOptions(
  */
 function getOptions(
   config: ResolvedBuidlerConfig,
-  args: BuidlerArguments
+  networkConfig: NetworkConfig
 ): any {
-  return { ...getDefaultOptions(config, args), ...(<any>config).gasReporter };
+  return { ...getDefaultOptions(config, networkConfig), ...(<any>config).gasReporter };
 }
 
 /**
@@ -102,8 +101,8 @@ function getOptions(
  */
 export default function() {
   internalTask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
-    async (args: any, { config }, runSuper) => {
-      const options = getOptions(config, args);
+    async (args: any, { config, network }, runSuper) => {
+      const options = getOptions(config, network.config);
 
       if (options.enabled) {
         const mochaConfig = config.mocha || {};

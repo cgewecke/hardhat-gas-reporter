@@ -6,7 +6,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "strict": true,
+    "strict": false,
     "rootDirs": ["./src", "./test"],
     "esModuleInterop": true
   },

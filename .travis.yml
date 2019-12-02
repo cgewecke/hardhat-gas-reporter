@@ -1,10 +1,9 @@
-dist: trusty
-sudo: required
+sudo: false
 group: beta
 language: node_js
 node_js:
   - "10"
 install:
-  - npm install
+  - yarn
 script:
   - npm test

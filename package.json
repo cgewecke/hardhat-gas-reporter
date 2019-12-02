@@ -29,10 +29,10 @@
     "README.md"
   ],
   "devDependencies": {
-    "@nomiclabs/buidler": "^1.0.0-beta.8",
-    "@nomiclabs/buidler-ethers": "^1.0.0-beta.8",
-    "@nomiclabs/buidler-truffle5": "^1.0.0-beta.8",
-    "@nomiclabs/buidler-web3": "^1.0.0-beta.8",
+    "@nomiclabs/buidler": "^1.0.1",
+    "@nomiclabs/buidler-ethers": "^1.0.1",
+    "@nomiclabs/buidler-truffle5": "^1.0.1",
+    "@nomiclabs/buidler-web3": "^1.0.1",
     "@types/chai": "^4.1.7",
     "@types/fs-extra": "^5.0.4",
     "@types/mocha": "^5.2.5",
@@ -48,12 +48,12 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.4.5",
-    "web3": "1.0.0-beta.37"
+    "web3": "^1.2.4"
   },
   "peerDependencies": {
-    "@nomiclabs/buidler": "^1.0.0-beta.8"
+    "@nomiclabs/buidler": "^1.0.1"
   },
   "dependencies": {
-    "eth-gas-reporter": "^0.2.3"
+    "eth-gas-reporter": "^0.2.13"
   }
 }

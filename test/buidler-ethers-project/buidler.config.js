@@ -9,5 +9,12 @@ loadPluginFile(__dirname + "/../../src/index");
 module.exports = {
   solc: {
     version: "0.5.8"
-  }
+  },
+  defaultNetwork: 'development',
+  networks: {
+    development: {
+      gas: 5000000,
+      url: "http://localhost:8545"
+    }
+  },
 };

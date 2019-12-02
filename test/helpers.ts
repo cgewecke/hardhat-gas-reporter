@@ -13,7 +13,7 @@ export function useEnvironment(projectPath: string) {
   beforeEach("Loading buidler environment", function() {
     previousCWD = process.cwd();
     process.chdir(projectPath);
-    process.env.BUIDLER_NETWORK = "develop";
+    process.env.BUIDLER_NETWORK = "development";
     this.env = require("@nomiclabs/buidler");
   });
 
