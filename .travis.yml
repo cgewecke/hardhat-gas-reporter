@@ -1,9 +1,8 @@
-dist: trusty
-sudo: required
+sudo: false
 group: beta
 language: node_js
 node_js:
-  - "12"
+  - "10"
 install:
   - npm install
 script:
