@@ -33,7 +33,8 @@ function artifactor(artifactPath: string, contractName : string) : any {
 
   return {
     abi: _artifact.abi,
-    bytecode: `0x${_artifact.bytecode}`
+    bytecode: _artifact.bytecode,
+    deployedBytecode: _artifact.deployedBytecode
   }
 }
 

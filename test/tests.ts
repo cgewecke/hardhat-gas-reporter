@@ -4,7 +4,18 @@ import { assert } from "chai";
 
 import { useEnvironment } from "./helpers";
 
-describe("Gas Reporter (Truffle plugin)", function() {
+const util = require('util')
+
+describe("Truffle plugin default", function() {
+  useEnvironment(__dirname + "/buidler-truffle-project");
+
+  it("default", async function() {
+    this.env.config.gasReporter.onlyCalledMethods = true;
+    await this.env.run(TASK_TEST, { testFiles: [] });
+  });
+});
+
+describe("Truffle plugin with options", function() {
   useEnvironment(__dirname + "/buidler-truffle-project");
 
   it("using option - onlyCalledMethods: false", async function() {

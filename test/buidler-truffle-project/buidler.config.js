@@ -14,9 +14,10 @@ module.exports = {
       runs: 100
     }
   },
+  defaultNetwork: 'development',
   networks: {
-    develop: {
-      gas: 7000000,
+    development: {
+      gas: 5000000,
       url: "http://localhost:8545"
     }
   },
