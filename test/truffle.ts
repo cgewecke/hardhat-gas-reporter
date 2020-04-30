@@ -1,6 +1,7 @@
 import { TASK_TEST } from "@nomiclabs/buidler/builtin-tasks/task-names";
 // tslint:disable-next-line no-implicit-dependencies
 import { assert } from "chai";
+
 import { useEnvironment } from "./helpers";
 
 describe("Truffle plugin", function() {

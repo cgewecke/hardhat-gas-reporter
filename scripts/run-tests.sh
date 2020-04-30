@@ -25,7 +25,6 @@ start_buidlerevm() {
   sleep 4
 }
 
-
 # Ganache tests
 start_ganache
 npx mocha test/truffle.ts --timeout 100000 --exit
