@@ -18,4 +18,11 @@ describe("Greeter contract", function() {
 
     assert.equal(await greeter1.functions.greet(), "Hi");
   });
+
+  it("Should set a greeting", async function(){
+    const Greeter = await ethers.getContract("Greeter");
+    const greeter1 = await Greeter.deploy("Hi");
+    await greeter1.functions.setGreeting('ciao');
+    assert.equal(await greeter1.functions.greet(), "ciao");
+  })
 });
