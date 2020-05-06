@@ -40,7 +40,7 @@ It goes away if `buidlerevm` if is launched [as an independent node][1] (similar
 We're working on removing this requirement...
 ```
 npx buidler node 
-npx buidler test --localhost
+npx buidler test --network localhost
 ```
 
 [1]: https://buidler.dev/buidler-evm/#connecting-to-buidler-evm-from-wallets-and-other-software
