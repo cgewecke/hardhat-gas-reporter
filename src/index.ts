@@ -2,17 +2,22 @@ import { readFileSync } from "fs";
 import { TASK_TEST_RUN_MOCHA_TESTS } from "@nomiclabs/buidler/builtin-tasks/task-names";
 import { internalTask } from "@nomiclabs/buidler/config";
 import { ensurePluginLoadedWithUsePlugin } from "@nomiclabs/buidler/plugins";
+import { wrapSend } from "@nomiclabs/buidler/internal/core/providers/wrapper";
+import AsyncProvider from "./provider";
 
 import {
   ResolvedBuidlerConfig,
   BuidlerArguments,
   HttpNetworkConfig,
-  NetworkConfig
+  NetworkConfig,
+  IEthereumProvider
 } from "@nomiclabs/buidler/types";
 
 import { EthGasReporterConfig } from "./types";
 
 ensurePluginLoadedWithUsePlugin();
+
+let mochaConfig;
 
 /**
  * Method passed to eth-gas-reporter to resolve artifact resources. Loads
@@ -66,6 +71,7 @@ function getDefaultOptions(
   return {
     artifactType: artifactor.bind(null, config.paths.artifacts),
     enabled: true,
+    fast: true,
     url: <string>url,
     metadata: {
       compiler: {
@@ -94,6 +100,23 @@ function getOptions(
   return { ...getDefaultOptions(config, networkConfig), ...(<any>config).gasReporter };
 }
 
+function createGasMeasuringProvider(
+  provider: IEthereumProvider
+){
+  return wrapSend(provider, async (method, params) => {
+    if (method === "eth_getTransactionReceipt") {
+      const receipt = await provider.send(method, params);
+
+      if (receipt.status && receipt.transactionHash){
+        const tx = await provider.send("eth_getTransactionByHash", [receipt.transactionHash]);
+        await mochaConfig.recordTransaction(receipt, tx);
+      }
+      return receipt;
+    }
+    return provider.send(method, params);
+  });
+}
+
 /**
  * Overrides TASK_TEST_RUN_MOCHA_TEST to (conditionally) use eth-gas-reporter as
  * the mocha test reporter and passes mocha relevant options. These are listed
@@ -101,16 +124,20 @@ function getOptions(
  */
 export default function() {
   internalTask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
-    async (args: any, { config, network }, runSuper) => {
-      const options = getOptions(config, network.config);
+    async (args: any, bre, runSuper) => {
+      const options = getOptions(bre.config, bre.network.config);
 
       if (options.enabled) {
-        const mochaConfig = config.mocha || {};
-
+        mochaConfig = bre.config.mocha || {};
         mochaConfig.reporter = "eth-gas-reporter";
         mochaConfig.reporterOptions = options;
 
-        config.mocha = mochaConfig;
+        if (options.fast){
+          bre.network.provider = createGasMeasuringProvider(bre.network.provider);
+          mochaConfig.reporterOptions.provider = new AsyncProvider(bre.network.provider);
+        }
+
+        bre.config.mocha = mochaConfig;
       }
 
       await runSuper();
