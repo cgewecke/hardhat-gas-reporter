@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -o errexit
-trap cleanup EXIT
 
 # Truffle tests
 npx mocha test/truffle.ts --timeout 100000 --exit
