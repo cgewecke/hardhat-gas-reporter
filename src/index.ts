@@ -135,7 +135,7 @@ export default function() {
         if (options.fast){
           bre.network.provider = createGasMeasuringProvider(bre.network.provider);
           mochaConfig.reporterOptions.provider = new AsyncProvider(bre.network.provider);
-          mochaConfig.reporterOptions.blockLimit = bre.network.config.blockGasLimit;
+          mochaConfig.reporterOptions.blockLimit = (<any>bre.network.config).blockGasLimit as number;
         }
 
         bre.config.mocha = mochaConfig;
