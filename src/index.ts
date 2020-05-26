@@ -109,7 +109,7 @@ function createGasMeasuringProvider(
 
       if (receipt.status && receipt.transactionHash){
         const tx = await provider.send("eth_getTransactionByHash", [receipt.transactionHash]);
-        await mochaConfig.recordTransaction(receipt, tx);
+        await mochaConfig.attachments.recordTransaction(receipt, tx);
       }
       return receipt;
     }
@@ -136,6 +136,7 @@ export default function() {
           bre.network.provider = createGasMeasuringProvider(bre.network.provider);
           mochaConfig.reporterOptions.provider = new AsyncProvider(bre.network.provider);
           mochaConfig.reporterOptions.blockLimit = (<any>bre.network.config).blockGasLimit as number;
+          mochaConfig.attachments = {};
         }
 
         bre.config.mocha = mochaConfig;
