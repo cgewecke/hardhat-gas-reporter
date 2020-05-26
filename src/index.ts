@@ -108,8 +108,12 @@ function createGasMeasuringProvider(
       const receipt = await provider.send(method, params);
 
       if (receipt.status && receipt.transactionHash){
-        const tx = await provider.send("eth_getTransactionByHash", [receipt.transactionHash]);
-        await mochaConfig.attachments.recordTransaction(receipt, tx);
+        try {
+          const tx = await provider.send("eth_getTransactionByHash", [receipt.transactionHash]);
+          await mochaConfig.attachments.recordTransaction(receipt, tx);
+        } catch (err) {
+          // ignore
+        }
       }
       return receipt;
     }
