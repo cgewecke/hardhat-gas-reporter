@@ -5,7 +5,7 @@ import { assert } from "chai";
 import { useEnvironment } from "./helpers";
 
 describe("Truffle plugin", function() {
-  useEnvironment(__dirname + "/buidler-truffle-project", "development");
+  useEnvironment(__dirname + "/buidler-truffle-project");
 
   it("default", async function() {
     this.env.config.gasReporter.onlyCalledMethods = true;
