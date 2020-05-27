@@ -1398,9 +1398,9 @@ eth-ens-namehash@2.0.8, eth-ens-namehash@^2.0.0:
     idna-uts46-hx "^2.3.1"
     js-sha3 "^0.5.7"
 
-eth-gas-reporter@^0.2.18-beta.2:
-  version "0.2.18-beta.2"
-  resolved "https://registry.yarnpkg.com/eth-gas-reporter/-/eth-gas-reporter-0.2.18-beta.2.tgz#f299aa53d9e78b5dc618c1a5d4d22f032f56a7e5"
+eth-gas-reporter@^0.2.18-beta.3:
+  version "0.2.18-beta.3"
+  resolved "https://registry.yarnpkg.com/eth-gas-reporter/-/eth-gas-reporter-0.2.18-beta.3.tgz#1a18c7df4ae90c3863c8962aaa096bc5ecec2c87"
   dependencies:
     "@ethersproject/abi" "^5.0.0-beta.146"
     "@solidity-parser/parser" "^0.5.2"
