@@ -1,6 +1,7 @@
 export interface EthGasReporterConfig {
   currency?: string;
   gasPrice?: number;
+  coinmarketcap?: string;
   outputFile?: string;
   noColors?: boolean;
   onlyCalledMethods?: boolean;
