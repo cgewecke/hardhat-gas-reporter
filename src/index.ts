@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import { TASK_TEST_RUN_MOCHA_TESTS } from "@nomiclabs/buidler/builtin-tasks/task-names";
 import { internalTask } from "@nomiclabs/buidler/config";
-import { ensurePluginLoadedWithUsePlugin } from "@nomiclabs/buidler/plugins";
+import { ensurePluginLoadedWithUsePlugin, BUIDLEREVM_NETWORK_NAME } from "@nomiclabs/buidler/plugins";
 
 import {
   ResolvedBuidlerConfig,
@@ -105,12 +105,17 @@ export default function() {
       const options = getOptions(config, network.config);
 
       if (options.enabled) {
-        const mochaConfig = config.mocha || {};
+        if (network.name === BUIDLEREVM_NETWORK_NAME) {
+          console.warn("buidler-gas-reporter doesn't work with an in-memory instance of Buidler EVM")
+          console.warn("To learn how to use it, please go to https://github.com/cgewecke/buidler-gas-reporter#using-buidlerevm-warning")
+        } else {
+          const mochaConfig = config.mocha || {};
 
-        mochaConfig.reporter = "eth-gas-reporter";
-        mochaConfig.reporterOptions = options;
+          mochaConfig.reporter = "eth-gas-reporter";
+          mochaConfig.reporterOptions = options;
 
-        config.mocha = mochaConfig;
+          config.mocha = mochaConfig;
+        }
       }
 
       await runSuper();
