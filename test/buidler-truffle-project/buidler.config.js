@@ -14,7 +14,6 @@ module.exports = {
       runs: 100
     }
   },
-  defaultNetwork: 'development',
   networks: {
     development: {
       gas: 5000000,

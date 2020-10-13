@@ -1,18 +1,26 @@
 import { readFileSync } from "fs";
 import { TASK_TEST_RUN_MOCHA_TESTS } from "@nomiclabs/buidler/builtin-tasks/task-names";
 import { internalTask } from "@nomiclabs/buidler/config";
-import { ensurePluginLoadedWithUsePlugin, BUIDLEREVM_NETWORK_NAME } from "@nomiclabs/buidler/plugins";
+import {
+  ensurePluginLoadedWithUsePlugin,
+  BUIDLEREVM_NETWORK_NAME
+} from "@nomiclabs/buidler/plugins";
+import { wrapSend } from "@nomiclabs/buidler/internal/core/providers/wrapper";
+import AsyncProvider from "./provider";
 
 import {
   ResolvedBuidlerConfig,
   BuidlerArguments,
   HttpNetworkConfig,
-  NetworkConfig
+  NetworkConfig,
+  IEthereumProvider
 } from "@nomiclabs/buidler/types";
 
 import { EthGasReporterConfig } from "./types";
 
 ensurePluginLoadedWithUsePlugin();
+
+let mochaConfig;
 
 /**
  * Method passed to eth-gas-reporter to resolve artifact resources. Loads
@@ -94,6 +102,32 @@ function getOptions(
   return { ...getDefaultOptions(config, networkConfig), ...(<any>config).gasReporter };
 }
 
+function createGasMeasuringProvider(
+  provider: IEthereumProvider
+){
+  return wrapSend(provider, async (method, params) => {
+    // Truffle
+    if (method === "eth_getTransactionReceipt") {
+      const receipt = await provider.send(method, params);
+      if (receipt.status && receipt.transactionHash){
+        const tx = await provider.send("eth_getTransactionByHash", [receipt.transactionHash]);
+        await mochaConfig.attachments.recordTransaction(receipt, tx);
+      }
+      return receipt;
+
+    // Ethers: will get run twice for deployments (e.g both receipt and txhash are fetched)
+    } else if (method === 'eth_getTransactionByHash'){
+      const receipt = await provider.send("eth_getTransactionReceipt", params)
+      const tx = await provider.send(method, params)
+      if (receipt.status){
+        await mochaConfig.attachments.recordTransaction(receipt, tx)
+      }
+      return tx;
+    }
+    return provider.send(method, params);
+  });
+}
+
 /**
  * Overrides TASK_TEST_RUN_MOCHA_TEST to (conditionally) use eth-gas-reporter as
  * the mocha test reporter and passes mocha relevant options. These are listed
@@ -101,21 +135,22 @@ function getOptions(
  */
 export default function() {
   internalTask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
-    async (args: any, { config, network }, runSuper) => {
-      const options = getOptions(config, network.config);
+    async (args: any, bre, runSuper) => {
+      const options = getOptions(bre.config, bre.network.config);
 
       if (options.enabled) {
-        if (network.name === BUIDLEREVM_NETWORK_NAME) {
-          console.warn("buidler-gas-reporter doesn't work with an in-memory instance of Buidler EVM")
-          console.warn("To learn how to use it, please go to https://github.com/cgewecke/buidler-gas-reporter#using-buidlerevm-warning")
-        } else {
-          const mochaConfig = config.mocha || {};
+        mochaConfig = bre.config.mocha || {};
+        mochaConfig.reporter = "eth-gas-reporter";
+        mochaConfig.reporterOptions = options;
 
-          mochaConfig.reporter = "eth-gas-reporter";
-          mochaConfig.reporterOptions = options;
-
-          config.mocha = mochaConfig;
+        if (bre.network.name === BUIDLEREVM_NETWORK_NAME || options.fast){
+          bre.network.provider = createGasMeasuringProvider(bre.network.provider);
+          mochaConfig.reporterOptions.provider = new AsyncProvider(bre.network.provider);
+          mochaConfig.reporterOptions.blockLimit = (<any>bre.network.config).blockGasLimit as number;
+          mochaConfig.attachments = {};
         }
+
+        bre.config.mocha = mochaConfig;
       }
 
       await runSuper();

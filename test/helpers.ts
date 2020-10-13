@@ -7,13 +7,17 @@ declare module "mocha" {
   }
 }
 
-export function useEnvironment(projectPath: string, networkName: string) {
+export function useEnvironment(projectPath: string, networkName?: string) {
   let previousCWD: string;
 
   beforeEach("Loading buidler environment", function() {
     previousCWD = process.cwd();
     process.chdir(projectPath);
-    process.env.BUIDLER_NETWORK = networkName;
+
+    if (networkName !== undefined){
+      process.env.BUIDLER_NETWORK = networkName;
+    }
+
     this.env = require("@nomiclabs/buidler");
   });
 
