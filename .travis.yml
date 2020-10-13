@@ -1,9 +1,0 @@
-sudo: false
-group: beta
-language: node_js
-node_js:
-  - "10"
-install:
-  - yarn
-script:
-  - npm test
