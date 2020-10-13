@@ -4,7 +4,7 @@ import { ethers } from "@nomiclabs/buidler";
 
 describe("Greeter contract", function() {
   it("Should shoud be deployable with different greetings", async function() {
-    const Greeter = await ethers.getContract("Greeter");
+    const Greeter = await ethers.getContractFactory("Greeter");
     const greeter1 = await Greeter.deploy("Hi");
     assert.equal(await greeter1.functions.greeting(), "Hi");
 
@@ -13,14 +13,14 @@ describe("Greeter contract", function() {
   });
 
   it("Should return the greeting when greet is called", async function() {
-    const Greeter = await ethers.getContract("Greeter");
+    const Greeter = await ethers.getContractFactory("Greeter");
     const greeter1 = await Greeter.deploy("Hi");
 
     assert.equal(await greeter1.functions.greet(), "Hi");
   });
 
   it("Should set a greeting", async function(){
-    const Greeter = await ethers.getContract("Greeter");
+    const Greeter = await ethers.getContractFactory("Greeter");
     const greeter1 = await Greeter.deploy("Hi");
     await greeter1.functions.setGreeting('ciao');
     assert.equal(await greeter1.functions.greet(), "ciao");
