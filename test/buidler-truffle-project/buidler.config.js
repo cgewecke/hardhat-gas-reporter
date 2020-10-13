@@ -14,6 +14,12 @@ module.exports = {
       runs: 100
     }
   },
+  networks: {
+    development: {
+      gas: 5000000,
+      url: "http://localhost:8545"
+    }
+  },
   gasReporter: {
     onlyCalledMethods: false
   }

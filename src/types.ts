@@ -16,5 +16,5 @@ export interface EthGasReporterConfig {
   metadata: any;
   artifactType: any;
   url: string;
-  fast: boolean;
+  fast?: boolean;
 }

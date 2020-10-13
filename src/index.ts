@@ -1,7 +1,10 @@
 import { readFileSync } from "fs";
 import { TASK_TEST_RUN_MOCHA_TESTS } from "@nomiclabs/buidler/builtin-tasks/task-names";
 import { internalTask } from "@nomiclabs/buidler/config";
-import { ensurePluginLoadedWithUsePlugin } from "@nomiclabs/buidler/plugins";
+import {
+  ensurePluginLoadedWithUsePlugin,
+  BUIDLEREVM_NETWORK_NAME
+} from "@nomiclabs/buidler/plugins";
 import { wrapSend } from "@nomiclabs/buidler/internal/core/providers/wrapper";
 import AsyncProvider from "./provider";
 
@@ -71,7 +74,6 @@ function getDefaultOptions(
   return {
     artifactType: artifactor.bind(null, config.paths.artifacts),
     enabled: true,
-    fast: true,
     url: <string>url,
     metadata: {
       compiler: {
@@ -104,14 +106,23 @@ function createGasMeasuringProvider(
   provider: IEthereumProvider
 ){
   return wrapSend(provider, async (method, params) => {
+    // Truffle
     if (method === "eth_getTransactionReceipt") {
       const receipt = await provider.send(method, params);
-
       if (receipt.status && receipt.transactionHash){
         const tx = await provider.send("eth_getTransactionByHash", [receipt.transactionHash]);
         await mochaConfig.attachments.recordTransaction(receipt, tx);
       }
       return receipt;
+
+    // Ethers: will get run twice for deployments (e.g both receipt and txhash are fetched)
+    } else if (method === 'eth_getTransactionByHash'){
+      const receipt = await provider.send("eth_getTransactionReceipt", params)
+      const tx = await provider.send(method, params)
+      if (receipt.status){
+        await mochaConfig.attachments.recordTransaction(receipt, tx)
+      }
+      return tx;
     }
     return provider.send(method, params);
   });
@@ -132,7 +143,7 @@ export default function() {
         mochaConfig.reporter = "eth-gas-reporter";
         mochaConfig.reporterOptions = options;
 
-        if (options.fast){
+        if (bre.network.name === BUIDLEREVM_NETWORK_NAME || options.fast){
           bre.network.provider = createGasMeasuringProvider(bre.network.provider);
           mochaConfig.reporterOptions.provider = new AsyncProvider(bre.network.provider);
           mochaConfig.reporterOptions.blockLimit = (<any>bre.network.config).blockGasLimit as number;
