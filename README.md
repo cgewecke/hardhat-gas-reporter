@@ -29,21 +29,6 @@ And add the following to your `buidler.config.js`:
 ```js
 usePlugin("buidler-gas-reporter");
 ```
-## Using `buidlerevm` :warning:
-
-Are you seeing this error?
-```
-ECONNREFUSED 127.0.0.1:8545
-```
-
-It goes away if `buidlerevm` if is launched [as an independent node][1] (similar to the way `ganache-cli` is typically run). 
-We're working on removing this requirement...
-```
-npx buidler node 
-npx buidler test --network localhost
-```
-
-[1]: https://buidler.dev/buidler-evm/#connecting-to-buidler-evm-from-wallets-and-other-software
 
 ## Configuration
 Configuration is optional.

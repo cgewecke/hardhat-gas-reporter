@@ -11,6 +11,9 @@ export interface EthGasReporterConfig {
   excludeContracts?: string[];
   src?: string;
   proxyResolver?: any;
+  showMethodSig?: boolean;
+  maxMethodDiff?: number;
+  maxDeploymentDiff?: number;
 
   // Buidler (required)
   enabled: boolean;
