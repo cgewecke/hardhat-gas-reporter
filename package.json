@@ -55,6 +55,6 @@
     "@nomiclabs/buidler": "^1.0.1"
   },
   "dependencies": {
-    "eth-gas-reporter": "^0.2.18-beta.4"
+    "eth-gas-reporter": "^0.2.18"
   }
 }
