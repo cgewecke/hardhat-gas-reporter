@@ -1,24 +1,22 @@
 import { readFileSync } from "fs";
-import { TASK_TEST_RUN_MOCHA_TESTS } from "@nomiclabs/buidler/builtin-tasks/task-names";
-import { internalTask } from "@nomiclabs/buidler/config";
+import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
+import { internalTask } from "hardhat/config";
 import {
   ensurePluginLoadedWithUsePlugin,
-  BUIDLEREVM_NETWORK_NAME
-} from "@nomiclabs/buidler/plugins";
-import { wrapSend } from "@nomiclabs/buidler/internal/core/providers/wrapper";
+  HARDHATEVM_NETWORK_NAME
+} from "hardhat/plugins";
+import { wrapSend } from "hardhat/internal/core/providers/wrapper";
 import AsyncProvider from "./provider";
 
 import {
-  ResolvedBuidlerConfig,
-  BuidlerArguments,
+  ResolvedHardhatConfig,
+  HardhatArguments,
   HttpNetworkConfig,
   NetworkConfig,
   IEthereumProvider
-} from "@nomiclabs/buidler/types";
+} from "hardhat/types";
 
 import { EthGasReporterConfig } from "./types";
-
-ensurePluginLoadedWithUsePlugin();
 
 let mochaConfig;
 
@@ -49,14 +47,14 @@ function artifactor(artifactPath: string, contractName : string) : any {
 /**
  * Sets reporter options to pass to eth-gas-reporter:
  * > url to connect to client with
- * > artifact format (buidler)
+ * > artifact format (hardhat)
  * > solc compiler info
- * @param  {ResolvedBuidlerConfig} config [description]
- * @param  {BuidlerArguments}      args   [description]
+ * @param  {ResolvedHardhatConfig} config [description]
+ * @param  {HardhatArguments}      args   [description]
  * @return {EthGasReporterConfig}         [description]
  */
 function getDefaultOptions(
-  config: ResolvedBuidlerConfig,
+  config: ResolvedHardhatConfig,
   networkConfig: NetworkConfig
 ): EthGasReporterConfig {
   const defaultUrl = "http://localhost:8545";
@@ -91,12 +89,12 @@ function getDefaultOptions(
 
 /**
  * Merges GasReporter defaults with user's GasReporter config
- * @param  {ResolvedBuidlerConfig} config
- * @param  {BuidlerArguments}      args   command line args (e.g network)
+ * @param  {ResolvedHardhatConfig} config
+ * @param  {HardhatArguments}      args   command line args (e.g network)
  * @return {any}
  */
 function getOptions(
-  config: ResolvedBuidlerConfig,
+  config: ResolvedHardhatConfig,
   networkConfig: NetworkConfig
 ): any {
   return { ...getDefaultOptions(config, networkConfig), ...(<any>config).gasReporter };
@@ -135,22 +133,22 @@ function createGasMeasuringProvider(
  */
 export default function() {
   internalTask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
-    async (args: any, bre, runSuper) => {
-      const options = getOptions(bre.config, bre.network.config);
+    async (args: any, hre, runSuper) => {
+      const options = getOptions(hre.config, hre.network.config);
 
       if (options.enabled) {
-        mochaConfig = bre.config.mocha || {};
+        mochaConfig = hre.config.mocha || {};
         mochaConfig.reporter = "eth-gas-reporter";
         mochaConfig.reporterOptions = options;
 
-        if (bre.network.name === BUIDLEREVM_NETWORK_NAME || options.fast){
-          bre.network.provider = createGasMeasuringProvider(bre.network.provider);
-          mochaConfig.reporterOptions.provider = new AsyncProvider(bre.network.provider);
-          mochaConfig.reporterOptions.blockLimit = (<any>bre.network.config).blockGasLimit as number;
+        if (hre.network.name === HARDHATEVM_NETWORK_NAME || options.fast){
+          hre.network.provider = createGasMeasuringProvider(hre.network.provider);
+          mochaConfig.reporterOptions.provider = new AsyncProvider(hre.network.provider);
+          mochaConfig.reporterOptions.blockLimit = (<any>hre.network.config).blockGasLimit as number;
           mochaConfig.attachments = {};
         }
 
-        bre.config.mocha = mochaConfig;
+        hre.config.mocha = mochaConfig;
       }
 
       await runSuper();

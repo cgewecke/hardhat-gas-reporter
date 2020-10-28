@@ -1,9 +1,9 @@
 /**
  * A set of async RPC calls which substitute the sync calls made by the core reporter
- * These allow us to use BuidlerEVM or another in-process provider.
+ * These allow us to use HardhatEVM or another in-process provider.
  */
 
-import { IEthereumProvider } from "@nomiclabs/buidler/types";
+import { IEthereumProvider } from "hardhat/types";
 
 export default class AsyncProvider {
   public provider: IEthereumProvider;

@@ -15,7 +15,7 @@ export interface EthGasReporterConfig {
   maxMethodDiff?: number;
   maxDeploymentDiff?: number;
 
-  // Buidler (required)
+  // Hardhat (required)
   enabled: boolean;
   metadata: any;
   artifactType: any;
