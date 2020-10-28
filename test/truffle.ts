@@ -8,7 +8,6 @@ describe("Truffle plugin", function() {
   useEnvironment(__dirname + "/hardhat-truffle-project");
 
   it("default", async function() {
-    (this.env.config as any).gasReporter!.onlyCalledMethods = true;
     await this.env.run(TASK_TEST, { testFiles: [] });
   });
 

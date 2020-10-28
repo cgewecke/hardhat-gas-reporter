@@ -1,21 +1,24 @@
-import { readFileSync } from "fs";
 import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
-import { internalTask } from "hardhat/config";
+import { subtask } from "hardhat/config";
+import { HARDHAT_NETWORK_NAME } from "hardhat/plugins";
 import {
-  ensurePluginLoadedWithUsePlugin,
-  HARDHATEVM_NETWORK_NAME
-} from "hardhat/plugins";
-import { wrapSend } from "hardhat/internal/core/providers/wrapper";
-import AsyncProvider from "./provider";
+  BackwardsCompatibilityProviderAdapter
+} from "hardhat/internal/core/providers/backwards-compatibility"
 
 import {
-  ResolvedHardhatConfig,
+  EGRDataCollectionProvider,
+  EGRAsyncApiProvider
+} from "./providers";
+
+import {
   HardhatArguments,
   HttpNetworkConfig,
   NetworkConfig,
-  IEthereumProvider
+  EthereumProvider,
+  HardhatRuntimeEnvironment
 } from "hardhat/types";
 
+import "./type-extensions"
 import { EthGasReporterConfig } from "./types";
 
 let mochaConfig;
@@ -27,15 +30,8 @@ let mochaConfig;
  * @param  {string} contractName parsed contract name
  * @return {any}                 object w/ abi and bytecode
  */
-function artifactor(artifactPath: string, contractName : string) : any {
-  let _artifact: any = {};
-  let file : string = `${artifactPath}/${contractName}.json`;
-
-  try {
-    _artifact = JSON.parse(readFileSync(file, "utf-8"));
-  } catch(err){
-    throw err;
-  }
+function artifactor(artifacts: any, contractName : string) : any {
+  const _artifact = artifacts.readArtifactSync(contractName)
 
   return {
     abi: _artifact.abi,
@@ -53,38 +49,34 @@ function artifactor(artifactPath: string, contractName : string) : any {
  * @param  {HardhatArguments}      args   [description]
  * @return {EthGasReporterConfig}         [description]
  */
-function getDefaultOptions(
-  config: ResolvedHardhatConfig,
-  networkConfig: NetworkConfig
-): EthGasReporterConfig {
+function getDefaultOptions(hre: HardhatRuntimeEnvironment): EthGasReporterConfig {
   const defaultUrl = "http://localhost:8545";
+  const defaultCompiler = hre.config.solidity.compilers[0]
 
   let url: any;
-  let artifactType: any;
-
   // Resolve URL
-  if ((<HttpNetworkConfig>networkConfig).url) {
-    url = (<HttpNetworkConfig>networkConfig).url;
+  if ((<HttpNetworkConfig>hre.network.config).url) {
+    url = (<HttpNetworkConfig>hre.network.config).url;
   } else {
     url = defaultUrl;
   }
 
   return {
-    artifactType: artifactor.bind(null, config.paths.artifacts),
+    artifactType: artifactor.bind(null, hre.artifacts),
     enabled: true,
     url: <string>url,
     metadata: {
       compiler: {
-        version: config.solc.version
+        version: defaultCompiler.version
       },
       settings: {
         optimizer: {
-          enabled: config.solc.optimizer.enabled,
-          runs: config.solc.optimizer.runs
+          enabled: defaultCompiler.settings.optimizer.enabled,
+          runs: defaultCompiler.settings.optimizer.runs
         }
       }
     }
-  };
+  }
 }
 
 /**
@@ -93,37 +85,8 @@ function getDefaultOptions(
  * @param  {HardhatArguments}      args   command line args (e.g network)
  * @return {any}
  */
-function getOptions(
-  config: ResolvedHardhatConfig,
-  networkConfig: NetworkConfig
-): any {
-  return { ...getDefaultOptions(config, networkConfig), ...(<any>config).gasReporter };
-}
-
-function createGasMeasuringProvider(
-  provider: IEthereumProvider
-){
-  return wrapSend(provider, async (method, params) => {
-    // Truffle
-    if (method === "eth_getTransactionReceipt") {
-      const receipt = await provider.send(method, params);
-      if (receipt.status && receipt.transactionHash){
-        const tx = await provider.send("eth_getTransactionByHash", [receipt.transactionHash]);
-        await mochaConfig.attachments.recordTransaction(receipt, tx);
-      }
-      return receipt;
-
-    // Ethers: will get run twice for deployments (e.g both receipt and txhash are fetched)
-    } else if (method === 'eth_getTransactionByHash'){
-      const receipt = await provider.send("eth_getTransactionReceipt", params)
-      const tx = await provider.send(method, params)
-      if (receipt.status){
-        await mochaConfig.attachments.recordTransaction(receipt, tx)
-      }
-      return tx;
-    }
-    return provider.send(method, params);
-  });
+function getOptions(hre: HardhatRuntimeEnvironment): any {
+  return { ...getDefaultOptions(hre), ...(hre.config as any).gasReporter };
 }
 
 /**
@@ -131,27 +94,27 @@ function createGasMeasuringProvider(
  * the mocha test reporter and passes mocha relevant options. These are listed
  * on the `gasReporter` of the user's config.
  */
-export default function() {
-  internalTask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
-    async (args: any, hre, runSuper) => {
-      const options = getOptions(hre.config, hre.network.config);
+subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
+  async (args: any, hre, runSuper) => {
+    const options = getOptions(hre);
 
-      if (options.enabled) {
-        mochaConfig = hre.config.mocha || {};
-        mochaConfig.reporter = "eth-gas-reporter";
-        mochaConfig.reporterOptions = options;
+    if (options.enabled) {
+      mochaConfig = hre.config.mocha || {};
+      mochaConfig.reporter = "eth-gas-reporter";
+      mochaConfig.reporterOptions = options;
 
-        if (hre.network.name === HARDHATEVM_NETWORK_NAME || options.fast){
-          hre.network.provider = createGasMeasuringProvider(hre.network.provider);
-          mochaConfig.reporterOptions.provider = new AsyncProvider(hre.network.provider);
-          mochaConfig.reporterOptions.blockLimit = (<any>hre.network.config).blockGasLimit as number;
-          mochaConfig.attachments = {};
-        }
-
-        hre.config.mocha = mochaConfig;
+      if (hre.network.name === HARDHAT_NETWORK_NAME || options.fast){
+        const wrappedDataProvider= new EGRDataCollectionProvider(hre.network.provider,mochaConfig);
+        hre.network.provider = new BackwardsCompatibilityProviderAdapter(wrappedDataProvider)
+        mochaConfig.reporterOptions.provider = new EGRAsyncApiProvider(hre.network.provider);
+        mochaConfig.reporterOptions.blockLimit = (<any>hre.network.config).blockGasLimit as number;
+        mochaConfig.attachments = {};
       }
 
-      await runSuper();
+      hre.config.mocha = mochaConfig;
     }
-  );
-}
+
+    await runSuper();
+  }
+);
+

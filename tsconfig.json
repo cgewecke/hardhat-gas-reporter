@@ -15,8 +15,5 @@
   "include": [
     "./test",
     "./src"
-  ],
-  "files": [
-    "node_modules/@nomiclabs/hardhat-ethers/src/type-extensions.d.ts"
   ]
 }

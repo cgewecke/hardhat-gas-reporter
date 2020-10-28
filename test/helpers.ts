@@ -11,7 +11,6 @@ export function useEnvironment(projectPath: string, networkName?: string) {
   let previousCWD: string;
 
   beforeEach("Loading hardhat environment", function() {
-    previousCWD = process.cwd();
     process.chdir(projectPath);
 
     if (networkName !== undefined){
@@ -23,6 +22,5 @@ export function useEnvironment(projectPath: string, networkName?: string) {
 
   afterEach("Resetting hardhat", function() {
     resetHardhatContext();
-    process.chdir(previousCWD);
   });
 }
