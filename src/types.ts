@@ -18,7 +18,7 @@ export interface EthGasReporterConfig {
   // Buidler (required)
   enabled: boolean;
   metadata: any;
-  artifactType: any;
+  artifactType?: "truffle-v5" | "0xProject-v2" | "buidler-v1" | "ethpm";
   url: string;
   fast?: boolean;
 }
