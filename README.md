@@ -25,10 +25,16 @@ npm install hardhat-gas-reporter --save-dev
 ```
 
 And add the following to your `hardhat.config.js`:
-
 ```js
-usePlugin("hardhat-gas-reporter");
+require("hardhat-gas-reporter");
 ```
+
+Or, if you are using TypeScript, add this to your hardhat.config.ts:
+```ts
+import "hardhat-gas-reporter"
+```
+
+**Looking for buidler-gas-reporter docs?** [They moved here...][1]
 
 ## Configuration
 Configuration is optional.
@@ -63,3 +69,5 @@ npx hardhat test
 ## Options / Documentation
 
 A list of options and other useful documentation can be found at [eth-gas-reporter](https://github.com/cgewecke/eth-gas-reporter)
+
+[1]: https://github.com/cgewecke/buidler-gas-reporter/tree/buidler-final#installation
