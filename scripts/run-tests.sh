@@ -9,9 +9,9 @@ cleanup() {
     kill -9 $ganache_pid
   fi
 
-  if [ -n "$buidlerevm_pid" ] && ps -p $buidlerevm_pid > /dev/null; then
-    echo "Killing buidlerevm."
-    kill -9 $buidlerevm_pid
+  if [ -n "$hardhatevm_pid" ] && ps -p $hardhatevm_pid > /dev/null; then
+    echo "Killing hardhatevm."
+    kill -9 $hardhatevm_pid
   fi
 }
 
@@ -22,23 +22,23 @@ start_ganache() {
   sleep 4
 }
 
-start_buidlerevm() {
-  echo "Launching buidlerevm..."
-  node_modules/.bin/buidler node > /dev/null &
-  buidlerevm_pid=$!
+start_hardhatevm() {
+  echo "Launching hardhatevm..."
+  node_modules/.bin/hardhat node > /dev/null &
+  hardhatevm_pid=$!
   sleep 4
 }
 
 
-# Truffle + BuidlerEVM
+# Truffle + HardhatEVM
 npx mocha test/truffle.ts --timeout 100000 --exit
 
-# Ethers + BuidlerEVM
+# Ethers + HardhatEVM
 npx mocha test/ethers.ts --timeout 100000 --exit
 
-# Ethers + Buidler Node
-start_buidlerevm
-npx mocha test/buidlerevm.node.ts --timeout 100000 --exit
+# Ethers + Hardhat Node
+start_hardhatevm
+npx mocha test/hardhatevm.node.ts --timeout 100000 --exit
 cleanup
 
 # Truffle + Ganache

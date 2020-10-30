@@ -60,10 +60,10 @@ typings/
 # next.js build output
 .next
 
-# buidler-project
-test/buidler-truffle-project/artifacts
-test/buidler-truffle-project/cache
-test/buidler-ethers-project/artifacts
-test/buidler-ethers-project/cache
+# hardhat-project
+test/hardhat-truffle-project/artifacts
+test/hardhat-truffle-project/cache
+test/hardhat-ethers-project/artifacts
+test/hardhat-ethers-project/cache
 dist/
 

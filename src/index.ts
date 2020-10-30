@@ -1,131 +1,110 @@
-import { readFileSync } from "fs";
-import { TASK_TEST_RUN_MOCHA_TESTS } from "@nomiclabs/buidler/builtin-tasks/task-names";
-import { internalTask } from "@nomiclabs/buidler/config";
+import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
+import { subtask } from "hardhat/config";
+import { HARDHAT_NETWORK_NAME } from "hardhat/plugins";
 import {
-  ensurePluginLoadedWithUsePlugin,
-  BUIDLEREVM_NETWORK_NAME
-} from "@nomiclabs/buidler/plugins";
-import { wrapSend } from "@nomiclabs/buidler/internal/core/providers/wrapper";
-import AsyncProvider from "./provider";
+  BackwardsCompatibilityProviderAdapter
+} from "hardhat/internal/core/providers/backwards-compatibility"
 
 import {
-  ResolvedBuidlerConfig,
-  BuidlerArguments,
+  EGRDataCollectionProvider,
+  EGRAsyncApiProvider
+} from "./providers";
+
+import {
+  HardhatArguments,
   HttpNetworkConfig,
   NetworkConfig,
-  IEthereumProvider
-} from "@nomiclabs/buidler/types";
+  EthereumProvider,
+  HardhatRuntimeEnvironment,
+  Artifact,
+  Artifacts
+} from "hardhat/types";
 
+import "./type-extensions"
 import { EthGasReporterConfig } from "./types";
-
-ensurePluginLoadedWithUsePlugin();
+const { parseSoliditySources } = require('eth-gas-reporter/lib/utils');
 
 let mochaConfig;
+let resolvedQualifiedNames: string[]
 
 /**
  * Method passed to eth-gas-reporter to resolve artifact resources. Loads
  * and processes JSON artifacts
- * @param  {string} artifactPath `config.paths.artifacts`
- * @param  {string} contractName parsed contract name
- * @return {any}                 object w/ abi and bytecode
+ * @param  {HardhatRuntimeEnvironment} hre.artifacts
+ * @return {object[]}                  objects w/ abi and bytecode
  */
-function artifactor(artifactPath: string, contractName : string) : any {
-  let _artifact: any = {};
-  let file : string = `${artifactPath}/${contractName}.json`;
+function getContracts(artifacts: Artifacts) : any[] {
+  const contracts = [];
 
-  try {
-    _artifact = JSON.parse(readFileSync(file, "utf-8"));
-  } catch(err){
-    throw err;
-  }
+  for (const qualifiedName of resolvedQualifiedNames) {
+    let name: string;
+    let artifact = artifacts.readArtifactSync(qualifiedName)
 
-  return {
-    abi: _artifact.abi,
-    bytecode: _artifact.bytecode,
-    deployedBytecode: _artifact.deployedBytecode
+    // Prefer simple names
+    try {
+      artifact = artifacts.readArtifactSync(artifact.contractName);
+      name = artifact.contractName;
+    } catch (e) {
+      name = qualifiedName;
+    }
+
+    contracts.push({
+      name: name,
+      artifact: {
+        abi: artifact.abi,
+        bytecode: artifact.bytecode,
+        deployedBytecode: artifact.deployedBytecode
+      }
+    });
   }
+  return contracts;
 }
 
 /**
  * Sets reporter options to pass to eth-gas-reporter:
  * > url to connect to client with
- * > artifact format (buidler)
+ * > artifact format (hardhat)
  * > solc compiler info
- * @param  {ResolvedBuidlerConfig} config [description]
- * @param  {BuidlerArguments}      args   [description]
- * @return {EthGasReporterConfig}         [description]
+ * @param  {HardhatRuntimeEnvironment} hre
+ * @return {EthGasReporterConfig}
  */
-function getDefaultOptions(
-  config: ResolvedBuidlerConfig,
-  networkConfig: NetworkConfig
-): EthGasReporterConfig {
+function getDefaultOptions(hre: HardhatRuntimeEnvironment): EthGasReporterConfig {
   const defaultUrl = "http://localhost:8545";
+  const defaultCompiler = hre.config.solidity.compilers[0]
 
   let url: any;
-  let artifactType: any;
-
   // Resolve URL
-  if ((<HttpNetworkConfig>networkConfig).url) {
-    url = (<HttpNetworkConfig>networkConfig).url;
+  if ((<HttpNetworkConfig>hre.network.config).url) {
+    url = (<HttpNetworkConfig>hre.network.config).url;
   } else {
     url = defaultUrl;
   }
 
   return {
-    artifactType: artifactor.bind(null, config.paths.artifacts),
+    getContracts: getContracts.bind(null, hre.artifacts),
     enabled: true,
     url: <string>url,
     metadata: {
       compiler: {
-        version: config.solc.version
+        version: defaultCompiler.version
       },
       settings: {
         optimizer: {
-          enabled: config.solc.optimizer.enabled,
-          runs: config.solc.optimizer.runs
+          enabled: defaultCompiler.settings.optimizer.enabled,
+          runs: defaultCompiler.settings.optimizer.runs
         }
       }
     }
-  };
+  }
 }
 
 /**
  * Merges GasReporter defaults with user's GasReporter config
- * @param  {ResolvedBuidlerConfig} config
- * @param  {BuidlerArguments}      args   command line args (e.g network)
+ * @param  {HardhatRuntimeEnvironment} hre
  * @return {any}
  */
-function getOptions(
-  config: ResolvedBuidlerConfig,
-  networkConfig: NetworkConfig
-): any {
-  return { ...getDefaultOptions(config, networkConfig), ...(<any>config).gasReporter };
-}
-
-function createGasMeasuringProvider(
-  provider: IEthereumProvider
-){
-  return wrapSend(provider, async (method, params) => {
-    // Truffle
-    if (method === "eth_getTransactionReceipt") {
-      const receipt = await provider.send(method, params);
-      if (receipt.status && receipt.transactionHash){
-        const tx = await provider.send("eth_getTransactionByHash", [receipt.transactionHash]);
-        await mochaConfig.attachments.recordTransaction(receipt, tx);
-      }
-      return receipt;
-
-    // Ethers: will get run twice for deployments (e.g both receipt and txhash are fetched)
-    } else if (method === 'eth_getTransactionByHash'){
-      const receipt = await provider.send("eth_getTransactionReceipt", params)
-      const tx = await provider.send(method, params)
-      if (receipt.status){
-        await mochaConfig.attachments.recordTransaction(receipt, tx)
-      }
-      return tx;
-    }
-    return provider.send(method, params);
-  });
+function getOptions(hre: HardhatRuntimeEnvironment): any {
+  return { ...getDefaultOptions(hre), ...(hre.config as any).gasReporter };
 }
 
 /**
@@ -133,27 +112,28 @@ function createGasMeasuringProvider(
  * the mocha test reporter and passes mocha relevant options. These are listed
  * on the `gasReporter` of the user's config.
  */
-export default function() {
-  internalTask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
-    async (args: any, bre, runSuper) => {
-      const options = getOptions(bre.config, bre.network.config);
+subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
+  async (args: any, hre, runSuper) => {
+    const options = getOptions(hre);
 
-      if (options.enabled) {
-        mochaConfig = bre.config.mocha || {};
-        mochaConfig.reporter = "eth-gas-reporter";
-        mochaConfig.reporterOptions = options;
+    if (options.enabled) {
+      mochaConfig = hre.config.mocha || {};
+      mochaConfig.reporter = "eth-gas-reporter";
+      mochaConfig.reporterOptions = options;
 
-        if (bre.network.name === BUIDLEREVM_NETWORK_NAME || options.fast){
-          bre.network.provider = createGasMeasuringProvider(bre.network.provider);
-          mochaConfig.reporterOptions.provider = new AsyncProvider(bre.network.provider);
-          mochaConfig.reporterOptions.blockLimit = (<any>bre.network.config).blockGasLimit as number;
-          mochaConfig.attachments = {};
-        }
-
-        bre.config.mocha = mochaConfig;
+      if (hre.network.name === HARDHAT_NETWORK_NAME || options.fast){
+        const wrappedDataProvider= new EGRDataCollectionProvider(hre.network.provider,mochaConfig);
+        hre.network.provider = new BackwardsCompatibilityProviderAdapter(wrappedDataProvider)
+        mochaConfig.reporterOptions.provider = new EGRAsyncApiProvider(hre.network.provider);
+        mochaConfig.reporterOptions.blockLimit = (<any>hre.network.config).blockGasLimit as number;
+        mochaConfig.attachments = {};
       }
 
-      await runSuper();
+      hre.config.mocha = mochaConfig;
+      resolvedQualifiedNames = await hre.artifacts.getAllFullyQualifiedNames();
     }
-  );
-}
+
+    await runSuper();
+  }
+);
+

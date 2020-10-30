@@ -1,6 +1,7 @@
+// @ts-nocheck
 // tslint:disable-next-line no-implicit-dependencies
 import { assert } from "chai";
-import { ethers } from "@nomiclabs/buidler";
+import 'hardhat'
 
 describe("Greeter contract", function() {
   it("Should shoud be deployable with different greetings", async function() {
