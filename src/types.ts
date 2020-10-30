@@ -18,7 +18,7 @@ export interface EthGasReporterConfig {
   // Hardhat (required)
   enabled: boolean;
   metadata: any;
-  artifactType: any;
+  getContracts: any;
   url: string;
   fast?: boolean;
 }

@@ -15,29 +15,49 @@ import {
   HttpNetworkConfig,
   NetworkConfig,
   EthereumProvider,
-  HardhatRuntimeEnvironment
+  HardhatRuntimeEnvironment,
+  Artifact,
+  Artifacts
 } from "hardhat/types";
 
 import "./type-extensions"
 import { EthGasReporterConfig } from "./types";
+const { parseSoliditySources } = require('eth-gas-reporter/lib/utils');
 
 let mochaConfig;
+let resolvedQualifiedNames: string[]
 
 /**
  * Method passed to eth-gas-reporter to resolve artifact resources. Loads
  * and processes JSON artifacts
- * @param  {string} artifactPath `config.paths.artifacts`
- * @param  {string} contractName parsed contract name
- * @return {any}                 object w/ abi and bytecode
+ * @param  {HardhatRuntimeEnvironment} hre.artifacts
+ * @return {object[]}                  objects w/ abi and bytecode
  */
-function artifactor(artifacts: any, contractName : string) : any {
-  const _artifact = artifacts.readArtifactSync(contractName)
+function getContracts(artifacts: Artifacts) : any[] {
+  const contracts = [];
 
-  return {
-    abi: _artifact.abi,
-    bytecode: _artifact.bytecode,
-    deployedBytecode: _artifact.deployedBytecode
+  for (const qualifiedName of resolvedQualifiedNames) {
+    let name: string;
+    let artifact = artifacts.readArtifactSync(qualifiedName)
+
+    // Prefer simple names
+    try {
+      artifact = artifacts.readArtifactSync(artifact.contractName);
+      name = artifact.contractName;
+    } catch (e) {
+      name = qualifiedName;
+    }
+
+    contracts.push({
+      name: name,
+      artifact: {
+        abi: artifact.abi,
+        bytecode: artifact.bytecode,
+        deployedBytecode: artifact.deployedBytecode
+      }
+    });
   }
+  return contracts;
 }
 
 /**
@@ -45,9 +65,8 @@ function artifactor(artifacts: any, contractName : string) : any {
  * > url to connect to client with
  * > artifact format (hardhat)
  * > solc compiler info
- * @param  {ResolvedHardhatConfig} config [description]
- * @param  {HardhatArguments}      args   [description]
- * @return {EthGasReporterConfig}         [description]
+ * @param  {HardhatRuntimeEnvironment} hre
+ * @return {EthGasReporterConfig}
  */
 function getDefaultOptions(hre: HardhatRuntimeEnvironment): EthGasReporterConfig {
   const defaultUrl = "http://localhost:8545";
@@ -62,7 +81,7 @@ function getDefaultOptions(hre: HardhatRuntimeEnvironment): EthGasReporterConfig
   }
 
   return {
-    artifactType: artifactor.bind(null, hre.artifacts),
+    getContracts: getContracts.bind(null, hre.artifacts),
     enabled: true,
     url: <string>url,
     metadata: {
@@ -81,8 +100,7 @@ function getDefaultOptions(hre: HardhatRuntimeEnvironment): EthGasReporterConfig
 
 /**
  * Merges GasReporter defaults with user's GasReporter config
- * @param  {ResolvedHardhatConfig} config
- * @param  {HardhatArguments}      args   command line args (e.g network)
+ * @param  {HardhatRuntimeEnvironment} hre
  * @return {any}
  */
 function getOptions(hre: HardhatRuntimeEnvironment): any {
@@ -112,6 +130,7 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
       }
 
       hre.config.mocha = mochaConfig;
+      resolvedQualifiedNames = await hre.artifacts.getAllFullyQualifiedNames();
     }
 
     await runSuper();
