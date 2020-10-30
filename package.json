@@ -55,6 +55,6 @@
     "hardhat": "^2.0.2"
   },
   "dependencies": {
-    "eth-gas-reporter": "^0.2.18"
+    "eth-gas-reporter": "^0.2.19"
   }
 }
