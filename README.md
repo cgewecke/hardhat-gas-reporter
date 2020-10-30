@@ -6,7 +6,7 @@
 
 # hardhat-gas-reporter
 
-[eth-gas-reporter](https://github.com/cgewecke/eth-gas-reporter) plugin for [hardhat](http://gethardhat.com). :fuelpump:
+[eth-gas-reporter](https://github.com/cgewecke/eth-gas-reporter) plugin for [hardhat](http://gethardhat.com).
 
 ## What
 
@@ -100,9 +100,8 @@ your own API key [here][55] and set it with the `coinmarketcap` option.
 | showTimeSpent     | _Boolean_              | false                       | Show the amount of time spent as well as the gas consumed                                                                                                                                                                                    |
 | excludeContracts  | _String[]_             | []                          | Contract names to exclude from report. Ex: `['Migrations']`                                                                                                                                                                                  |
 | src               | _String_               | "contracts"                 | Folder in root directory to begin search for `.sol` files. This can also be a path to a subfolder relative to the root, e.g. "planets/annares/contracts"                                                                                     |
-| url               | _String_               | `web3.currentProvider.host` | RPC client url (ex: "http://localhost:8545")                                                                                                                                                                                                 |
+| url               | _String_               | `http://localhost:8545` (or network value) | RPC client url                                                                                                                                                                                                  |
 | proxyResolver     | _Function_             | none                        | Custom method to resolve identity of methods managed by a proxy contract.                                                                                                                                                                    |
-| artifactType      | _Function_ or _String_ | "truffle-v5"                | Compilation artifact format to consume. (See [advanced use](https://github.com/cgewecke/eth-gas-reporter/blob/master/docs/advanced.md).)                                                                                                     |
 | showMethodSig     | _Boolean_              | false                       | Display complete method signatures. Useful when you have overloaded methods you can't tell apart.                                                                                                                                            |
 | maxMethodDiff     | _Number_               | undefined                   | Codechecks failure threshold, triggered when the % diff for any method is greater than `number` (integer)                                                                                                                                    |
 | maxDeploymentDiff | _Number_               | undefined                   | Codechecks failure threshold, triggered when the % diff for any deployment is greater than `number` (integer)                                                                                                                                |
