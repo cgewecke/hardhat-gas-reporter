@@ -133,7 +133,7 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
       resolvedQualifiedNames = await hre.artifacts.getAllFullyQualifiedNames();
     }
 
-    await runSuper();
+    return runSuper();
   }
 );
 
