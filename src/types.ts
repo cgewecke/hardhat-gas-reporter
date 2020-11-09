@@ -14,11 +14,11 @@ export interface EthGasReporterConfig {
   showMethodSig?: boolean;
   maxMethodDiff?: number;
   maxDeploymentDiff?: number;
+  enabled?: boolean;
 
-  // Hardhat (required)
-  enabled: boolean;
-  metadata: any;
-  getContracts: any;
-  url: string;
+  // Hardhat internals set for eth-gas-reporter
+  metadata?: any;
+  getContracts?: any;
+  url?: string;
   fast?: boolean;
 }
