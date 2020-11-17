@@ -1,3 +1,4 @@
+import sha1 from "sha1"
 import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
 import { subtask } from "hardhat/config";
 import { HARDHAT_NETWORK_NAME } from "hardhat/plugins";
@@ -65,6 +66,7 @@ function getContracts(artifacts: Artifacts) : any[] {
       artifact: {
         abi: remoteContract.abi,
         bytecode: remoteContract.bytecode,
+        bytecodeHash: remoteContract.bytecodeHash,
         deployedBytecode: remoteContract.deployedBytecode
       }
     })
@@ -119,6 +121,13 @@ function getOptions(hre: HardhatRuntimeEnvironment): any {
   return { ...getDefaultOptions(hre), ...(hre.config as any).gasReporter };
 }
 
+/**
+ * Fetches remote bytecode at address and hashes it so these addresses can be
+ * added to the tracking at eth-gas-reporter synchronously on init.
+ * @param  {EGRAsyncApiProvider}   provider
+ * @param  {RemoteContract[] = []} remoteContracts
+ * @return {Promise<RemoteContract[]>}
+ */
 async function getResolvedRemoteContracts(
   provider: EGRAsyncApiProvider,
   remoteContracts: RemoteContract[] = []
@@ -128,6 +137,7 @@ async function getResolvedRemoteContracts(
     try {
       contract.bytecode = await provider.getCode(contract.address);
       contract.deployedBytecode = contract.bytecode;
+      contract.bytecodeHash = sha1(contract.bytecode);
     } catch (error){
       console.log(`Warning: failed to fetch bytecode for remote contract: ${contract.name}`)
       console.log(`Error was: ${error}\n`);

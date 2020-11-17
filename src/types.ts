@@ -29,5 +29,6 @@ export interface RemoteContract {
   address: string;
   name: string;
   bytecode?: string;
+  bytecodeHash?: string;
   deployedBytecode?: string;
 }

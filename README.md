@@ -109,6 +109,7 @@ your own API key [here][55] and set it with the `coinmarketcap` option.
 | remoteContracts | _RemoteContract[]_               | `[]`                  | Contracts
 pre-deployed to a (forked) network the reporter should collect gas usage data for. (See [RemoteContract type][44])                                |
 
+[44]:
 [55]: https://coinmarketcap.com/api/pricing/
 
 
@@ -117,3 +118,4 @@ pre-deployed to a (forked) network the reporter should collect gas usage data fo
 Other useful documentation can be found at [eth-gas-reporter](https://github.com/cgewecke/eth-gas-reporter)
 
 [1]: https://github.com/cgewecke/buidler-gas-reporter/tree/buidler-final#installation
+

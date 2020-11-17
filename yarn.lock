@@ -1836,10 +1836,9 @@ eth-ens-namehash@2.0.8, eth-ens-namehash@^2.0.0:
     idna-uts46-hx "^2.3.1"
     js-sha3 "^0.5.7"
 
-eth-gas-reporter@^0.2.19:
+"eth-gas-reporter@https://github.com/cgewecke/eth-gas-reporter.git#bcd8bd32d719cb8969396a236e8fb041fbd9c279":
   version "0.2.19"
-  resolved "https://registry.yarnpkg.com/eth-gas-reporter/-/eth-gas-reporter-0.2.19.tgz#57ce74e0617d021d04fd1789a4232837d0f41918"
-  integrity sha512-yQmbAa6O9/Yl/syNml2A0R+ZLQnJ9m9jogFXHzjMWVBMUVnAcEskOVyxaMYddkclZdYIMxE99tQy830C2jLsAQ==
+  resolved "https://github.com/cgewecke/eth-gas-reporter.git#bcd8bd32d719cb8969396a236e8fb041fbd9c279"
   dependencies:
     "@ethersproject/abi" "^5.0.0-beta.146"
     "@solidity-parser/parser" "^0.8.0"
