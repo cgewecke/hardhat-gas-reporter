@@ -16,7 +16,7 @@ export class EGRDataCollectionProvider extends ProviderWrapper {
     // Truffle
     if (args.method === "eth_getTransactionReceipt") {
       const receipt: any = await this._wrappedProvider.request(args);
-      if (receipt.status && receipt.transactionHash){
+      if (receipt?.status && receipt?.transactionHash){
         const tx = await this._wrappedProvider.request({
           method: "eth_getTransactionByHash",
           params: [receipt.transactionHash]
@@ -32,7 +32,7 @@ export class EGRDataCollectionProvider extends ProviderWrapper {
         params: args.params
       })
       const tx = await this._wrappedProvider.request(args)
-      if (receipt.status){
+      if (receipt?.status){
         await this.mochaConfig.attachments.recordTransaction(receipt, tx)
       }
       return tx;
