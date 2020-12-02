@@ -106,8 +106,7 @@ your own API key [here][55] and set it with the `coinmarketcap` option.
 | showMethodSig     | _Boolean_              | false                       | Display complete method signatures. Useful when you have overloaded methods you can't tell apart.                                                                                                                                            |
 | maxMethodDiff     | _Number_               | undefined                   | Codechecks failure threshold, triggered when the % diff for any method is greater than `number` (integer)                                                                                                                                    |
 | maxDeploymentDiff | _Number_               | undefined                   | Codechecks failure threshold, triggered when the % diff for any deployment is greater than `number` (integer)                                                                                                                                |
-| remoteContracts | _RemoteContract[]_               | `[]`                  | Contracts
-pre-deployed to a (forked) network the reporter should collect gas usage data for. (See [RemoteContract type][44])                                |
+| remoteContracts | _RemoteContract[]_               | `[]`                  | Contracts pre-deployed to a (forked) network which the reporter should collect gas usage data for. (See [RemoteContract type][44])                                |
 
 [44]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/src/types.ts#L27
 [55]: https://coinmarketcap.com/api/pricing/
