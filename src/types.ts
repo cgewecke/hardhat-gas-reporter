@@ -15,10 +15,20 @@ export interface EthGasReporterConfig {
   maxMethodDiff?: number;
   maxDeploymentDiff?: number;
   enabled?: boolean;
+  remoteContracts?: RemoteContract[]
 
   // Hardhat internals set for eth-gas-reporter
   metadata?: any;
   getContracts?: any;
   url?: string;
   fast?: boolean;
+}
+
+export interface RemoteContract {
+  abi: any;
+  address: string;
+  name: string;
+  bytecode?: string;
+  bytecodeHash?: string;
+  deployedBytecode?: string;
 }

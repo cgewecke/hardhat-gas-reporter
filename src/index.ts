@@ -1,3 +1,4 @@
+import sha1 from "sha1"
 import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
 import { subtask } from "hardhat/config";
 import { HARDHAT_NETWORK_NAME } from "hardhat/plugins";
@@ -21,11 +22,12 @@ import {
 } from "hardhat/types";
 
 import "./type-extensions"
-import { EthGasReporterConfig } from "./types";
+import { EthGasReporterConfig, RemoteContract } from "./types";
 const { parseSoliditySources } = require('eth-gas-reporter/lib/utils');
 
 let mochaConfig;
 let resolvedQualifiedNames: string[]
+let resolvedRemoteContracts: RemoteContract[] = [];
 
 /**
  * Method passed to eth-gas-reporter to resolve artifact resources. Loads
@@ -56,6 +58,18 @@ function getContracts(artifacts: Artifacts) : any[] {
         deployedBytecode: artifact.deployedBytecode
       }
     });
+  }
+
+  for (const remoteContract of resolvedRemoteContracts){
+    contracts.push({
+      name: remoteContract.name,
+      artifact: {
+        abi: remoteContract.abi,
+        bytecode: remoteContract.bytecode,
+        bytecodeHash: remoteContract.bytecodeHash,
+        deployedBytecode: remoteContract.deployedBytecode
+      }
+    })
   }
   return contracts;
 }
@@ -108,6 +122,31 @@ function getOptions(hre: HardhatRuntimeEnvironment): any {
 }
 
 /**
+ * Fetches remote bytecode at address and hashes it so these addresses can be
+ * added to the tracking at eth-gas-reporter synchronously on init.
+ * @param  {EGRAsyncApiProvider}   provider
+ * @param  {RemoteContract[] = []} remoteContracts
+ * @return {Promise<RemoteContract[]>}
+ */
+async function getResolvedRemoteContracts(
+  provider: EGRAsyncApiProvider,
+  remoteContracts: RemoteContract[] = []
+) : Promise <RemoteContract[]> {
+  for (const contract of remoteContracts){
+    let code;
+    try {
+      contract.bytecode = await provider.getCode(contract.address);
+      contract.deployedBytecode = contract.bytecode;
+      contract.bytecodeHash = sha1(contract.bytecode);
+    } catch (error){
+      console.log(`Warning: failed to fetch bytecode for remote contract: ${contract.name}`)
+      console.log(`Error was: ${error}\n`);
+    }
+  }
+  return remoteContracts;
+}
+
+/**
  * Overrides TASK_TEST_RUN_MOCHA_TEST to (conditionally) use eth-gas-reporter as
  * the mocha test reporter and passes mocha relevant options. These are listed
  * on the `gasReporter` of the user's config.
@@ -123,8 +162,15 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
 
       if (hre.network.name === HARDHAT_NETWORK_NAME || options.fast){
         const wrappedDataProvider= new EGRDataCollectionProvider(hre.network.provider,mochaConfig);
-        hre.network.provider = new BackwardsCompatibilityProviderAdapter(wrappedDataProvider)
-        mochaConfig.reporterOptions.provider = new EGRAsyncApiProvider(hre.network.provider);
+        hre.network.provider = new BackwardsCompatibilityProviderAdapter(wrappedDataProvider);
+
+        const asyncProvider = new EGRAsyncApiProvider(hre.network.provider);
+        resolvedRemoteContracts = await getResolvedRemoteContracts(
+          asyncProvider,
+          options.remoteContracts
+        );
+
+        mochaConfig.reporterOptions.provider = asyncProvider;
         mochaConfig.reporterOptions.blockLimit = (<any>hre.network.config).blockGasLimit as number;
         mochaConfig.attachments = {};
       }

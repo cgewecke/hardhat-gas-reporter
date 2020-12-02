@@ -75,7 +75,7 @@ This reporter comes with a [codechecks](http://codechecks.io) CI integration tha
 displays a pull request's gas consumption changes relative to its target branch in the Github UI.
 It's like coveralls for gas. The codechecks service is free for open source and maintained by MakerDao engineer [@krzkaczor](https://github.com/krzkaczor).
 
-Complete [set-up guide here](https://github.com/cgewecke/eth-gas-reporter/blob/master/docs/codechecks.md) (it's easy). 
+Complete [set-up guide here](https://github.com/cgewecke/eth-gas-reporter/blob/master/docs/codechecks.md) (it's easy).
 
 ![Screen Shot 2019-06-18 at 12 25 49 PM](https://user-images.githubusercontent.com/7332026/59713894-47298900-91c5-11e9-8083-233572787cfa.png)
 
@@ -106,7 +106,10 @@ your own API key [here][55] and set it with the `coinmarketcap` option.
 | showMethodSig     | _Boolean_              | false                       | Display complete method signatures. Useful when you have overloaded methods you can't tell apart.                                                                                                                                            |
 | maxMethodDiff     | _Number_               | undefined                   | Codechecks failure threshold, triggered when the % diff for any method is greater than `number` (integer)                                                                                                                                    |
 | maxDeploymentDiff | _Number_               | undefined                   | Codechecks failure threshold, triggered when the % diff for any deployment is greater than `number` (integer)                                                                                                                                |
+| remoteContracts | _RemoteContract[]_               | `[]`                  | Contracts
+pre-deployed to a (forked) network the reporter should collect gas usage data for. (See [RemoteContract type][44])                                |
 
+[44]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/src/types.ts#L27
 [55]: https://coinmarketcap.com/api/pricing/
 
 
@@ -115,3 +118,4 @@ your own API key [here][55] and set it with the `coinmarketcap` option.
 Other useful documentation can be found at [eth-gas-reporter](https://github.com/cgewecke/eth-gas-reporter)
 
 [1]: https://github.com/cgewecke/buidler-gas-reporter/tree/buidler-final#installation
+
