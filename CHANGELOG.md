@@ -1,3 +1,7 @@
+# 1.0.2 / 2020-12-01
+  * Add remoteContracts option (https://github.com/cgewecke/hardhat-gas-reporter/issues/49)
+  * Fix null receipt crash (https://github.com/cgewecke/hardhat-gas-reporter/issues/48)
+
 # 1.0.1 / 2020-11-09
   * Make all EthGasReporterConfig types optional (https://github.com/cgewecke/hardhat-gas-reporter/issues/45)
   * Fix test return value bug by returning result of runSuper (https://github.com/cgewecke/hardhat-gas-reporter/issues/44)
