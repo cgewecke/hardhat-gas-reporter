@@ -30,15 +30,33 @@ let resolvedQualifiedNames: string[]
 let resolvedRemoteContracts: RemoteContract[] = [];
 
 /**
+ * Filters out contracts to exclude from report
+ * @param  {string}   qualifiedName HRE artifact identifier
+ * @param  {string[]} skippable      excludeContracts option values
+ * @return {boolean}
+ */
+function shouldSkipContract(qualifiedName: string, skippable: string[]): boolean {
+  for (const item of skippable){
+    if (qualifiedName.includes(item)) return true;
+  }
+  return false;
+}
+
+/**
  * Method passed to eth-gas-reporter to resolve artifact resources. Loads
  * and processes JSON artifacts
  * @param  {HardhatRuntimeEnvironment} hre.artifacts
+ * @param  {String[]}                  skippable    contract *not* to track
  * @return {object[]}                  objects w/ abi and bytecode
  */
-function getContracts(artifacts: Artifacts) : any[] {
+function getContracts(artifacts: Artifacts, skippable: string[] = []) : any[] {
   const contracts = [];
 
   for (const qualifiedName of resolvedQualifiedNames) {
+    if (shouldSkipContract(qualifiedName, skippable)){
+      continue;
+    }
+
     let name: string;
     let artifact = artifacts.readArtifactSync(qualifiedName)
 
@@ -95,7 +113,6 @@ function getDefaultOptions(hre: HardhatRuntimeEnvironment): EthGasReporterConfig
   }
 
   return {
-    getContracts: getContracts.bind(null, hre.artifacts),
     enabled: true,
     url: <string>url,
     metadata: {
@@ -154,6 +171,7 @@ async function getResolvedRemoteContracts(
 subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
   async (args: any, hre, runSuper) => {
     const options = getOptions(hre);
+    options.getContracts = getContracts.bind(null, hre.artifacts, options.excludeContracts);
 
     if (options.enabled) {
       mochaConfig = hre.config.mocha || {};
