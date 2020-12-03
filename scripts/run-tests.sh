@@ -33,6 +33,9 @@ start_hardhatevm() {
 # Truffle + HardhatEVM
 npx mocha test/truffle.ts --timeout 100000 --exit
 
+# Truffle + HardhatEVM + misc reporterOptions
+npx mocha test/truffle.options.ts --timeout 100000 --exit
+
 # Ethers + HardhatEVM
 npx mocha test/ethers.ts --timeout 100000 --exit
 

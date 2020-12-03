@@ -99,7 +99,7 @@ your own API key [here][55] and set it with the `coinmarketcap` option.
 | rst               | _Boolean_              | false                       | Output with a reStructured text code-block directive. Useful if you want to include report in RTD                                                                                                                                            |
 | rstTitle          | _String_               | ""                          | Title for reStructured text header (See Travis for example output)                                                                                                                                                                           |
 | showTimeSpent     | _Boolean_              | false                       | Show the amount of time spent as well as the gas consumed                                                                                                                                                                                    |
-| excludeContracts  | _String[]_             | []                          | Contract names to exclude from report. Ex: `['Migrations']`                                                                                                                                                                                  |
+| excludeContracts  | _String[]_             | []                          | Contracts (or folders) to exclude from report. Ex: `['Migrations.sol', 'Wallets/']`. (See [v1.0.3 release notes][45] for additional usage help)                                                               |
 | src               | _String_               | "contracts"                 | Folder in root directory to begin search for `.sol` files. This can also be a path to a subfolder relative to the root, e.g. "planets/annares/contracts"                                                                                     |
 | url               | _String_               | `http://localhost:8545` (or network value) | RPC client url                                                                                                                                                                                                  |
 | proxyResolver     | _Function_             | none                        | Custom method to resolve identity of methods managed by a proxy contract.                                                                                                                                                                    |
@@ -109,6 +109,7 @@ your own API key [here][55] and set it with the `coinmarketcap` option.
 | remoteContracts | _RemoteContract[]_               | `[]`                  | Contracts pre-deployed to a (forked) network which the reporter should collect gas usage data for. (See [RemoteContract type][44])                                |
 
 [44]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/src/types.ts#L27
+[45]: https://github.com/cgewecke/hardhat-gas-reporter/releases/tag/v1.0.3
 [55]: https://coinmarketcap.com/api/pricing/
 
 

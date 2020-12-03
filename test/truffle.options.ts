@@ -4,10 +4,13 @@ import { assert } from "chai";
 
 import { useEnvironment } from "./helpers";
 
-describe("Truffle plugin", function() {
+// A place to test options
+describe("Truffle plugin: gasReporter", function() {
   useEnvironment(__dirname + "/hardhat-truffle-project");
 
-  it("default", async function() {
+  it("gasReporter options", async function() {
+    // Expect everything in the EtherRouter folder to be missing from report
+    (this.env.config as any).gasReporter.excludeContracts = ['EtherRouter/']
     await this.env.run(TASK_TEST, { testFiles: [] });
   });
 });
