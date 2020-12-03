@@ -1,3 +1,6 @@
+# 1.0.3 / 2020-12-02
+  * Fix excludeContracts option & support folders (https://github.com/cgewecke/hardhat-gas-reporter/issues/51)
+
 # 1.0.2 / 2020-12-01
   * Add remoteContracts option (https://github.com/cgewecke/hardhat-gas-reporter/issues/49)
   * Fix null receipt crash (https://github.com/cgewecke/hardhat-gas-reporter/issues/48)
