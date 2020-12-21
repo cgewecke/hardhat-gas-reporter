@@ -65,5 +65,7 @@ test/hardhat-truffle-project/artifacts
 test/hardhat-truffle-project/cache
 test/hardhat-ethers-project/artifacts
 test/hardhat-ethers-project/cache
+test/hardhat-waffle-project/artifacts
+test/hardhat-waffle-project/cache
 dist/
 
