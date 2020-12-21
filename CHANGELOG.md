@@ -1,3 +1,6 @@
+# 1.0.4 / 2020-12-21
+  * Fix bug that caused txs signed with Waffle wallets to be omitted from report (https://github.com/cgewecke/hardhat-gas-reporter/issues/54)
+
 # 1.0.3 / 2020-12-02
   * Fix excludeContracts option & support folders (https://github.com/cgewecke/hardhat-gas-reporter/issues/51)
 
