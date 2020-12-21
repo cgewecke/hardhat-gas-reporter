@@ -1,0 +1,38 @@
+{
+  "_format": "hh-sol-cache-1",
+  "files": {
+    "/Users/cgewecke/code/hardhat-gas-reporter/test/hardhat-waffle-project/contracts/Greeter.sol": {
+      "lastModificationDate": 1608590282086,
+      "sourceName": "contracts/Greeter.sol",
+      "solcConfig": {
+        "version": "0.5.8",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.5.1"
+      ],
+      "artifacts": [
+        "Greeter"
+      ]
+    }
+  }
+}
