@@ -39,9 +39,15 @@ npx mocha test/truffle.options.ts --timeout 100000 --exit
 # Ethers + HardhatEVM
 npx mocha test/ethers.ts --timeout 100000 --exit
 
+# Waffle + HardhatEVM
+npx mocha test/waffle.ts --timeout 100000 --exit
+
 # Ethers + Hardhat Node
 start_hardhatevm
 npx mocha test/hardhatevm.node.ts --timeout 100000 --exit
+
+# Waffle + Hardhat Node
+npx mocha test/waffle.ts --timeout 100000 --exit
 cleanup
 
 # Truffle + Ganache

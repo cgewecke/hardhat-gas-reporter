@@ -36,6 +36,27 @@ export class EGRDataCollectionProvider extends ProviderWrapper {
         await this.mochaConfig.attachments.recordTransaction(receipt, tx)
       }
       return tx;
+
+    // Waffle: This is necessary when using Waffle wallets. eth_sendTransaction fetches the
+    // transactionHash as part of its flow, eth_sendRawTransaction *does not*.
+    } else if (args.method === 'eth_sendRawTransaction') {
+      const txHash = await this._wrappedProvider.request(args);
+
+      if (typeof txHash === 'string'){
+        const tx = await this._wrappedProvider.request({
+          method: "eth_getTransactionByHash",
+          params: [txHash]
+        });
+        const receipt : any = await this._wrappedProvider.request({
+            method: "eth_getTransactionReceipt",
+            params: [txHash]
+        });
+
+        if (receipt?.status){
+          await this.mochaConfig.attachments.recordTransaction(receipt, tx)
+        }
+      }
+      return txHash;
     }
     return this._wrappedProvider.request(args);
   }
