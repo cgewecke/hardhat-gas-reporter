@@ -6,6 +6,9 @@ import "../../src/index";
 
 const config: HardhatUserConfig = {
   solidity: "0.5.8",
+  gasReporter: {
+    coinmarketcap: process.env.CMC_API_KEY
+  }
 };
 
 export default config;
