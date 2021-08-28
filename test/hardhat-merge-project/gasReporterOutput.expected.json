@@ -1,0 +1,105 @@
+{
+  "namespace": "ethGasReporter",
+  "config": {
+    "blockLimit": 12000000,
+    "defaultGasPrice": 5,
+    "currency": "USD",
+    "coinmarketcap": "",
+    "ethPrice": null,
+    "gasPrice": 20,
+    "outputFile": "",
+    "rst": false,
+    "rstTitle": "",
+    "showTimeSpent": true,
+    "srcPath": "contracts",
+    "artifactType": "truffle-v5",
+    "proxyResolver": null,
+    "metadata": {
+      "compiler": {
+        "version": "0.4.25"
+      },
+      "settings": {
+        "optimizer": {
+          "enabled": false
+        }
+      }
+    },
+    "showMethodSig": false,
+    "maxMethodDiff": 25,
+    "excludeContracts": [],
+    "onlyCalledMethods": true,
+    "url": "http://localhost:8545"
+  },
+  "info": {
+    "methods": {
+      "AddressResolver_51456061": {
+        "key": "51456061",
+        "contract": "AddressResolver",
+        "method": "getSynth",
+        "fnSig": "getSynth(bytes32)",
+        "gasData": [
+          25891
+        ],
+        "numberOfCalls": 1
+      },
+      "AddressResolver_79ba5097": {
+        "key": "79ba5097",
+        "contract": "AddressResolver",
+        "method": "acceptOwnership",
+        "fnSig": "acceptOwnership()",
+        "gasData": [
+          12845,
+          21334
+        ],
+        "numberOfCalls": 2
+      },
+      "AddressResolver_9f42102f": {
+        "key": "9f42102f",
+        "contract": "AddressResolver",
+        "method": "areAddressesImported",
+        "fnSig": "areAddressesImported(bytes32[],address[])",
+        "gasData": [
+          9337,
+          14008,
+          21873
+        ],
+        "numberOfCalls": 3
+      }
+    },
+    "deployments": [
+      {
+        "name": "@chainlink/contracts-0.0.10/src/v0.5/interfaces/AggregatorV2V3Interface.sol:AggregatorV2V3Interface",
+        "bytecode": "0x",
+        "deployedBytecode": "0x",
+        "gasData": [
+          7287989,
+          7288085,
+          7288085,
+          7288085,
+          7288085
+        ]
+      },
+      {
+        "name": "@chainlink/contracts-0.0.10/src/v0.5/interfaces/FlagsInterface.sol:FlagsInterface",
+        "bytecode": "0x",
+        "deployedBytecode": "0x",
+        "gasData": [
+          9123041,
+          9123042
+        ]
+      },
+      {
+        "name": "Address",
+        "bytecode": "0x60556023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea265627a7a723158203dcdf84dd61be7f2cf50e1d67c9700ec52d32e98e1872b24b4879d2b4a8db89364736f6c63430005100032",
+        "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea265627a7a723158203dcdf84dd61be7f2cf50e1d67c9700ec52d32e98e1872b24b4879d2b4a8db89364736f6c63430005100032",
+        "gasData": [
+          301239,
+          459817,
+          903314,
+          1459817
+        ]
+      }
+    ],
+    "blockLimit": 12000000
+  }
+}

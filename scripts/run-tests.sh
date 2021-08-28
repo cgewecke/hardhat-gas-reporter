@@ -29,6 +29,8 @@ start_hardhatevm() {
   sleep 4
 }
 
+# Merge gasRerpoterOutput.json files task
+npx mocha test/merge.ts
 
 # Truffle + HardhatEVM
 npx mocha test/truffle.ts --timeout 100000 --exit
