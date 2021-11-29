@@ -1,3 +1,6 @@
+# 1.0.6 / 2021-11-29
+  * Add missing config TS types for multi chain gas prices (https://github.com/cgewecke/hardhat-gas-reporter/issues/81)
+
 # 1.0.5 / 2021-11-29
   * Fix remote data fetching race condition (https://github.com/cgewecke/hardhat-gas-reporter/issues/80)
   * Update eth-gas-reporter to 0.2.23 (https://github.com/cgewecke/hardhat-gas-reporter/issues/80)
