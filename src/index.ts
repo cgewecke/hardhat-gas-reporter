@@ -4,11 +4,12 @@ import sha1 from "sha1"
 import arrayUniq from "array-uniq";
 import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
 import { task, subtask } from "hardhat/config";
-import { HARDHAT_NETWORK_NAME } from "hardhat/plugins";
+import { HARDHAT_NETWORK_NAME, HardhatPluginError } from "hardhat/plugins";
 import { globSync } from "hardhat/internal/util/glob";
 import {
   BackwardsCompatibilityProviderAdapter
 } from "hardhat/internal/core/providers/backwards-compatibility"
+
 
 import {
   EGRDataCollectionProvider,
@@ -178,6 +179,12 @@ async function getResolvedRemoteContracts(
  */
 subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
   async (args: any, hre, runSuper) => {
+
+    // Temporarily prohibiting parallel mode because it crashes and unsure how to resolve...
+    if (args.parallel === true) {
+      throw new HardhatPluginError("hardhat-gas-reporter", `Parallel tests are not supported`);
+    }
+
     let options = getOptions(hre);
     options.getContracts = getContracts.bind(null, hre.artifacts, options.excludeContracts);
 
