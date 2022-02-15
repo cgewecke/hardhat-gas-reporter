@@ -1,3 +1,9 @@
+# 1.0.8 / 2022-02-15
+  * Skip gas reporting when --parallel flag detected (https://github.com/cgewecke/hardhat-gas-reporter/issues/101)
+
+# 1.0.7 / 2022-01-09
+  * Pin colors.js to 1.4.0
+
 # 1.0.6 / 2021-11-29
   * Add missing config TS types for multi chain gas prices (https://github.com/cgewecke/hardhat-gas-reporter/issues/81)
 
