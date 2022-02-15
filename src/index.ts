@@ -180,15 +180,20 @@ async function getResolvedRemoteContracts(
 subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
   async (args: any, hre, runSuper) => {
 
-    // Temporarily prohibiting parallel mode because it crashes and unsure how to resolve...
-    if (args.parallel === true) {
-      throw new HardhatPluginError("hardhat-gas-reporter", `Parallel tests are not supported`);
-    }
-
     let options = getOptions(hre);
     options.getContracts = getContracts.bind(null, hre.artifacts, options.excludeContracts);
 
     if (options.enabled) {
+      // Temporarily skipping when in parallel mode because it crashes and unsure how to resolve...
+      if (args.parallel === true) {
+        const result = await runSuper();
+        console.log(
+          "Note: Gas reporting has been skipped because plugin `hardhat-gas-reporter` does not support " +
+          "the --parallel flag."
+        );
+        return result;
+      }
+
       // Fetch data from gas and coin price providers
       options = new InternalReporterConfig(options);
       await setGasAndPriceRates(options);
