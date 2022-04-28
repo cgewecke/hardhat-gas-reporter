@@ -35,7 +35,6 @@ export class EGRDataCollectionProvider extends ProviderWrapper {
             this.txs.add(receipt.transactionHash);
             await this.mochaConfig.attachments.recordTransaction(receipt, tx);
         }
-        await this.mochaConfig.attachments.recordTransaction(receipt, tx);
       }
       return receipt;
 
