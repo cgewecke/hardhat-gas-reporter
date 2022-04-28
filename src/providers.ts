@@ -6,10 +6,14 @@ import { EthereumProvider, EIP1193Provider, RequestArguments } from "hardhat/typ
  */
 export class EGRDataCollectionProvider extends ProviderWrapper {
   private mochaConfig: any;
+  private txs: Set<string>;
+  private txsBlock: number;
 
   constructor(provider: EIP1193Provider, mochaConfig) {
     super(provider);
     this.mochaConfig = mochaConfig
+    this.txs = new Set();
+    this.txsBlock = 0;
   }
 
   public async request(args: RequestArguments): Promise<unknown> {
@@ -21,6 +25,16 @@ export class EGRDataCollectionProvider extends ProviderWrapper {
           method: "eth_getTransactionByHash",
           params: [receipt.transactionHash]
         });
+
+        if (this.txsBlock != receipt.blockNumber) {
+            this.txsBlock = receipt.blockNumber;
+            this.txs.clear();
+        }
+
+        if (this.txs.has(receipt.transactionHash)) {
+            this.txs.add(receipt.transactionHash);
+            await this.mochaConfig.attachments.recordTransaction(receipt, tx);
+        }
         await this.mochaConfig.attachments.recordTransaction(receipt, tx);
       }
       return receipt;
