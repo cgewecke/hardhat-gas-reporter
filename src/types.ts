@@ -1,6 +1,7 @@
 export interface EthGasReporterConfig {
   currency?: string;
   token?: string;
+  ethPrice?: number;
   gasPrice?: number;
   gasPriceApi?: string;
   coinmarketcap?: string;
