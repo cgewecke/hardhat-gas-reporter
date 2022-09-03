@@ -1,6 +1,5 @@
 import fs from "fs"
 import path from "path"
-import arrayUniq from "array-uniq";
 import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
 import { task, subtask } from "hardhat/config";
 import { HARDHAT_NETWORK_NAME, HardhatPluginError } from "hardhat/plugins";
@@ -259,7 +258,8 @@ task(TASK_GAS_REPORTER_MERGE)
 
 		// Parse input files and calculate glob patterns
     const { globSync } = await import("hardhat/internal/util/glob");
-		const inputFiles = arrayUniq<string>(taskArguments.input.map(globSync).flat())
+    const arrayUniq = require("array-uniq");
+		const inputFiles = arrayUniq(taskArguments.input.map(globSync).flat())
       .map(inputFile => path.resolve(inputFile));
 
 		if (inputFiles.length === 0) {
