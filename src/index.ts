@@ -1,6 +1,5 @@
 import fs from "fs"
 import path from "path"
-import sha1 from "sha1"
 import arrayUniq from "array-uniq";
 import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
 import { task, subtask } from "hardhat/config";
@@ -150,6 +149,7 @@ async function getResolvedRemoteContracts(
   provider: EGRAsyncApiProviderT,
   remoteContracts: RemoteContract[] = []
 ) : Promise <RemoteContract[]> {
+  const { defualt : sha1 } = await import("sha1");
   for (const contract of remoteContracts){
     let code;
     try {
