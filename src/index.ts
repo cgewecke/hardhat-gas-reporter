@@ -6,9 +6,6 @@ import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
 import { task, subtask } from "hardhat/config";
 import { HARDHAT_NETWORK_NAME, HardhatPluginError } from "hardhat/plugins";
 import { globSync } from "hardhat/internal/util/glob";
-import {
-  BackwardsCompatibilityProviderAdapter
-} from "hardhat/internal/core/providers/backwards-compatibility"
 
 
 import {
@@ -203,6 +200,11 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
       mochaConfig.reporterOptions = options;
 
       if (hre.network.name === HARDHAT_NETWORK_NAME || options.fast){
+
+        const {
+          BackwardsCompatibilityProviderAdapter
+        } = await import("hardhat/internal/core/providers/backwards-compatibility")
+
         const wrappedDataProvider= new EGRDataCollectionProvider(hre.network.provider,mochaConfig);
         hre.network.provider = new BackwardsCompatibilityProviderAdapter(wrappedDataProvider);
 
