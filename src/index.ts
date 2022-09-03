@@ -21,9 +21,6 @@ import { EthGasReporterConfig, EthGasReporterOutput, RemoteContract } from "./ty
 import { TASK_GAS_REPORTER_MERGE, TASK_GAS_REPORTER_MERGE_REPORTS } from "./task-names";
 import { mergeReports } from "./merge-reports";
 
-const { parseSoliditySources, setGasAndPriceRates } = require('eth-gas-reporter/lib/utils');
-const InternalReporterConfig  = require('eth-gas-reporter/lib/config');
-
 let mochaConfig;
 let resolvedQualifiedNames: string[]
 let resolvedRemoteContracts: RemoteContract[] = [];
@@ -184,6 +181,10 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
         );
         return result;
       }
+
+
+      const { parseSoliditySources, setGasAndPriceRates } = require('eth-gas-reporter/lib/utils');
+      const InternalReporterConfig  = require('eth-gas-reporter/lib/config');
 
       // Fetch data from gas and coin price providers
       options = new InternalReporterConfig(options);
