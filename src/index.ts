@@ -7,11 +7,7 @@ import { task, subtask } from "hardhat/config";
 import { HARDHAT_NETWORK_NAME, HardhatPluginError } from "hardhat/plugins";
 import { globSync } from "hardhat/internal/util/glob";
 
-
-import {
-  EGRDataCollectionProvider,
-  EGRAsyncApiProvider
-} from "./providers";
+import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
 
 import {
   HardhatArguments,
@@ -152,7 +148,7 @@ function getOptions(hre: HardhatRuntimeEnvironment): any {
  * @return {Promise<RemoteContract[]>}
  */
 async function getResolvedRemoteContracts(
-  provider: EGRAsyncApiProvider,
+  provider: EGRAsyncApiProviderT,
   remoteContracts: RemoteContract[] = []
 ) : Promise <RemoteContract[]> {
   for (const contract of remoteContracts){
@@ -204,6 +200,11 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
         const {
           BackwardsCompatibilityProviderAdapter
         } = await import("hardhat/internal/core/providers/backwards-compatibility")
+
+        const {
+          EGRDataCollectionProvider,
+          EGRAsyncApiProvider
+        } = await import("./providers");
 
         const wrappedDataProvider= new EGRDataCollectionProvider(hre.network.provider,mochaConfig);
         hre.network.provider = new BackwardsCompatibilityProviderAdapter(wrappedDataProvider);
