@@ -5,7 +5,6 @@ import arrayUniq from "array-uniq";
 import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
 import { task, subtask } from "hardhat/config";
 import { HARDHAT_NETWORK_NAME, HardhatPluginError } from "hardhat/plugins";
-import { globSync } from "hardhat/internal/util/glob";
 
 import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
 
@@ -259,6 +258,7 @@ task(TASK_GAS_REPORTER_MERGE)
 		const output = path.resolve(process.cwd(), taskArguments.output);
 
 		// Parse input files and calculate glob patterns
+    const { globSync } = await import("hardhat/internal/util/glob");
 		const inputFiles = arrayUniq<string>(taskArguments.input.map(globSync).flat())
       .map(inputFile => path.resolve(inputFile));
 
