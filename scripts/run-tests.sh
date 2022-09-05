@@ -51,7 +51,3 @@ npx mocha test/hardhatevm.node.ts --timeout 100000 --exit
 # Waffle + Hardhat Node
 npx mocha test/waffle.ts --timeout 100000 --exit
 cleanup
-
-# Truffle + Ganache
-start_ganache
-npx mocha test/ganache.node.ts --timeout 100000 --exit
