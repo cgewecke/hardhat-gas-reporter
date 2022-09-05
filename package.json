@@ -1,6 +1,6 @@
 {
   "name": "hardhat-gas-reporter",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Hardhat plugin for eth-gas-reporter, a mocha reporter for Ethereum test suites",
   "repository": "github:cgewecke/hardhat-gas-reporter",
   "author": "cgewecke",
