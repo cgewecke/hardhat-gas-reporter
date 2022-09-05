@@ -44,7 +44,7 @@
     "ethereum-waffle": "^3.2.1",
     "ethers": "^5.0.0",
     "ganache-cli": "^6.4.3",
-    "hardhat": "^2.6.1",
+    "hardhat": "^2.11.0",
     "mocha": "7",
     "prettier": "^1.17.0",
     "source-map-support": "^0.5.12",
