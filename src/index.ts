@@ -1,20 +1,10 @@
 import fs from "fs"
 import path from "path"
-import sha1 from "sha1"
-import arrayUniq from "array-uniq";
 import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
 import { task, subtask } from "hardhat/config";
 import { HARDHAT_NETWORK_NAME, HardhatPluginError } from "hardhat/plugins";
-import { globSync } from "hardhat/internal/util/glob";
-import {
-  BackwardsCompatibilityProviderAdapter
-} from "hardhat/internal/core/providers/backwards-compatibility"
 
-
-import {
-  EGRDataCollectionProvider,
-  EGRAsyncApiProvider
-} from "./providers";
+import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
 
 import {
   HardhatArguments,
@@ -30,9 +20,6 @@ import "./type-extensions"
 import { EthGasReporterConfig, EthGasReporterOutput, RemoteContract } from "./types";
 import { TASK_GAS_REPORTER_MERGE, TASK_GAS_REPORTER_MERGE_REPORTS } from "./task-names";
 import { mergeReports } from "./merge-reports";
-
-const { parseSoliditySources, setGasAndPriceRates } = require('eth-gas-reporter/lib/utils');
-const InternalReporterConfig  = require('eth-gas-reporter/lib/config');
 
 let mochaConfig;
 let resolvedQualifiedNames: string[]
@@ -155,9 +142,10 @@ function getOptions(hre: HardhatRuntimeEnvironment): any {
  * @return {Promise<RemoteContract[]>}
  */
 async function getResolvedRemoteContracts(
-  provider: EGRAsyncApiProvider,
+  provider: EGRAsyncApiProviderT,
   remoteContracts: RemoteContract[] = []
 ) : Promise <RemoteContract[]> {
+  const { defualt : sha1 } = await import("sha1");
   for (const contract of remoteContracts){
     let code;
     try {
@@ -194,6 +182,10 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
         return result;
       }
 
+
+      const { parseSoliditySources, setGasAndPriceRates } = require('eth-gas-reporter/lib/utils');
+      const InternalReporterConfig  = require('eth-gas-reporter/lib/config');
+
       // Fetch data from gas and coin price providers
       options = new InternalReporterConfig(options);
       await setGasAndPriceRates(options);
@@ -203,6 +195,16 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
       mochaConfig.reporterOptions = options;
 
       if (hre.network.name === HARDHAT_NETWORK_NAME || options.fast){
+
+        const {
+          BackwardsCompatibilityProviderAdapter
+        } = await import("hardhat/internal/core/providers/backwards-compatibility")
+
+        const {
+          EGRDataCollectionProvider,
+          EGRAsyncApiProvider
+        } = await import("./providers");
+
         const wrappedDataProvider= new EGRDataCollectionProvider(hre.network.provider,mochaConfig);
         hre.network.provider = new BackwardsCompatibilityProviderAdapter(wrappedDataProvider);
 
@@ -256,7 +258,9 @@ task(TASK_GAS_REPORTER_MERGE)
 		const output = path.resolve(process.cwd(), taskArguments.output);
 
 		// Parse input files and calculate glob patterns
-		const inputFiles = arrayUniq<string>(taskArguments.input.map(globSync).flat())
+    const { globSync } = await import("hardhat/internal/util/glob");
+    const arrayUniq = require("array-uniq");
+		const inputFiles = arrayUniq(taskArguments.input.map(globSync).flat())
       .map(inputFile => path.resolve(inputFile));
 
 		if (inputFiles.length === 0) {
