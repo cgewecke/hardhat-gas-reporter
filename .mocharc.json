@@ -1,0 +1,5 @@
+{
+    "$schema": "https://json.schemastore.org/mocharc",
+    "extension": ["js", "cjs", "mjs", "ts"],
+    "require": ["dotenv/config", "ts-node/register", "source-map-support/register"]
+}
