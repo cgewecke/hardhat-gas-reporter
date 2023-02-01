@@ -8,7 +8,7 @@ export interface EthGasReporterConfig {
   noColors?: boolean;
   onlyCalledMethods?: boolean;
   rst?: boolean;
-  rstTitle?: boolean;
+  rstTitle?: string;
   showTimeSpent?: boolean;
   excludeContracts?: string[];
   src?: string;
