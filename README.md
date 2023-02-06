@@ -128,6 +128,7 @@ In order to retrieve the gas price of a particular blockchain, you can configure
 | Avalanche          | AVAX  | https://api.snowtrace.io/api?module=proxy&action=eth_gasPrice          |
 | Heco               | HT    | https://api.hecoinfo.com/api?module=proxy&action=eth_gasPrice          |
 | Moonriver          | MOVR  | https://api-moonriver.moonscan.io/api?module=proxy&action=eth_gasPrice |
+| Gnosis             | XDAI  | https://api.gnosisscan.io/api?module=proxy&action=eth_gasPrice         |
 
 These APIs have [rate limits](https://docs.etherscan.io/support/rate-limits). Depending on the usage, it might require an [API Key](https://docs.etherscan.io/getting-started/viewing-api-usage-statistics).
 
