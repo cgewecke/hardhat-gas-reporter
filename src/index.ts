@@ -145,7 +145,7 @@ async function getResolvedRemoteContracts(
   provider: EGRAsyncApiProviderT,
   remoteContracts: RemoteContract[] = []
 ) : Promise <RemoteContract[]> {
-  const { defualt : sha1 } = await import("sha1");
+  const { default : sha1 } = await import("sha1");
   for (const contract of remoteContracts){
     let code;
     try {
