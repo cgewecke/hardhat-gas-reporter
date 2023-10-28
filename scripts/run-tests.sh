@@ -44,10 +44,17 @@ npx mocha test/ethers.ts --timeout 100000 --exit
 # Waffle + HardhatEVM
 npx mocha test/waffle.ts --timeout 100000 --exit
 
+# Viem + HardhatEVM
+npx mocha test/viem.ts --timeout 100000 --exit
+
 # Ethers + Hardhat Node
 start_hardhatevm
 npx mocha test/hardhatevm.node.ts --timeout 100000 --exit
 
 # Waffle + Hardhat Node
 npx mocha test/waffle.ts --timeout 100000 --exit
+
+# Viem + Hardhat Node
+npx mocha test/viem.ts --timeout 100000 --exit
+
 cleanup

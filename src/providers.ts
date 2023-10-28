@@ -1,64 +1,43 @@
-import { ProviderWrapper } from "hardhat/internal/core/providers/wrapper"
-import { EthereumProvider, EIP1193Provider, RequestArguments } from "hardhat/types";
+import { ProviderWrapper } from "hardhat/internal/core/providers/wrapper";
+import {
+  EthereumProvider,
+  EIP1193Provider,
+  RequestArguments,
+} from "hardhat/types";
+
+export type Sniffer = (request: {
+  args: RequestArguments;
+  result: Promise<unknown>;
+  provider: EIP1193Provider;
+}) => Promise<void> | void;
 
 /**
- * Wrapped provider which collects tx data
+ * Wrapped provider which sniffs requests
  */
-export class EGRDataCollectionProvider extends ProviderWrapper {
-  private mochaConfig: any;
+export class SnifferProvider extends ProviderWrapper {
+  private sniffers: Sniffer[] = [];
 
-  constructor(provider: EIP1193Provider, mochaConfig) {
+  constructor(provider: EIP1193Provider) {
     super(provider);
-    this.mochaConfig = mochaConfig
+  }
+
+  public addSniffer(sniffer: Sniffer) {
+    this.sniffers.push(sniffer);
   }
 
   public async request(args: RequestArguments): Promise<unknown> {
-    // Truffle
-    if (args.method === "eth_getTransactionReceipt") {
-      const receipt: any = await this._wrappedProvider.request(args);
-      if (receipt?.status && receipt?.transactionHash){
-        const tx = await this._wrappedProvider.request({
-          method: "eth_getTransactionByHash",
-          params: [receipt.transactionHash]
-        });
-        await this.mochaConfig.attachments.recordTransaction(receipt, tx);
-      }
-      return receipt;
-
-    // Ethers: will get run twice for deployments (e.g both receipt and txhash are fetched)
-    } else if (args.method === 'eth_getTransactionByHash'){
-      const receipt: any = await this._wrappedProvider.request({
-        method: "eth_getTransactionReceipt",
-        params: args.params
-      })
-      const tx = await this._wrappedProvider.request(args)
-      if (receipt?.status){
-        await this.mochaConfig.attachments.recordTransaction(receipt, tx)
-      }
-      return tx;
-
-    // Waffle: This is necessary when using Waffle wallets. eth_sendTransaction fetches the
-    // transactionHash as part of its flow, eth_sendRawTransaction *does not*.
-    } else if (args.method === 'eth_sendRawTransaction') {
-      const txHash = await this._wrappedProvider.request(args);
-
-      if (typeof txHash === 'string'){
-        const tx = await this._wrappedProvider.request({
-          method: "eth_getTransactionByHash",
-          params: [txHash]
-        });
-        const receipt : any = await this._wrappedProvider.request({
-            method: "eth_getTransactionReceipt",
-            params: [txHash]
-        });
-
-        if (receipt?.status){
-          await this.mochaConfig.attachments.recordTransaction(receipt, tx)
-        }
-      }
-      return txHash;
-    }
-    return this._wrappedProvider.request(args);
+    const result = (async () => await this._wrappedProvider.request(args))();
+    await Promise.all(
+      this.sniffers.map(
+        async (sniffer) =>
+          await sniffer({
+            args,
+            provider: this._wrappedProvider,
+            result,
+          })
+      )
+    );
+    return await result;
   }
 }
 

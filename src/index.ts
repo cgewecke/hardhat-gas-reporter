@@ -1,10 +1,10 @@
 import fs from "fs"
 import path from "path"
 import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
-import { task, subtask } from "hardhat/config";
+import { task, subtask, extendEnvironment } from "hardhat/config";
 import { HARDHAT_NETWORK_NAME, HardhatPluginError } from "hardhat/plugins";
 
-import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
+import type { EGRAsyncApiProvider as EGRAsyncApiProviderT, SnifferProvider as SnifferProviderT } from "./providers";
 
 import {
   HardhatArguments,
@@ -21,6 +21,7 @@ import { EthGasReporterConfig, EthGasReporterOutput, RemoteContract } from "./ty
 import { TASK_GAS_REPORTER_MERGE, TASK_GAS_REPORTER_MERGE_REPORTS } from "./task-names";
 import { mergeReports } from "./merge-reports";
 
+let snifferProvider: SnifferProviderT;
 let mochaConfig;
 let resolvedQualifiedNames: string[]
 let resolvedRemoteContracts: RemoteContract[] = [];
@@ -145,7 +146,7 @@ async function getResolvedRemoteContracts(
   provider: EGRAsyncApiProviderT,
   remoteContracts: RemoteContract[] = []
 ) : Promise <RemoteContract[]> {
-  const { defualt : sha1 } = await import("sha1");
+  const { default : sha1 } = await import("sha1");
   for (const contract of remoteContracts){
     let code;
     try {
@@ -159,6 +160,21 @@ async function getResolvedRemoteContracts(
   }
   return remoteContracts;
 }
+
+extendEnvironment(function (hre) {
+  const {
+    BackwardsCompatibilityProviderAdapter
+  } = require("hardhat/internal/core/providers/backwards-compatibility")
+
+  const {
+    SnifferProvider
+  } = require("./providers");
+
+  snifferProvider = new SnifferProvider(hre.network.provider);
+  const backwardCompatibilityProvider = new BackwardsCompatibilityProviderAdapter(snifferProvider);
+
+  hre.network.provider = backwardCompatibilityProvider;
+});
 
 /**
  * Overrides TASK_TEST_RUN_MOCHA_TEST to (conditionally) use eth-gas-reporter as
@@ -197,16 +213,15 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
       if (hre.network.name === HARDHAT_NETWORK_NAME || options.fast){
 
         const {
-          BackwardsCompatibilityProviderAdapter
-        } = await import("hardhat/internal/core/providers/backwards-compatibility")
-
-        const {
-          EGRDataCollectionProvider,
           EGRAsyncApiProvider
         } = await import("./providers");
 
-        const wrappedDataProvider= new EGRDataCollectionProvider(hre.network.provider,mochaConfig);
-        hre.network.provider = new BackwardsCompatibilityProviderAdapter(wrappedDataProvider);
+        const {
+          createEGRDataCollectionSniffer
+        } = await import("./sniffers");
+
+        const egrDataCollectionSniffer = createEGRDataCollectionSniffer(mochaConfig);
+        snifferProvider.addSniffer(egrDataCollectionSniffer);
 
         const asyncProvider = new EGRAsyncApiProvider(hre.network.provider);
         resolvedRemoteContracts = await getResolvedRemoteContracts(

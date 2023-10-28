@@ -38,6 +38,8 @@ import "hardhat-gas-reporter"
 
 **Looking for buidler-gas-reporter docs?** [They moved here...][1]
 
+> **Note:** If you import `@nomicfoundation/hardhat-toolbox-viem` in the config, make sure to put it after importing `hardhat-gas-reporter`.
+
 ## Configuration
 Configuration is optional.
 ```js
