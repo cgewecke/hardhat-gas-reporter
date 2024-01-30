@@ -72,5 +72,7 @@ test/hardhat-waffle-project/artifacts
 test/hardhat-waffle-project/cache
 test/hardhat-forked-project/artifacts
 test/hardhat-forked-project/cache
+test/hardhat-viem-project/artifacts
+test/hardhat-viem-project/cache
 dist/
 
