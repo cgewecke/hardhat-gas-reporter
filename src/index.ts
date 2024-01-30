@@ -145,7 +145,7 @@ async function getResolvedRemoteContracts(
   provider: EGRAsyncApiProviderT,
   remoteContracts: RemoteContract[] = []
 ) : Promise <RemoteContract[]> {
-  const { defualt : sha1 } = await import("sha1");
+  const { default : sha1 } = await import("sha1");
   for (const contract of remoteContracts){
     let code;
     try {
@@ -187,7 +187,8 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
       const InternalReporterConfig  = require('eth-gas-reporter/lib/config');
 
       // Fetch data from gas and coin price providers
-      options = new InternalReporterConfig(options);
+      const originalOptions = options
+      options = new InternalReporterConfig(originalOptions);
       await setGasAndPriceRates(options);
 
       mochaConfig = hre.config.mocha || {};
@@ -211,7 +212,7 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
         const asyncProvider = new EGRAsyncApiProvider(hre.network.provider);
         resolvedRemoteContracts = await getResolvedRemoteContracts(
           asyncProvider,
-          options.remoteContracts
+          originalOptions.remoteContracts
         );
 
         mochaConfig.reporterOptions.provider = asyncProvider;
