@@ -70,5 +70,7 @@ test/hardhat-ethers-project/artifacts
 test/hardhat-ethers-project/cache
 test/hardhat-waffle-project/artifacts
 test/hardhat-waffle-project/cache
+test/hardhat-forked-project/artifacts
+test/hardhat-forked-project/cache
 dist/
 

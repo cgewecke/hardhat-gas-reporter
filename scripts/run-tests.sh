@@ -44,6 +44,9 @@ npx mocha test/ethers.ts --timeout 100000 --exit
 # Waffle + HardhatEVM
 npx mocha test/waffle.ts --timeout 100000 --exit
 
+# Forked Network + HardhatEVM
+npx mocha test/forked.ts --timeout 100000 --exit
+
 # Ethers + Hardhat Node
 start_hardhatevm
 npx mocha test/hardhatevm.node.ts --timeout 100000 --exit
