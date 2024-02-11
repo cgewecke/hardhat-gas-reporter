@@ -1,8 +1,4 @@
-import {
-  Artifact,
-  Artifacts
-} from "hardhat/types";
-
+import { Artifact, Artifacts } from "hardhat/types";
 import { RemoteContract } from "../types";
 import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
 

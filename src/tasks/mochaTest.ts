@@ -1,14 +1,10 @@
 import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
 import { HARDHAT_NETWORK_NAME } from "hardhat/plugins";
-
 import { subtask } from "hardhat/config";
 
 import { wrapProviders } from "../utils/providers";
 import { getOptions } from "../utils/options";
-import {
-  getContracts,
-  getResolvedRemoteContracts
-} from "../utils/artifacts";
+import { getContracts, getResolvedRemoteContracts } from "../utils/artifacts";
 
 import "../type-extensions"
 import { RemoteContract } from "../types";

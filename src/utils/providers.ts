@@ -1,6 +1,6 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-
 import { ProviderWrapper } from "hardhat/internal/core/providers/wrapper"
+
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { EthereumProvider, EIP1193Provider, RequestArguments } from "hardhat/types";
 
 /**

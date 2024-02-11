@@ -1,8 +1,4 @@
-import {
-  HttpNetworkConfig,
-  HardhatRuntimeEnvironment,
-} from "hardhat/types";
-
+import { HttpNetworkConfig, HardhatRuntimeEnvironment } from "hardhat/types";
 import { EthGasReporterConfig } from "../types";
 
 /**
