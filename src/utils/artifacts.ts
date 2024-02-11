@@ -6,9 +6,6 @@ import {
 import { RemoteContract } from "../types";
 import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
 
-let resolvedQualifiedNames: string[];
-let resolvedRemoteContracts: RemoteContract[] = [];
-
 /**
  * Filters out contracts to exclude from report
  * @param  {string}   qualifiedName        HRE artifact identifier
@@ -59,7 +56,8 @@ export async function getResolvedRemoteContracts(
 export function getContracts(
   artifacts: Artifacts,
   skippable: string[] = [],
-  resolvedRemoteContracts: RemoteContract[]
+  resolvedRemoteContracts: RemoteContract[],
+  resolvedQualifiedNames: string[],
 ) : any[] {
   const contracts = [];
 
