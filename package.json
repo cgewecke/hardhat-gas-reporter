@@ -62,6 +62,7 @@
     "hardhat": "^2.0.2"
   },
   "dependencies": {
+    "@types/sha1": "^1.1.5",
     "array-uniq": "1.0.3",
     "eth-gas-reporter": "^0.2.25",
     "sha1": "^1.1.1"

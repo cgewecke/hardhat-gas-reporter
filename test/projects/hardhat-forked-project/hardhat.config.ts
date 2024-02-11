@@ -7,7 +7,7 @@ import "../../../src/index";
 
 import { ABI } from "./abi";
 
-if (process.env.ALCHEMY_TOKEN.length === 0) {
+if (process.env.ALCHEMY_TOKEN === undefined) {
   throw new Error("Forked hardhat test requires ALCHEMY_TOKEN set in env");
 }
 

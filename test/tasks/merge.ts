@@ -7,7 +7,7 @@ import { TASK_GAS_REPORTER_MERGE } from "../../src/task-names";
 
 import { useEnvironment } from "./../helpers";
 
-const loadJsonFile = (filepath) =>
+const loadJsonFile = (filepath: any) =>
   JSON.parse(fs.readFileSync(filepath, "utf-8"));
 
 describe("Merge gasRerpoterOutput.json files task", function () {

@@ -16,7 +16,7 @@ import { ProviderWrapper } from "hardhat/internal/core/providers/wrapper";
 export class EGRDataCollectionProvider extends ProviderWrapper {
   private _mochaConfig: any;
 
-  constructor(provider: EIP1193Provider, mochaConfig) {
+  constructor(provider: EIP1193Provider, mochaConfig: any) {
     super(provider);
     this._mochaConfig = mochaConfig;
   }
@@ -104,18 +104,18 @@ export class EGRAsyncApiProvider {
     return parseInt(block.number, 16);
   }
 
-  public async getTransactionByHash(tx) {
+  public async getTransactionByHash(tx: string) {
     return this.provider.send("eth_getTransactionByHash", [tx]);
   }
 
-  public async call(payload, blockNumber) {
+  public async call(payload: any, blockNumber: any) {
     return this.provider.send("eth_call", [payload, blockNumber]);
   }
 }
 
 export async function wrapProviders(
   hre: HardhatRuntimeEnvironment,
-  mochaConfig
+  mochaConfig: any
 ): Promise<{
   wrappedDataProvider: EGRDataCollectionProvider;
   asyncProvider: EGRAsyncApiProvider;

@@ -79,7 +79,7 @@ export interface EthGasReporterOutput {
     };
   };
 
-  info: {
+  info?: {
     blockLimit: number;
 
     methods: {

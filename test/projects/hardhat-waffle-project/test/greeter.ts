@@ -3,9 +3,9 @@ import { assert, expect } from "chai";
 import { ethers, waffle } from "hardhat";
 
 describe("Greeter contract", function () {
-  let Greeter;
-  let greeter1;
-  let addr1;
+  let Greeter: any;
+  let greeter1: any;
+  let addr1: any;
 
   beforeEach(async function () {
     [, addr1] = waffle.provider.getWallets();

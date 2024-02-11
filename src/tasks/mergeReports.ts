@@ -44,7 +44,7 @@ task(TASK_GAS_REPORTER_MERGE)
     const { globSync } = await import("hardhat/internal/util/glob");
     const arrayUniq = require("array-uniq");
     const inputFiles = arrayUniq(taskArguments.input.map(globSync).flat()).map(
-      (inputFile) => path.resolve(inputFile)
+      (inputFile: string) => path.resolve(inputFile)
     );
 
     if (inputFiles.length === 0) {
@@ -54,7 +54,7 @@ task(TASK_GAS_REPORTER_MERGE)
     }
 
     console.log(`Merging ${inputFiles.length} input files:`);
-    inputFiles.forEach((inputFile) => {
+    inputFiles.forEach((inputFile: string) => {
       console.log("  - ", inputFile);
     });
 
@@ -73,7 +73,7 @@ task(TASK_GAS_REPORTER_MERGE)
 export function mergeReports(
   reports: EthGasReporterOutput[]
 ): EthGasReporterOutput {
-  const result: EthGasReporterOutput = {
+  const result: any = {
     namespace: null,
     config: null,
     info: {
@@ -130,12 +130,12 @@ export function mergeReports(
       }
 
       result.info.methods[key].gasData = [
-        ...result.info.methods[key].gasData,
-        ...report.info.methods[key].gasData,
+        ...result.info!.methods[key].gasData,
+        ...report.info!.methods[key].gasData,
       ].sort((a, b) => a - b);
 
       result.info.methods[key].numberOfCalls +=
-        report.info.methods[key].numberOfCalls;
+        report.info!.methods[key].numberOfCalls;
     });
 
     if (!Array.isArray(report.info.deployments)) {
@@ -145,10 +145,10 @@ export function mergeReports(
     // Merge info.deployments objects
     report.info.deployments.forEach((deployment) => {
       const current = result.info.deployments.find(
-        (d) => d.name === deployment.name
+        (d: any) => d.name === deployment.name
       );
 
-      if (current !== null) {
+      if (current !== undefined) {
         current.gasData = [...current.gasData, ...deployment.gasData].sort(
           (a, b) => a - b
         );

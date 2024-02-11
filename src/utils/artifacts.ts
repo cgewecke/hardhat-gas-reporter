@@ -37,7 +37,7 @@ export async function getResolvedRemoteContracts(
     try {
       contract.bytecode = await provider.getCode(contract.address);
       contract.deployedBytecode = contract.bytecode;
-      contract.bytecodeHash = sha1(contract.bytecode);
+      contract.bytecodeHash = sha1(contract.bytecode!);
     } catch (error: any) {
       console.log(
         `Warning: failed to fetch bytecode for remote contract: ${contract.name}`

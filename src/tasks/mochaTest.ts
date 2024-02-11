@@ -70,7 +70,7 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
         mochaConfig.reporterOptions.provider = asyncProvider;
         mochaConfig.reporterOptions.blockLimit = (hre.network.config as any)
           .blockGasLimit as number;
-        mochaConfig.attachments = {};
+        (mochaConfig as any).attachments = {};
       }
 
       hre.config.mocha = mochaConfig;
