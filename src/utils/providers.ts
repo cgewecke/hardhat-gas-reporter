@@ -1,4 +1,6 @@
 import { ProviderWrapper } from "hardhat/internal/core/providers/wrapper"
+
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { EthereumProvider, EIP1193Provider, RequestArguments } from "hardhat/types";
 
 /**
@@ -102,4 +104,20 @@ export class EGRAsyncApiProvider {
   async call(payload, blockNumber) {
     return this.provider.send("eth_call", [payload, blockNumber]);
   }
+}
+
+export async function wrapProviders(hre: HardhatRuntimeEnvironment, mochaConfig): Promise<{
+  wrappedDataProvider: EGRDataCollectionProvider,
+  asyncProvider: EGRAsyncApiProvider
+}> {
+  const {
+    BackwardsCompatibilityProviderAdapter
+  } = await import("hardhat/internal/core/providers/backwards-compatibility")
+
+  const wrappedDataProvider= new EGRDataCollectionProvider(hre.network.provider, mochaConfig);
+  hre.network.provider = new BackwardsCompatibilityProviderAdapter(wrappedDataProvider);
+
+  const asyncProvider = new EGRAsyncApiProvider(hre.network.provider);
+
+  return {wrappedDataProvider, asyncProvider}
 }
