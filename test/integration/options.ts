@@ -1,12 +1,14 @@
+import path from "path"
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 // tslint:disable-next-line no-implicit-dependencies
 import { assert } from "chai";
 
-import { useEnvironment } from "./helpers";
+import { useEnvironment } from "./../helpers";
 
 // A place to test options
 describe("Truffle plugin: gasReporter", function() {
-  useEnvironment(__dirname + "/hardhat-truffle-project");
+  const projectPath = path.resolve(__dirname, "../projects/hardhat-truffle-project");
+  useEnvironment(projectPath);
 
   it("gasReporter options", async function() {
     // Expect everything in the EtherRouter folder to be missing from report

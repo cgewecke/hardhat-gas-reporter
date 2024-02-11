@@ -2,7 +2,7 @@ import "@nomiclabs/hardhat-truffle5"
 import { HardhatUserConfig } from "hardhat/types";
 
 // We load the plugin here.
-import "../../src/index";
+import "../../../src/index";
 
 const config: HardhatUserConfig = {
   solidity: {

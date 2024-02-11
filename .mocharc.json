@@ -1,0 +1,7 @@
+{
+  "require" : [
+      "dotenv/config",
+      "ts-node/register",
+      "source-map-support/register"
+  ]
+}

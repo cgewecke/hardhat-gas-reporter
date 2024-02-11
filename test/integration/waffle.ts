@@ -1,10 +1,12 @@
+import path from "path"
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 // tslint:disable-next-line no-implicit-dependencies
 import { assert } from "chai";
-import { useEnvironment } from "./helpers";
+import { useEnvironment } from "./../helpers";
 
 describe("Waffle plugin with signers", function() {
-  useEnvironment(__dirname + "/hardhat-waffle-project");
+  const projectPath = path.resolve(__dirname, "../projects/hardhat-waffle-project");
+  useEnvironment(projectPath);
 
   it("no options", async function() {
     await this.env.run(TASK_TEST, { testFiles: [] });

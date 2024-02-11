@@ -64,13 +64,13 @@ typings/
 .next
 
 # hardhat-project
-test/hardhat-truffle-project/artifacts
-test/hardhat-truffle-project/cache
-test/hardhat-ethers-project/artifacts
-test/hardhat-ethers-project/cache
-test/hardhat-waffle-project/artifacts
-test/hardhat-waffle-project/cache
-test/hardhat-forked-project/artifacts
-test/hardhat-forked-project/cache
+test/projects/hardhat-truffle-project/artifacts
+test/projects/hardhat-truffle-project/cache
+test/projects/hardhat-ethers-project/artifacts
+test/projects/hardhat-ethers-project/cache
+test/projects/hardhat-waffle-project/artifacts
+test/projects/hardhat-waffle-project/cache
+test/projects/hardhat-forked-project/artifacts
+test/projects/hardhat-forked-project/cache
 dist/
 

@@ -3,7 +3,7 @@ import { HardhatUserConfig } from "hardhat/types";
 import "@nomiclabs/hardhat-ethers"
 import { ABI } from "./abi";
 
-import "../../src/index";
+import "../../../src/index";
 
 const config: HardhatUserConfig = {
   solidity: "0.4.18",
