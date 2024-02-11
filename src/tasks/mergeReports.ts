@@ -84,11 +84,11 @@ export function mergeReports(
   };
 
   for (const report of reports) {
-    if (!result.config) {
+    if (result.config === null) {
       result.config = report.config;
     }
 
-    if (!result.namespace) {
+    if (result.namespace === null) {
       result.namespace = report.namespace;
     }
 
@@ -108,23 +108,23 @@ export function mergeReports(
       result.config.gasPrice = report.config.gasPrice;
     }
 
-    if (!report.info || typeof report.info.blockLimit !== "number") {
+    if (report.info === undefined || typeof report.info.blockLimit !== "number") {
       throw new Error(`Invalid "info" property for given report`);
     }
 
-    if (!result.info.blockLimit) {
+    if (result.info.blockLimit === null) {
       result.info.blockLimit = report.info.blockLimit;
     } else if (result.info.blockLimit !== report.info.blockLimit) {
       throw new Error('"info.blockLimit" should be the same on all reports');
     }
 
-    if (!report.info.methods) {
+    if (report.info.methods === undefined) {
       throw new Error(`Missing "info.methods" property on given report`);
     }
 
     // Merge info.methods objects
     Object.entries(report.info.methods).forEach(([key, value]) => {
-      if (!result.info.methods[key]) {
+      if (result.info.methods[key] === undefined) {
         result.info.methods[key] = value;
         return;
       }
@@ -148,7 +148,7 @@ export function mergeReports(
         (d) => d.name === deployment.name
       );
 
-      if (current != null) {
+      if (current !== null) {
         current.gasData = [...current.gasData, ...deployment.gasData].sort(
           (a, b) => a - b
         );

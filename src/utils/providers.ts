@@ -1,3 +1,6 @@
+// TODO: figure out receipt boolean checking
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
+
 import {
   EIP1193Provider,
   EthereumProvider,
@@ -5,18 +8,17 @@ import {
   RequestArguments,
 } from "hardhat/types";
 
-// tslint:disable-next-line ordered-imports
 import { ProviderWrapper } from "hardhat/internal/core/providers/wrapper";
 
 /**
  * Wrapped provider which collects tx data
  */
 export class EGRDataCollectionProvider extends ProviderWrapper {
-  private mochaConfig: any;
+  private _mochaConfig: any;
 
   constructor(provider: EIP1193Provider, mochaConfig) {
     super(provider);
-    this.mochaConfig = mochaConfig;
+    this._mochaConfig = mochaConfig;
   }
 
   public async request(args: RequestArguments): Promise<unknown> {
@@ -28,7 +30,7 @@ export class EGRDataCollectionProvider extends ProviderWrapper {
           method: "eth_getTransactionByHash",
           params: [receipt.transactionHash],
         });
-        await this.mochaConfig.attachments.recordTransaction(receipt, tx);
+        await this._mochaConfig.attachments.recordTransaction(receipt, tx);
       }
       return receipt;
 
@@ -40,7 +42,7 @@ export class EGRDataCollectionProvider extends ProviderWrapper {
       });
       const tx = await this._wrappedProvider.request(args);
       if (receipt?.status) {
-        await this.mochaConfig.attachments.recordTransaction(receipt, tx);
+        await this._mochaConfig.attachments.recordTransaction(receipt, tx);
       }
       return tx;
 
@@ -60,7 +62,7 @@ export class EGRDataCollectionProvider extends ProviderWrapper {
         });
 
         if (receipt?.status) {
-          await this.mochaConfig.attachments.recordTransaction(receipt, tx);
+          await this._mochaConfig.attachments.recordTransaction(receipt, tx);
         }
       }
       return txHash;
@@ -80,33 +82,33 @@ export class EGRAsyncApiProvider {
     this.provider = provider;
   }
 
-  async getNetworkId() {
+  public async getNetworkId() {
     return this.provider.send("net_version", []);
   }
 
-  async getCode(address: string) {
+  public async getCode(address: string) {
     return this.provider.send("eth_getCode", [address, "latest"]);
   }
 
-  async getLatestBlock() {
+  public async getLatestBlock() {
     return this.provider.send("eth_getBlockByNumber", ["latest", false]);
   }
 
-  async getBlockByNumber(num: number) {
+  public async getBlockByNumber(num: number) {
     const hexNumber = `0x${num.toString(16)}`;
     return this.provider.send("eth_getBlockByNumber", [hexNumber, true]);
   }
 
-  async blockNumber() {
+  public async blockNumber() {
     const block = await this.getLatestBlock();
     return parseInt(block.number, 16);
   }
 
-  async getTransactionByHash(tx) {
+  public async getTransactionByHash(tx) {
     return this.provider.send("eth_getTransactionByHash", [tx]);
   }
 
-  async call(payload, blockNumber) {
+  public async call(payload, blockNumber) {
     return this.provider.send("eth_call", [payload, blockNumber]);
   }
 }

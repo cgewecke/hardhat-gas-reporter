@@ -6,7 +6,6 @@ import { getContracts, getResolvedRemoteContracts } from "../utils/artifacts";
 import { getOptions } from "../utils/options";
 import { wrapProviders } from "../utils/providers";
 
-// tslint:disable-next-line ordered-imports
 import "../type-extensions";
 import { RemoteContract } from "../types";
 
@@ -23,7 +22,7 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
   async (args: any, hre, runSuper) => {
     let options = getOptions(hre);
 
-    if (options.enabled) {
+    if (options.enabled === true) {
       // Temporarily skipping when in parallel mode because it crashes and unsure how to resolve...
       if (args.parallel === true) {
         const result = await runSuper();
@@ -34,10 +33,7 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
         return result;
       }
 
-      const {
-        parseSoliditySources,
-        setGasAndPriceRates,
-      } = require("eth-gas-reporter/lib/utils");
+      const { setGasAndPriceRates } = require("eth-gas-reporter/lib/utils");
       const InternalReporterConfig = require("eth-gas-reporter/lib/config");
 
       // Fetch data from gas and coin price providers
@@ -45,10 +41,10 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
       options = new InternalReporterConfig(originalOptions);
       await setGasAndPriceRates(options);
 
-      mochaConfig = hre.config.mocha || {};
+      mochaConfig = hre.config.mocha;
 
-      if (hre.network.name === HARDHAT_NETWORK_NAME || options.fast) {
-        const { wrappedDataProvider, asyncProvider } = await wrapProviders(
+      if (hre.network.name === HARDHAT_NETWORK_NAME) {
+        const { asyncProvider } = await wrapProviders(
           hre,
           mochaConfig
         );

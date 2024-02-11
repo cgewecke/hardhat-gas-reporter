@@ -1,9 +1,7 @@
-import type { EGRAsyncApiProvider } from "./providers";
-import { Artifact, Artifacts } from "hardhat/types";
+import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
+import { Artifacts } from "hardhat/types";
 
 import { RemoteContract } from "../types";
-
-// tslint:disable-next-line prettier
 
 /**
  * Filters out contracts to exclude from report
@@ -31,7 +29,7 @@ function shouldSkipContract(
  * @return {Promise<RemoteContract[]>}
  */
 export async function getResolvedRemoteContracts(
-  provider: EGRAsyncApiProvider,
+  provider: EGRAsyncApiProviderT,
   remoteContracts: RemoteContract[] = []
 ): Promise<RemoteContract[]> {
   const { default: sha1 } = await import("sha1");
@@ -40,7 +38,7 @@ export async function getResolvedRemoteContracts(
       contract.bytecode = await provider.getCode(contract.address);
       contract.deployedBytecode = contract.bytecode;
       contract.bytecodeHash = sha1(contract.bytecode);
-    } catch (error) {
+    } catch (error: any) {
       console.log(
         `Warning: failed to fetch bytecode for remote contract: ${contract.name}`
       );

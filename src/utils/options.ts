@@ -18,7 +18,7 @@ function getDefaultOptions(
 
   let url: any;
   // Resolve URL
-  if ((hre.network.config as HttpNetworkConfig).url) {
+  if ((hre.network.config as HttpNetworkConfig).url !== undefined) {
     url = (hre.network.config as HttpNetworkConfig).url;
   } else {
     url = defaultUrl;
