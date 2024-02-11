@@ -43,7 +43,6 @@
     "dotenv": "^6.2.0",
     "ethereum-waffle": "^3.2.1",
     "ethers": "^5.0.0",
-    "ganache-cli": "^6.4.3",
     "hardhat": "^2.19.4",
     "mocha": "7",
     "prettier": "^1.17.0",
