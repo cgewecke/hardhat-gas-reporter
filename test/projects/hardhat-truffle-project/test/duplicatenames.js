@@ -11,4 +11,4 @@ contract("Duplicate contract names", function(accounts) {
     const d = await DuplicateB.new();
     await d.b();
   });
-})
+});

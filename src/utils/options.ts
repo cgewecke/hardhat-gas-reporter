@@ -1,4 +1,5 @@
-import { HttpNetworkConfig, HardhatRuntimeEnvironment } from "hardhat/types";
+import { HardhatRuntimeEnvironment, HttpNetworkConfig } from "hardhat/types";
+
 import { EthGasReporterConfig } from "../types";
 
 /**
@@ -9,33 +10,35 @@ import { EthGasReporterConfig } from "../types";
  * @param  {HardhatRuntimeEnvironment} hre
  * @return {EthGasReporterConfig}
  */
-function getDefaultOptions(hre: HardhatRuntimeEnvironment): EthGasReporterConfig {
+function getDefaultOptions(
+  hre: HardhatRuntimeEnvironment
+): EthGasReporterConfig {
   const defaultUrl = "http://localhost:8545";
-  const defaultCompiler = hre.config.solidity.compilers[0]
+  const defaultCompiler = hre.config.solidity.compilers[0];
 
   let url: any;
   // Resolve URL
-  if ((<HttpNetworkConfig>hre.network.config).url) {
-    url = (<HttpNetworkConfig>hre.network.config).url;
+  if ((hre.network.config as HttpNetworkConfig).url !== undefined) {
+    url = (hre.network.config as HttpNetworkConfig).url;
   } else {
     url = defaultUrl;
   }
 
   return {
     enabled: true,
-    url: <string>url,
+    url: url as string,
     metadata: {
       compiler: {
-        version: defaultCompiler.version
+        version: defaultCompiler.version,
       },
       settings: {
         optimizer: {
           enabled: defaultCompiler.settings.optimizer.enabled,
-          runs: defaultCompiler.settings.optimizer.runs
-        }
-      }
-    }
-  }
+          runs: defaultCompiler.settings.optimizer.runs,
+        },
+      },
+    },
+  };
 }
 
 /**

@@ -1,6 +1,7 @@
-import { Artifact, Artifacts } from "hardhat/types";
-import { RemoteContract } from "../types";
 import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
+import { Artifacts } from "hardhat/types";
+
+import { RemoteContract } from "../types";
 
 /**
  * Filters out contracts to exclude from report
@@ -8,9 +9,14 @@ import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
  * @param  {string[]} skippable            excludeContracts option values
  * @return {boolean}
  */
-function shouldSkipContract(qualifiedName: string, skippable: string[]): boolean {
-  for (const item of skippable){
-    if (qualifiedName.includes(item)) return true;
+function shouldSkipContract(
+  qualifiedName: string,
+  skippable: string[]
+): boolean {
+  for (const item of skippable) {
+    if (qualifiedName.includes(item)) {
+      return true;
+    }
   }
   return false;
 }
@@ -25,16 +31,17 @@ function shouldSkipContract(qualifiedName: string, skippable: string[]): boolean
 export async function getResolvedRemoteContracts(
   provider: EGRAsyncApiProviderT,
   remoteContracts: RemoteContract[] = []
-) : Promise <RemoteContract[]> {
-  const { default : sha1 } = await import("sha1");
-  for (const contract of remoteContracts){
-    let code;
+): Promise<RemoteContract[]> {
+  const { default: sha1 } = await import("sha1");
+  for (const contract of remoteContracts) {
     try {
       contract.bytecode = await provider.getCode(contract.address);
       contract.deployedBytecode = contract.bytecode;
-      contract.bytecodeHash = sha1(contract.bytecode);
-    } catch (error){
-      console.log(`Warning: failed to fetch bytecode for remote contract: ${contract.name}`)
+      contract.bytecodeHash = sha1(contract.bytecode!);
+    } catch (error: any) {
+      console.log(
+        `Warning: failed to fetch bytecode for remote contract: ${contract.name}`
+      );
       console.log(`Error was: ${error}\n`);
     }
   }
@@ -53,17 +60,17 @@ export function getContracts(
   artifacts: Artifacts,
   skippable: string[] = [],
   resolvedRemoteContracts: RemoteContract[],
-  resolvedQualifiedNames: string[],
-) : any[] {
+  resolvedQualifiedNames: string[]
+): any[] {
   const contracts = [];
 
   for (const qualifiedName of resolvedQualifiedNames) {
-    if (shouldSkipContract(qualifiedName, skippable)){
+    if (shouldSkipContract(qualifiedName, skippable)) {
       continue;
     }
 
     let name: string;
-    let artifact = artifacts.readArtifactSync(qualifiedName)
+    let artifact = artifacts.readArtifactSync(qualifiedName);
 
     // Prefer simple names
     try {
@@ -74,25 +81,25 @@ export function getContracts(
     }
 
     contracts.push({
-      name: name,
+      name,
       artifact: {
         abi: artifact.abi,
         bytecode: artifact.bytecode,
-        deployedBytecode: artifact.deployedBytecode
-      }
+        deployedBytecode: artifact.deployedBytecode,
+      },
     });
   }
 
-  for (const remoteContract of resolvedRemoteContracts){
+  for (const remoteContract of resolvedRemoteContracts) {
     contracts.push({
       name: remoteContract.name,
       artifact: {
         abi: remoteContract.abi,
         bytecode: remoteContract.bytecode,
         bytecodeHash: remoteContract.bytecodeHash,
-        deployedBytecode: remoteContract.deployedBytecode
-      }
-    })
+        deployedBytecode: remoteContract.deployedBytecode,
+      },
+    });
   }
   return contracts;
 }
