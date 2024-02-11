@@ -1,4 +1,5 @@
-import "@nomiclabs/hardhat-truffle5"
+// eslint-disable-next-line import/no-extraneous-dependencies
+import "@nomiclabs/hardhat-truffle5";
 import { HardhatUserConfig } from "hardhat/types";
 
 // We load the plugin here.
@@ -10,20 +11,21 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 100
-      }
-    }
+        runs: 100,
+      },
+    },
   },
   networks: {
     development: {
       gas: 5000000,
-      url: "http://localhost:8545"
-    }
+      url: "http://localhost:8545",
+    },
   },
   gasReporter: {
     showMethodSig: true,
-    coinmarketcap: process.env.CMC_API_KEY
-  }
+    coinmarketcap: process.env.CMC_API_KEY,
+  },
 };
 
+// eslint-disable-next-line import/no-default-export
 export default config;

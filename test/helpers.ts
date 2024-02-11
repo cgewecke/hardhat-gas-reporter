@@ -8,19 +8,17 @@ declare module "mocha" {
 }
 
 export function useEnvironment(projectPath: string, networkName?: string) {
-  let previousCWD: string;
-
-  beforeEach("Loading hardhat environment", function() {
+  beforeEach("Loading hardhat environment", function () {
     process.chdir(projectPath);
 
-    if (networkName !== undefined){
+    if (networkName !== undefined) {
       process.env.HARDHAT_NETWORK = networkName;
     }
 
     this.env = require("hardhat");
   });
 
-  afterEach("Resetting hardhat", function() {
+  afterEach("Resetting hardhat", function () {
     resetHardhatContext();
   });
 }

@@ -1,7 +1,12 @@
-import { ProviderWrapper } from "hardhat/internal/core/providers/wrapper"
+import {
+  EIP1193Provider,
+  EthereumProvider,
+  HardhatRuntimeEnvironment,
+  RequestArguments,
+} from "hardhat/types";
 
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { EthereumProvider, EIP1193Provider, RequestArguments } from "hardhat/types";
+// tslint:disable-next-line ordered-imports
+import { ProviderWrapper } from "hardhat/internal/core/providers/wrapper";
 
 /**
  * Wrapped provider which collects tx data
@@ -11,51 +16,51 @@ export class EGRDataCollectionProvider extends ProviderWrapper {
 
   constructor(provider: EIP1193Provider, mochaConfig) {
     super(provider);
-    this.mochaConfig = mochaConfig
+    this.mochaConfig = mochaConfig;
   }
 
   public async request(args: RequestArguments): Promise<unknown> {
     // Truffle
     if (args.method === "eth_getTransactionReceipt") {
       const receipt: any = await this._wrappedProvider.request(args);
-      if (receipt?.status && receipt?.transactionHash){
+      if (receipt?.status && receipt?.transactionHash) {
         const tx = await this._wrappedProvider.request({
           method: "eth_getTransactionByHash",
-          params: [receipt.transactionHash]
+          params: [receipt.transactionHash],
         });
         await this.mochaConfig.attachments.recordTransaction(receipt, tx);
       }
       return receipt;
 
-    // Ethers: will get run twice for deployments (e.g both receipt and txhash are fetched)
-    } else if (args.method === 'eth_getTransactionByHash'){
+      // Ethers: will get run twice for deployments (e.g both receipt and txhash are fetched)
+    } else if (args.method === "eth_getTransactionByHash") {
       const receipt: any = await this._wrappedProvider.request({
         method: "eth_getTransactionReceipt",
-        params: args.params
-      })
-      const tx = await this._wrappedProvider.request(args)
-      if (receipt?.status){
-        await this.mochaConfig.attachments.recordTransaction(receipt, tx)
+        params: args.params,
+      });
+      const tx = await this._wrappedProvider.request(args);
+      if (receipt?.status) {
+        await this.mochaConfig.attachments.recordTransaction(receipt, tx);
       }
       return tx;
 
-    // Waffle: This is necessary when using Waffle wallets. eth_sendTransaction fetches the
-    // transactionHash as part of its flow, eth_sendRawTransaction *does not*.
-    } else if (args.method === 'eth_sendRawTransaction') {
+      // Waffle: This is necessary when using Waffle wallets. eth_sendTransaction fetches the
+      // transactionHash as part of its flow, eth_sendRawTransaction *does not*.
+    } else if (args.method === "eth_sendRawTransaction") {
       const txHash = await this._wrappedProvider.request(args);
 
-      if (typeof txHash === 'string'){
+      if (typeof txHash === "string") {
         const tx = await this._wrappedProvider.request({
           method: "eth_getTransactionByHash",
-          params: [txHash]
+          params: [txHash],
         });
-        const receipt : any = await this._wrappedProvider.request({
-            method: "eth_getTransactionReceipt",
-            params: [txHash]
+        const receipt: any = await this._wrappedProvider.request({
+          method: "eth_getTransactionReceipt",
+          params: [txHash],
         });
 
-        if (receipt?.status){
-          await this.mochaConfig.attachments.recordTransaction(receipt, tx)
+        if (receipt?.status) {
+          await this.mochaConfig.attachments.recordTransaction(receipt, tx);
         }
       }
       return txHash;
@@ -106,18 +111,26 @@ export class EGRAsyncApiProvider {
   }
 }
 
-export async function wrapProviders(hre: HardhatRuntimeEnvironment, mochaConfig): Promise<{
-  wrappedDataProvider: EGRDataCollectionProvider,
-  asyncProvider: EGRAsyncApiProvider
+export async function wrapProviders(
+  hre: HardhatRuntimeEnvironment,
+  mochaConfig
+): Promise<{
+  wrappedDataProvider: EGRDataCollectionProvider;
+  asyncProvider: EGRAsyncApiProvider;
 }> {
-  const {
-    BackwardsCompatibilityProviderAdapter
-  } = await import("hardhat/internal/core/providers/backwards-compatibility")
+  const { BackwardsCompatibilityProviderAdapter } = await import(
+    "hardhat/internal/core/providers/backwards-compatibility"
+  );
 
-  const wrappedDataProvider= new EGRDataCollectionProvider(hre.network.provider, mochaConfig);
-  hre.network.provider = new BackwardsCompatibilityProviderAdapter(wrappedDataProvider);
+  const wrappedDataProvider = new EGRDataCollectionProvider(
+    hre.network.provider,
+    mochaConfig
+  );
+  hre.network.provider = new BackwardsCompatibilityProviderAdapter(
+    wrappedDataProvider
+  );
 
   const asyncProvider = new EGRAsyncApiProvider(hre.network.provider);
 
-  return {wrappedDataProvider, asyncProvider}
+  return { wrappedDataProvider, asyncProvider };
 }

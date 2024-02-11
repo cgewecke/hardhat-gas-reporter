@@ -1,12 +1,13 @@
 import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
-import { HARDHAT_NETWORK_NAME } from "hardhat/plugins";
 import { subtask } from "hardhat/config";
+import { HARDHAT_NETWORK_NAME } from "hardhat/plugins";
 
-import { wrapProviders } from "../utils/providers";
-import { getOptions } from "../utils/options";
 import { getContracts, getResolvedRemoteContracts } from "../utils/artifacts";
+import { getOptions } from "../utils/options";
+import { wrapProviders } from "../utils/providers";
 
-import "../type-extensions"
+// tslint:disable-next-line ordered-imports
+import "../type-extensions";
 import { RemoteContract } from "../types";
 
 let mochaConfig;
@@ -20,7 +21,6 @@ let resolvedRemoteContracts: RemoteContract[] = [];
  */
 subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
   async (args: any, hre, runSuper) => {
-
     let options = getOptions(hre);
 
     if (options.enabled) {
@@ -29,31 +29,37 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
         const result = await runSuper();
         console.log(
           "Note: Gas reporting has been skipped because plugin `hardhat-gas-reporter` does not support " +
-          "the --parallel flag."
+            "the --parallel flag."
         );
         return result;
       }
 
-      const { parseSoliditySources, setGasAndPriceRates } = require('eth-gas-reporter/lib/utils');
-      const InternalReporterConfig  = require('eth-gas-reporter/lib/config');
+      const {
+        parseSoliditySources,
+        setGasAndPriceRates,
+      } = require("eth-gas-reporter/lib/utils");
+      const InternalReporterConfig = require("eth-gas-reporter/lib/config");
 
       // Fetch data from gas and coin price providers
-      const originalOptions = options
+      const originalOptions = options;
       options = new InternalReporterConfig(originalOptions);
       await setGasAndPriceRates(options);
 
       mochaConfig = hre.config.mocha || {};
 
-      if (hre.network.name === HARDHAT_NETWORK_NAME || options.fast){
-
-        const { wrappedDataProvider, asyncProvider } = await wrapProviders(hre, mochaConfig);
+      if (hre.network.name === HARDHAT_NETWORK_NAME || options.fast) {
+        const { wrappedDataProvider, asyncProvider } = await wrapProviders(
+          hre,
+          mochaConfig
+        );
 
         resolvedRemoteContracts = await getResolvedRemoteContracts(
           asyncProvider,
           originalOptions.remoteContracts
         );
 
-        resolvedQualifiedNames = await hre.artifacts.getAllFullyQualifiedNames();
+        resolvedQualifiedNames =
+          await hre.artifacts.getAllFullyQualifiedNames();
 
         options.getContracts = getContracts.bind(
           null,
@@ -66,7 +72,8 @@ subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
         mochaConfig.reporter = "eth-gas-reporter";
         mochaConfig.reporterOptions = options;
         mochaConfig.reporterOptions.provider = asyncProvider;
-        mochaConfig.reporterOptions.blockLimit = (<any>hre.network.config).blockGasLimit as number;
+        mochaConfig.reporterOptions.blockLimit = (hre.network.config as any)
+          .blockGasLimit as number;
         mochaConfig.attachments = {};
       }
 

@@ -16,6 +16,9 @@ jobs:
           name: Test
           command: npm test
       - run:
+          name: Lint
+          command: npm run lint
+      - run:
           name: Validate build
           command: npm run build
 workflows:
