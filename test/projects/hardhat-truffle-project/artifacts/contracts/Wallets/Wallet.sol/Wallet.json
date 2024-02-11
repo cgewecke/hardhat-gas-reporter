@@ -1,0 +1,83 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Wallet",
+  "sourceName": "contracts/Wallets/Wallet.sol",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getBalance",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "payment",
+          "type": "uint256"
+        },
+        {
+          "name": "recipient",
+          "type": "address"
+        }
+      ],
+      "name": "transferPayment",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "payment",
+          "type": "uint256"
+        },
+        {
+          "name": "recipient",
+          "type": "address"
+        }
+      ],
+      "name": "sendPayment",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "_sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Deposit",
+      "type": "event"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b506101ac806100206000396000f3fe6080604052600436106100345760003560e01c806312065fe014610073578063137a3fa71461009a578063c58a6ce8146100d3575b34156100715760408051348152905133917fe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c919081900360200190a25b005b34801561007f57600080fd5b5061008861010c565b60408051918252519081900360200190f35b3480156100a657600080fd5b50610071600480360360408110156100bd57600080fd5b50803590602001356001600160a01b0316610111565b3480156100df57600080fd5b50610071600480360360408110156100f657600080fd5b50803590602001356001600160a01b031661014c565b303190565b6040516001600160a01b0382169083156108fc029084906000818181858888f19350505050158015610147573d6000803e3d6000fd5b505050565b6040516001600160a01b0382169083156108fc029084906000818181858888f19350505050151561017c57600080fd5b505056fea165627a7a723058209a341854a1718e255e30939102dea0f01c46617ebaf2530291aa62b5c7cad5420029",
+  "deployedBytecode": "0x6080604052600436106100345760003560e01c806312065fe014610073578063137a3fa71461009a578063c58a6ce8146100d3575b34156100715760408051348152905133917fe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c919081900360200190a25b005b34801561007f57600080fd5b5061008861010c565b60408051918252519081900360200190f35b3480156100a657600080fd5b50610071600480360360408110156100bd57600080fd5b50803590602001356001600160a01b0316610111565b3480156100df57600080fd5b50610071600480360360408110156100f657600080fd5b50803590602001356001600160a01b031661014c565b303190565b6040516001600160a01b0382169083156108fc029084906000818181858888f19350505050158015610147573d6000803e3d6000fd5b505050565b6040516001600160a01b0382169083156108fc029084906000818181858888f19350505050151561017c57600080fd5b505056fea165627a7a723058209a341854a1718e255e30939102dea0f01c46617ebaf2530291aa62b5c7cad5420029",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

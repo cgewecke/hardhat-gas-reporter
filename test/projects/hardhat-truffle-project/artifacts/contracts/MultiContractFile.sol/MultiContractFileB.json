@@ -1,0 +1,20 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "MultiContractFileB",
+  "sourceName": "contracts/MultiContractFile.sol",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "goodbye",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b50606880601d6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806375fc8e3c14602d575b600080fd5b60336035565b005b600560005556fea165627a7a72305820b89fdc3743fad9496b2e2f38f16ee3e42b3462f181c12e9c1a7e4d4444ef71e60029",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c806375fc8e3c14602d575b600080fd5b60336035565b005b600560005556fea165627a7a72305820b89fdc3743fad9496b2e2f38f16ee3e42b3462f181c12e9c1a7e4d4444ef71e60029",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
