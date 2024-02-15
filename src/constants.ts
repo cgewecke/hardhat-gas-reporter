@@ -1,0 +1,1 @@
+export const DEFAULT_GAS_PRICE_API_URL  = "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice"

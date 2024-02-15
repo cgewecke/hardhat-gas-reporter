@@ -1,6 +1,7 @@
-export interface EthGasReporterConfig {
+export interface HardhatGasReporterOptions {
   currency?: string;
   token?: string;
+  ethPrice?: number;
   gasPrice?: number;
   gasPriceApi?: string;
   coinmarketcap?: string;
@@ -8,7 +9,7 @@ export interface EthGasReporterConfig {
   noColors?: boolean;
   onlyCalledMethods?: boolean;
   rst?: boolean;
-  rstTitle?: boolean;
+  rstTitle?: string;
   showTimeSpent?: boolean;
   excludeContracts?: string[];
   src?: string;
@@ -19,11 +20,9 @@ export interface EthGasReporterConfig {
   enabled?: boolean;
   remoteContracts?: RemoteContract[];
 
-  // Hardhat internals set for eth-gas-reporter
-  metadata?: any;
-  getContracts?: any;
-  url?: string;
-  fast?: boolean;
+  // Hardhat internals
+  solcConfig?: any;
+  blockLimit?: number;
 }
 
 export interface RemoteContract {
@@ -94,4 +93,65 @@ export interface EthGasReporterOutput {
 
     deployments: Deployment[];
   };
+}
+
+export interface MethodDataItem {
+  key: string,
+  contract: string,
+  method: string,
+  fnSig: string,
+  gasData: number[],
+  numberOfCalls: number
+}
+
+export interface MethodData {[key: string]: MethodDataItem }
+
+export interface Deployment {
+  name: string,
+  bytecode: string,
+  deployedBytecode: string,
+  gasData: number[]
+}
+
+export interface SolcInfo {
+  version: string,
+  optimizer: string,
+  runs: number | string
+}
+
+export interface ArtifactInfo {
+  abi: any[],
+  bytecode: string,
+  deployedBytecode: string,
+  address? : string,
+  bytecodeHash?: string,
+}
+
+export interface ContractInfo {
+  name: string,
+  artifact: ArtifactInfo
+}
+
+// Borrowed from @ethereumjs/tx to avoid adding package
+export interface JsonRpcTx {
+  blockHash: string | null // DATA, 32 Bytes - hash of the block where this transaction was in. null when it's pending.
+  blockNumber: string | null // QUANTITY - block number where this transaction was in. null when it's pending.
+  from: string // DATA, 20 Bytes - address of the sender.
+  gas: string // QUANTITY - gas provided by the sender.
+  gasPrice: string // QUANTITY - gas price provided by the sender in wei. If EIP-1559 tx, defaults to maxFeePerGas.
+  maxFeePerGas?: string // QUANTITY - max total fee per gas provided by the sender in wei.
+  maxPriorityFeePerGas?: string // QUANTITY - max priority fee per gas provided by the sender in wei.
+  type: string // QUANTITY - EIP-2718 Typed Transaction type
+  chainId?: string // Chain ID that this transaction is valid on.
+  hash: string // DATA, 32 Bytes - hash of the transaction.
+  input: string // DATA - the data send along with the transaction.
+  nonce: string // QUANTITY - the number of transactions made by the sender prior to this one.
+  to: string | null /// DATA, 20 Bytes - address of the receiver. null when it's a contract creation transaction.
+  transactionIndex: string | null // QUANTITY - integer of the transactions index position in the block. null when it's pending.
+  value: string // QUANTITY - value transferred in Wei.
+  v: string // QUANTITY - ECDSA recovery id
+  r: string // DATA, 32 Bytes - ECDSA signature r
+  s: string // DATA, 32 Bytes - ECDSA signature s
+  maxFeePerDataGas?: string // QUANTITY - max data fee for blob transactions
+  versionedHashes?: string[] // DATA - array of 32 byte versioned hashes for blob transactions
 }

@@ -1,7 +1,7 @@
 import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
 import { Artifacts } from "hardhat/types";
 
-import { RemoteContract } from "../types";
+import { RemoteContract, ContractInfo } from "../types";
 
 /**
  * Filters out contracts to exclude from report
@@ -54,6 +54,7 @@ export async function getResolvedRemoteContracts(
  * @param  {HardhatRuntimeEnvironment} hre.artifacts
  * @param  {String[]}                  skippable        contract *not* to track
  * @param  {RemoteContract[]}          resolvedRemoteContracts
+ * @param  {String}                    resolvedQualifiedNames
  * @return {object[]}                                   objects w/ abi and bytecode
  */
 export function getContracts(
@@ -61,7 +62,7 @@ export function getContracts(
   skippable: string[] = [],
   resolvedRemoteContracts: RemoteContract[],
   resolvedQualifiedNames: string[]
-): any[] {
+): ContractInfo[] {
   const contracts = [];
 
   for (const qualifiedName of resolvedQualifiedNames) {
@@ -95,11 +96,12 @@ export function getContracts(
       name: remoteContract.name,
       artifact: {
         abi: remoteContract.abi,
+        address: remoteContract.address,
         bytecode: remoteContract.bytecode,
         bytecodeHash: remoteContract.bytecodeHash,
         deployedBytecode: remoteContract.deployedBytecode,
       },
-    });
+    } as ContractInfo);
   }
   return contracts;
 }
