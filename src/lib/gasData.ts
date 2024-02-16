@@ -1,8 +1,6 @@
-import type { Artifacts } from "hardhat/types";
-import type { EGRAsyncApiProvider } from './providers';
+import type { EthereumProvider, HardhatRuntimeEnvironment } from "hardhat/types";
 import type { FunctionFragment } from 'ethers/lib/utils';
-import type { Config } from './config';
-import type { Deployment, MethodData, RemoteContract } from '../types';
+import type { Deployment, GasReporterOptions, MethodData, ContractInfo, JsonRpcBlock } from '../types';
 import ethers from "ethers";
 import { keccak256 } from "ethereum-cryptography/keccak";
 import { utf8ToBytes, bytesToHex } from "ethereum-cryptography/utils";
@@ -10,8 +8,7 @@ import sha1 from "sha1";
 
 import { warnEthers } from "../utils/ui";
 import { matchBinaries } from "../utils/sources";
-
-import { getContracts } from "./artifacts";
+import { gasToCost, gasToPercentOfLimit } from "../utils/gas";
 
 type MethodID = { fnSig: string } & FunctionFragment;
 
@@ -23,7 +20,7 @@ export class GasData {
   public methods: MethodData;
   public deployments: Deployment[];
   public codeHashMap: {[hash: string]: string };
-  public provider: EGRAsyncApiProvider | undefined;
+  public provider: EthereumProvider | undefined;
 
   constructor() {
     this.addressCache = {};
@@ -35,7 +32,7 @@ export class GasData {
   /**
    * Sets up data structures to store deployments and methods gas usage
    * @param config {Config}
-   * @param provider {EGRAsyncApiProvider}
+   * @param provider {EthereumProvider}
    * @param artifacts {Artifacts}
    * @param skippable {string[]}
    * @param remoteContracts {RemoteContracts[]}
@@ -43,30 +40,27 @@ export class GasData {
    * @returns
    */
   public initialize(
-    config: Config,
-    provider: EGRAsyncApiProvider,
-    artifacts: Artifacts,
-    skippable: string[],
-    remoteContracts: RemoteContract[],
-    qualifiedNames: string[]
+    options: GasReporterOptions,
+    provider: EthereumProvider,
+    contracts: ContractInfo[]
   ) {
 
     this.provider = provider;
 
-    for (const contract of getContracts(artifacts, skippable, remoteContracts, qualifiedNames)) {
-      const contractInfo = {
-        name: contract.name,
-        bytecode: contract.artifact.bytecode,
-        deployedBytecode: contract.artifact.deployedBytecode,
+    for (const item of contracts) {
+      const contract = {
+        name: item.name,
+        bytecode: item.artifact.bytecode,
+        deployedBytecode: item.artifact.deployedBytecode,
         gasData: []
       };
-      this.deployments.push(contractInfo);
+      this.deployments.push(contract);
 
-      if (contract.artifact.bytecodeHash) {
+      if (item.artifact.bytecodeHash) {
         this.trackNameByPreloadedAddress(
-          contract.name,
-          contract.artifact.address!,
-          contract.artifact.bytecodeHash
+          item.name,
+          item.artifact.address!,
+          item.artifact.bytecodeHash
         );
       }
 
@@ -75,7 +69,7 @@ export class GasData {
 
       let methods: { [name: string]: FunctionFragment; };
       try {
-        methods = new ethers.utils.Interface(contract.artifact.abi).functions;
+        methods = new ethers.utils.Interface(item.artifact.abi).functions;
       } catch (err: any) {
         warnEthers(contract.name, err);
         return;
@@ -91,7 +85,7 @@ export class GasData {
 
       // Create Method Map;
       Object.keys(methodIDs).forEach(key => {
-        const isInterface = contract.artifact.bytecode === "0x";
+        const isInterface = item.artifact.bytecode === "0x";
         const isCall = methodIDs[key].type === "call";
         const methodHasName = methodIDs[key].name !== undefined;
 
@@ -107,6 +101,86 @@ export class GasData {
         }
       });
     }
+  }
+
+  /**
+   * Calculates summary and price data for methods and deployments data after it's all
+   * been collected
+   */
+  public async runAnalysis(hre: HardhatRuntimeEnvironment, options: GasReporterOptions) {
+    const block = await hre.network.provider.send("eth_getBlockByNumber", ["latest", false]);
+    const blockGasLimit = parseInt((block as JsonRpcBlock).gasLimit);
+
+    let methodsTotal = 0;
+    let deploymentsTotal = 0;
+
+    /* Methods */
+    for (const key of Object.keys(this.methods)){
+      const method = this.methods[key];
+
+      if (method.gasData.length > 0) {
+        const total = method.gasData.reduce((acc: number, datum: number) => acc + datum, 0);
+        method.average = Math.round(total / method.gasData.length);
+        method.cost =
+          options.ethPrice && options.gasPrice
+            ? gasToCost(
+                method.average,
+                options.ethPrice,
+                options.gasPrice
+              )
+            : undefined;
+
+        const sortedData = method.gasData.sort((a: number, b: number) => a - b);
+        method.min = sortedData[0];
+        method.max = sortedData[sortedData.length - 1];
+        methodsTotal += method.average;
+      }
+    }
+
+    /* Deployments */
+    for (const deployment of this.deployments) {
+      if (deployment.gasData.length === 0) {
+        const total = deployment.gasData.reduce((acc, datum) => acc + datum, 0);
+        deployment.average = Math.round(total / deployment.gasData.length);
+        deployment.percent = gasToPercentOfLimit(deployment.average, blockGasLimit);
+
+        deployment.cost =
+          options.ethPrice && options.gasPrice
+            ? gasToCost(
+                deployment.average,
+                options.ethPrice,
+                options.gasPrice
+              )
+            : undefined;
+
+        const sortedData = deployment.gasData.sort((a, b) => a - b);
+        deployment.min = sortedData[0];
+        deployment.max = sortedData[sortedData.length - 1];
+        deploymentsTotal += deployment.average;
+      }
+    }
+
+    hre.__hhgrec.blockGasLimit = blockGasLimit;
+
+    hre.__hhgrec.methodsTotalGas = methodsTotal;
+    hre.__hhgrec.methodsTotalCost =
+      options.ethPrice && options.gasPrice
+        ? gasToCost(
+            methodsTotal,
+            options.ethPrice,
+            options.gasPrice
+          )
+        : undefined;
+
+    hre.__hhgrec.deploymentsTotalGas = deploymentsTotal;
+    hre.__hhgrec.deploymentsTotalCost =
+      options.ethPrice && options.gasPrice
+        ? gasToCost(
+            deploymentsTotal,
+            options.ethPrice,
+            options.gasPrice
+          )
+        : undefined;
   }
 
   /**
@@ -128,7 +202,7 @@ export class GasData {
   public async trackNameByAddress(name: string, address: string): Promise<void> {
     if (this.addressIsCached(address)) return;
 
-    const code = await this.provider!.getCode(address);
+    const code = await this.provider!.send("eth_getCode", [address, "latest"]);
     const hash = code ? sha1(code) : null;
 
     this.addressCache[address] = name;
@@ -148,7 +222,7 @@ export class GasData {
     if (this.addressIsCached(address)) {
       return this.addressCache[address!];
     }
-    const code = await this.provider!.getCode(address);
+    const code = await this.provider!.send("eth_getCode", [address, "latest"]);
     const hash = code ? sha1(code) : null;
 
     return (hash !== null) ? this.codeHashMap[hash] : null;

@@ -1,5 +1,6 @@
-import type { Config} from "../lib/config";
 import axios from "axios";
+import { DEFAULT_COINMARKET_BASE_URL } from "../constants";
+import { GasReporterOptions } from "../types";
 
 /**
  * Expresses gas usage as a nation-state currency price
@@ -22,7 +23,6 @@ export function gasToPercentOfLimit(gasUsed: number, blockLimit: number): number
   return Math.round((1000 * gasUsed) / blockLimit) / 10;
 }
 
-
 /**
  * Converts hex gas to decimal
  * @param  {bigint} val hex gas returned by RPC
@@ -33,50 +33,49 @@ export function hexGasToDecimal(val: string): number {
 }
 
 /**
- * Fetches gasPrices from ethgasstation (defaults to the lowest safe gas price)
- * and current market value of eth in currency specified by the config from
- * coinmarketcap (defaults to euros). Sets config.ethPrice, config.gasPrice unless these
- * are already set as constants in the reporter options
- * @param  {Object} config
+ * Fetches gasPrices from etherscan and current market value of eth in currency specified by
+ * the options from coinmarketcap (defaults to usd). Sets options.ethPrice, options.gasPrice
+ * unless these are already set as constants in the reporter options
+ * @param  {GasReporterOptions} options
  */
-export async function setGasAndPriceRates(config: Config): Promise<void> {
-  if ((config.ethPrice && config.gasPrice) || !config.coinmarketcap) return;
+export async function setGasAndPriceRates(options: GasReporterOptions): Promise<void> {
+  if ((options.ethPrice && options.gasPrice) || !options.coinmarketcap) return;
 
-  const token = config.token.toUpperCase();
-  const gasPriceApi = config.gasPriceApi;
+  const token = options.token!.toUpperCase();
+  const gasPriceApi = options.gasPriceApi;
 
   const axiosInstance = axios.create({
-    baseURL: `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/`
+    baseURL: DEFAULT_COINMARKET_BASE_URL
   });
 
   const requestArgs = `latest?symbol=${token}&CMC_PRO_API_KEY=${
-    config.coinmarketcap
+    options.coinmarketcap
   }&convert=`;
 
-  const currencyKey = config.currency.toUpperCase();
+  const currencyKey = options.currency!.toUpperCase();
   const currencyPath = `${requestArgs}${currencyKey}`;
 
   // Currency market data: coinmarketcap
-  if (!config.ethPrice) {
+  if (!options.ethPrice) {
     try {
       const response = await axiosInstance.get(currencyPath);
-      config.ethPrice = response.data.data[token].quote[
+      options.ethPrice = response.data.data[token].quote[
         currencyKey
       ].price.toFixed(2);
     } catch (error) {
-      config.ethPrice = null;
+      /* ignore */
     }
   }
 
   // Gas price data: etherscan (or `gasPriceAPI`)
-  if (!config.gasPrice) {
+  if (!options.gasPrice) {
     try {
-      const response = await axiosInstance.get(gasPriceApi);
-      config.gasPrice = Math.round(
+      const response = await axiosInstance.get(gasPriceApi!);
+      options.gasPrice = Math.round(
         parseInt(response.data.result, 16) / Math.pow(10, 9)
       );
     } catch (error) {
-      config.gasPrice = config.defaultGasPrice;
+      options.gasPrice = options.gasPrice;
     }
   }
 }

@@ -1,13 +1,11 @@
 import type { RpcReceiptOutput } from "hardhat/internal/hardhat-network/provider/output"
-import { JsonRpcTx } from "../types"
+import { EthereumProvider } from "hardhat/types";
+import { GasReporterOptions, JsonRpcTx } from "../types"
 import { hexGasToDecimal } from "../utils/gas";
 import { getMethodID } from "../utils/sources";
 import { GasData } from "./gasData";
 
-import { Config } from './config';
-
 import { ProxyResolver } from "./proxyResolver";
-import { EGRAsyncApiProvider } from "./providers";
 
 /**
  * Collects gas usage data, associating it with the relevant contracts, methods.
@@ -16,9 +14,9 @@ export class Collector {
   public data: GasData;
   public resolver: ProxyResolver;
 
-  constructor(config: Config, provider: EGRAsyncApiProvider) {
+  constructor(options: GasReporterOptions, provider: EthereumProvider) {
     this.data = new GasData();
-    this.resolver = new ProxyResolver(config, provider, this.data);
+    this.resolver = new ProxyResolver(options, provider, this.data);
   }
 
   /**

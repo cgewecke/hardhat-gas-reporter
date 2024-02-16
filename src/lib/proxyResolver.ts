@@ -1,22 +1,21 @@
 
-import type {Config} from "./config";
 import type {GasData} from "./gasData";
-import type { EGRAsyncApiProvider } from "./providers";
-import { JsonRpcTx } from "../types";
+import { EthereumProvider } from "hardhat/types";
+import { GasReporterOptions, JsonRpcTx } from "../types";
 
 export class ProxyResolver {
   public unresolvedCalls: number;
   public data: GasData;
-  public provider: EGRAsyncApiProvider;
+  public provider: EthereumProvider;
   public resolveByProxy: Function;
 
-  constructor(config: Config, provider: EGRAsyncApiProvider, data: GasData) {
+  constructor(options: GasReporterOptions, provider: EthereumProvider, data: GasData) {
     this.unresolvedCalls = 0;
     this.data = data;
     this.provider = provider;
 
-    if (typeof config.proxyResolver === "function") {
-      this.resolveByProxy = config.proxyResolver.bind(this);
+    if (typeof options.proxyResolver === "function") {
+      this.resolveByProxy = options.proxyResolver.bind(this);
     } else {
       this.resolveByProxy = this.resolveByMethodSignature;
     }
@@ -43,10 +42,10 @@ export class ProxyResolver {
    * @param  {String} address contract address
    * @return {String}         contract name
    */
-  async public resolveByDeployedBytecode(address: string | null): Promise<string | null> {
+  public async resolveByDeployedBytecode(address: string | null): Promise<string | null> {
     if (!address) return null;
 
-    const code = await this.provider.getCode(address);
+    const code = await this.provider.send("eth_getCode", [address, "latest"]);
     const match = this.data.getContractByDeployedBytecode(code);
 
     if (match !== null) {

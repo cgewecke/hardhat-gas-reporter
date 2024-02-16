@@ -1,40 +1,26 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { DEFAULT_CURRENCY, DEFAULT_GAS_PRICE,DEFAULT_GAS_PRICE_API_URL } from "../constants";
 
-import { HardhatGasReporterOptions } from "../types";
+import { GasReporterOptions } from "../types";
 
 /**
- * Sets reporter options to pass to eth-gas-reporter:
- * > url to connect to client with
- * > artifact format (hardhat)
- * > solc compiler info
- * @param  {HardhatRuntimeEnvironment} hre
- * @return {HardhatGasReporterOptions}
+ * Sets default reporter options
  */
-function getDefaultOptions(
-  hre: HardhatRuntimeEnvironment
-): HardhatGasReporterOptions {
-  const compiler = hre.config.solidity.compilers[0];
-
+export function getDefaultOptions(): GasReporterOptions {
   return {
+    blockLimit: undefined,     // gets set immediately prior to output formatting
+    coinmarketcap: undefined,
+    currency: DEFAULT_CURRENCY,
     enabled: true,
-    blockLimit: (hre.network.config as any).blockGasLimit as number,
-    solcConfig: {
-      version: compiler.version,
-      settings: {
-        optimizer: {
-          enabled: compiler.settings.optimizer.enabled,
-          runs: compiler.settings.optimizer.runs,
-        },
-      },
-    },
+    ethPrice: undefined,
+    excludeContracts: [],
+    gasPrice: DEFAULT_GAS_PRICE,
+    gasPriceApi: DEFAULT_GAS_PRICE_API_URL,
+    noColors: false,
+    onlyCalledMethods: true,
+    outputFile: undefined,
+    proxyResolver: null,
+    rst: false,
+    rstTitle: "",
+    showMethodSig: false,
   };
-}
-
-/**
- * Merges GasReporter defaults with user's GasReporter config
- * @param  {HardhatRuntimeEnvironment} hre
- * @return {any}
- */
-export function getOptions(hre: HardhatRuntimeEnvironment): any {
-  return { ...getDefaultOptions(hre), ...(hre.config as any).gasReporter };
 }

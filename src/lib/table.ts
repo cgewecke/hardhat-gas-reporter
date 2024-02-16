@@ -4,28 +4,22 @@ import _ from "lodash";
 import fs from "fs";
 import Table, { HorizontalTableRow } from "cli-table3";
 
-import { gasToCost, gasToPercentOfLimit } from "../utils/gas";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getSolcInfo } from "../utils/sources";
 
-import { MethodDataItem } from "../types";
-import {Config} from './config';
+import { GasReporterOptions, MethodDataItem } from "../types";
 import { GasData } from "./gasData";
 
-export class GasTable {
-  public config: Config;
-
-  constructor(config: Config) {
-    this.config = config;
-  }
+export class GasDetailsTextTable {
 
   /**
    * Formats and prints a gas statistics table. Optionally writes to a file.
-   * Based on Alan Lu's (github.com/@cag) stats for Gnosis
+   * Based on Alan Lu's (github.com/cag) stats for Gnosis
    * @param  {Object} data   GasData instance with `methods` and `deployments` data
    */
-  public async generate(data: GasData) {
+  public generate(hre: HardhatRuntimeEnvironment, data: GasData, options: GasReporterOptions) {
     let chalk: ChalkInstance;
-    if (this.config.noColors)
+    if (options.noColors || options.outputFile !== undefined)
       chalk = new (Chalk as any)({level: 0});
     else
       chalk = new (Chalk as any)({level: 1});
@@ -41,35 +35,21 @@ export class GasTable {
       const stats: any = {};
 
       if (method.gasData.length > 0) {
-        const total = method.gasData.reduce((acc: number, datum: number) => acc + datum, 0);
-        stats.average = Math.round(total / method.gasData.length);
-
-        stats.cost =
-          this.config.ethPrice && this.config.gasPrice
-            ? gasToCost(
-                stats.average,
-                this.config.ethPrice,
-                this.config.gasPrice
-              )
-            : chalk.grey("-");
+        stats.cost = (method.cost === undefined) ? chalk.grey("-") : method.cost;
       } else {
         stats.average = chalk.grey("-");
         stats.cost = chalk.grey("-");
       }
 
-      const sortedData = method.gasData.sort((a: number, b: number) => a - b);
-      stats.min = sortedData[0];
-      stats.max = sortedData[sortedData.length - 1];
-
-      const uniform = stats.min === stats.max;
+      const uniform = method.min === method.max;
       stats.min = uniform ? "-" : chalk.cyan(stats.min.toString());
       stats.max = uniform ? "-" : chalk.red(stats.max.toString());
 
       stats.numberOfCalls = chalk.grey(method.numberOfCalls.toString());
 
-      const fnName = this.config.showMethodSig ? method.fnSig : method.method;
+      const fnName = options.showMethodSig ? method.fnSig : method.method;
 
-      if (!this.config.onlyCalledMethods || method.numberOfCalls > 0) {
+      if (!options.onlyCalledMethods || method.numberOfCalls > 0) {
         const section: any = [];
         section.push(chalk.grey(method.contract));
         section.push(fnName);
@@ -94,39 +74,24 @@ export class GasTable {
     // Alphabetize contract names
     data.deployments.sort((a, b) => a.name.localeCompare(b.name));
 
-    data.deployments.forEach(contract => {
+    data.deployments.forEach(deployment => {
       const stats: any = {};
-      if (contract.gasData.length === 0) return;
+      if (deployment.gasData.length === 0) return;
 
-      const total = contract.gasData.reduce((acc, datum) => acc + datum, 0);
-      stats.average = Math.round(total / contract.gasData.length);
-      stats.percent = gasToPercentOfLimit(stats.average, this.config.blockLimit);
-
-      stats.cost =
-        this.config.ethPrice && this.config.gasPrice
-          ? gasToCost(
-              stats.average,
-              this.config.ethPrice,
-              this.config.gasPrice
-            )
-          : chalk.grey("-");
-
-      const sortedData = contract.gasData.sort((a, b) => a - b);
-      stats.min = sortedData[0];
-      stats.max = sortedData[sortedData.length - 1];
+      stats.cost = (deployment.cost === undefined) ? chalk.grey("-") : deployment.cost;
 
       const uniform = stats.min === stats.max;
-      stats.min = uniform ? "-" : chalk.cyan(stats.min.toString());
-      stats.max = uniform ? "-" : chalk.red(stats.max.toString());
+      stats.min = uniform ? "-" : chalk.cyan(deployment.min!.toString());
+      stats.max = uniform ? "-" : chalk.red(deployment.max!.toString());
 
       const section = [];
-      section.push({ hAlign: "left", colSpan: 2, content: contract.name });
+      section.push({ hAlign: "left", colSpan: 2, content: deployment.name });
       section.push({ hAlign: "right", content: stats.min });
       section.push({ hAlign: "right", content: stats.max });
-      section.push({ hAlign: "right", content: stats.average });
+      section.push({ hAlign: "right", content: deployment.average });
       section.push({
         hAlign: "right",
-        content: chalk.grey(`${stats.percent} %`)
+        content: chalk.grey(`${deployment.percent!} %`)
       });
       section.push({
         hAlign: "right",
@@ -141,7 +106,7 @@ export class GasTable {
     // ---------------------------------------------------------------------------------------------
 
     // Configure indentation for RTD
-    const leftPad = this.config.rst ? "  " : "";
+    const leftPad = options.rst ? "  " : "";
 
     // Format table
     const table = new Table({
@@ -164,9 +129,9 @@ export class GasTable {
       }
     });
 
-    // Format and load methods metrics
-    const solc = getSolcInfo(this.config.solcConfig!);
+    const solc = getSolcInfo(hre.config.solidity.compilers[0]);
 
+    // Format and load methods metrics
     const title = [
       {
         hAlign: "center",
@@ -186,16 +151,16 @@ export class GasTable {
       {
         hAlign: "center",
         colSpan: 2,
-        content: chalk.grey(`Block limit: ${this.config.blockLimit} gas`)
+        content: chalk.grey(`Block limit: ${hre.__hhgrec.blockGasLimit!} gas`)
       }
     ];
 
     let methodSubtitle;
-    if (this.config.ethPrice && this.config.gasPrice) {
-      const gwei = this.config.gasPrice;
-      const rate = parseFloat(this.config.ethPrice.toString()).toFixed(2);
-      const currency = `${this.config.currency.toLowerCase()}`;
-      const token = `${this.config.token.toLowerCase()}`;
+    if (options.ethPrice && options.gasPrice) {
+      const gwei = options.gasPrice;
+      const rate = parseFloat(options.ethPrice.toString()).toFixed(2);
+      const currency = `${options.currency!.toLowerCase()}`;
+      const token = `${options.token!.toLowerCase()}`;
 
       methodSubtitle = [
         { hAlign: "left", colSpan: 2, content: chalk.green.bold("Methods") },
@@ -223,7 +188,7 @@ export class GasTable {
       chalk.green("Max"),
       chalk.green("Avg"),
       chalk.bold("# calls"),
-      chalk.bold(`${this.config.currency.toLowerCase()} (avg)`)
+      chalk.bold(`${options.currency!.toLowerCase()} (avg)`)
     ];
 
     // ---------------------------------------------------------------------------------------------
@@ -259,9 +224,9 @@ export class GasTable {
     // RST / ReadTheDocs / Sphinx output
     // ---------------------------------------------------------------------------------------------
     let rstOutput = "";
-    if (this.config.rst) {
-      rstOutput += `${this.config.rstTitle}\n`;
-      rstOutput += `${"=".repeat(this.config.rstTitle.length)}\n\n`;
+    if (options.rst) {
+      rstOutput += `${options.rstTitle!}\n`;
+      rstOutput += `${"=".repeat(options.rstTitle!.length)}\n\n`;
       rstOutput += `.. code-block:: shell\n\n`;
     }
 
@@ -270,24 +235,24 @@ export class GasTable {
     // ---------------------------------------------------------------------------------------------
     // Print
     // ---------------------------------------------------------------------------------------------
-    if (this.config.outputFile) {
-      fs.writeFileSync(this.config.outputFile, tableOutput);
+    if (options.outputFile) {
+      fs.writeFileSync(options.outputFile, tableOutput);
     } else {
       console.log(tableOutput);
     }
 
-    this.writeJSON(data);
+    this.writeJSON(data, options);
   }
 
   /**
-   * Writes acccumulated data and the current config to gasReporterOutput.json so it
+   * Writes acccumulated data and the current options to gasReporterOutput.json so it
    * can be consumed by codechecks
    * @param  {Object} data  GasData instance
    */
-  public writeJSON(data: GasData) {
+  public writeJSON(data: GasData, options: GasReporterOptions) {
     const output = {
-      namespace: "ethGasReporter",
-      config: this.config,
+      namespace: "hardhatGasReporter",
+      options,
       data
     };
 
