@@ -1,7 +1,8 @@
-import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
-import { Artifacts } from "hardhat/types";
+import path from "path";
 
-import { RemoteContract } from "../types";
+import { EthereumProvider, HardhatRuntimeEnvironment } from "hardhat/types";
+
+import { RemoteContract, ContractInfo, GasReporterOptions } from "../types";
 
 /**
  * Filters out contracts to exclude from report
@@ -29,13 +30,13 @@ function shouldSkipContract(
  * @return {Promise<RemoteContract[]>}
  */
 export async function getResolvedRemoteContracts(
-  provider: EGRAsyncApiProviderT,
+  provider: EthereumProvider,
   remoteContracts: RemoteContract[] = []
 ): Promise<RemoteContract[]> {
   const { default: sha1 } = await import("sha1");
   for (const contract of remoteContracts) {
     try {
-      contract.bytecode = await provider.getCode(contract.address);
+      contract.bytecode = await provider.send("eth_getCode", [contract.address, "latest"]);
       contract.deployedBytecode = contract.bytecode;
       contract.bytecodeHash = sha1(contract.bytecode!);
     } catch (error: any) {
@@ -54,30 +55,36 @@ export async function getResolvedRemoteContracts(
  * @param  {HardhatRuntimeEnvironment} hre.artifacts
  * @param  {String[]}                  skippable        contract *not* to track
  * @param  {RemoteContract[]}          resolvedRemoteContracts
+ * @param  {String}                    resolvedQualifiedNames
  * @return {object[]}                                   objects w/ abi and bytecode
  */
-export function getContracts(
-  artifacts: Artifacts,
-  skippable: string[] = [],
-  resolvedRemoteContracts: RemoteContract[],
-  resolvedQualifiedNames: string[]
-): any[] {
+export async function getContracts(
+  hre: HardhatRuntimeEnvironment,
+  options: GasReporterOptions,
+): Promise<ContractInfo[]> {
   const contracts = [];
 
+  const resolvedRemoteContracts = await getResolvedRemoteContracts(
+    hre.network.provider,
+    options.remoteContracts
+  );
+
+  const resolvedQualifiedNames = await hre.artifacts.getAllFullyQualifiedNames();
+
   for (const qualifiedName of resolvedQualifiedNames) {
-    if (shouldSkipContract(qualifiedName, skippable)) {
+    if (shouldSkipContract(qualifiedName, options.excludeContracts!)) {
       continue;
     }
 
     let name: string;
-    let artifact = artifacts.readArtifactSync(qualifiedName);
+    let artifact = hre.artifacts.readArtifactSync(qualifiedName);
 
     // Prefer simple names
     try {
-      artifact = artifacts.readArtifactSync(artifact.contractName);
+      artifact = hre.artifacts.readArtifactSync(artifact.contractName);
       name = artifact.contractName;
     } catch (e) {
-      name = qualifiedName;
+      name = path.relative(hre.config.paths.sources, qualifiedName);;
     }
 
     contracts.push({
@@ -95,11 +102,12 @@ export function getContracts(
       name: remoteContract.name,
       artifact: {
         abi: remoteContract.abi,
+        address: remoteContract.address,
         bytecode: remoteContract.bytecode,
         bytecodeHash: remoteContract.bytecodeHash,
         deployedBytecode: remoteContract.deployedBytecode,
       },
-    });
+    } as ContractInfo);
   }
   return contracts;
 }

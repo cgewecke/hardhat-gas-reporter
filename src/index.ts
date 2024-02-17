@@ -1,2 +1,3 @@
 import "./tasks/mergeReports";
-import "./tasks/mochaTest";
+import "./tasks/gasReporter";
+import "./tasks/builtins";

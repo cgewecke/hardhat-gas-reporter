@@ -124,15 +124,6 @@ module.exports = {
         allowAny: true,
       },
     ],
-    "@typescript-eslint/strict-boolean-expressions": [
-      "error",
-      {
-        allowString: false,
-        allowNumber: false,
-        allowNullableObject: false,
-        allowAny: false,
-      },
-    ],
     "@typescript-eslint/triple-slash-reference": [
       "error",
       {
