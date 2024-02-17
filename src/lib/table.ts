@@ -247,7 +247,8 @@ export class GasDetailsTextTable {
       console.log(tableOutput);
     }
 
-    this.writeJSON(data, options);
+    // TODO: this is broken - unserializable BigInt
+    // this.writeJSON(data, options);
   }
 
   /**
