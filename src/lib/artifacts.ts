@@ -4,6 +4,8 @@ import { EthereumProvider, HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { RemoteContract, ContractInfo, GasReporterOptions } from "../types";
 
+import  { inspect } from "util";
+
 /**
  * Filters out contracts to exclude from report
  * @param  {string}   qualifiedName        HRE artifact identifier
@@ -70,7 +72,7 @@ export async function getContracts(
   );
 
   const resolvedQualifiedNames = await hre.artifacts.getAllFullyQualifiedNames();
-  console.log('artifacts:getContracts:resolvedQualifiedNames ' + resolvedQualifiedNames);
+  console.log('artifacts:getContracts:resolvedQualifiedNames ' + inspect(resolvedQualifiedNames));
 
   for (const qualifiedName of resolvedQualifiedNames) {
     if (shouldSkipContract(qualifiedName, options.excludeContracts!)) {
