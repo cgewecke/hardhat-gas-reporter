@@ -17,7 +17,7 @@ task(TASK_TEST).setAction(
   async (args: any, hre, runSuper) => {
     await hre.run(TASK_GAS_REPORTER_START, args);
     await runSuper();
-    await hre.run(TASK_GAS_REPORTER_STOP, args);
+    return hre.run(TASK_GAS_REPORTER_STOP, args);
   }
 );
 
@@ -28,6 +28,6 @@ task(TASK_RUN).setAction(
   async (args: any, hre, runSuper) => {
     await hre.run(TASK_GAS_REPORTER_START, args);
     await runSuper();
-    await hre.run(TASK_GAS_REPORTER_STOP, args);
+    return hre.run(TASK_GAS_REPORTER_STOP, args);
   }
 );
