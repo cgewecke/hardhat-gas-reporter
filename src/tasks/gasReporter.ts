@@ -47,7 +47,10 @@ subtask(TASK_GAS_REPORTER_STOP).setAction(
       await hre.__hhgrec.collector?.data.runAnalysis(hre, options);
 
       const table = new GasDetailsTextTable();
-      table.generate(hre, hre.__hhgrec.collector!.data, options);
+
+      setTimeout(() => {
+        table.generate(hre, hre.__hhgrec.collector!.data, options);
+      });
     }
   }
 );
