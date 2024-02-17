@@ -70,6 +70,7 @@ export async function getContracts(
   );
 
   const resolvedQualifiedNames = await hre.artifacts.getAllFullyQualifiedNames();
+  console.log('artifacts:getContracts:resolvedQualifiedNames ' + resolvedQualifiedNames);
 
   for (const qualifiedName of resolvedQualifiedNames) {
     if (shouldSkipContract(qualifiedName, options.excludeContracts!)) {

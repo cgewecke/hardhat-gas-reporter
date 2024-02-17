@@ -35,8 +35,8 @@ subtask(TASK_GAS_REPORTER_START).setAction(
       hre.__hhgrec.collector = new Collector(options, hre.network.provider);
       hre.__hhgrec.collector.data.initialize(options, hre.network.provider, contracts);
 
-      console.log('starting:collector ' + inspect(hre.__hhgrec.collector));
-      console.log('starting:methods ' + inspect(hre.__hhgrec.collector?.data.methods));
+      //console.log('starting:collector ' + inspect(hre.__hhgrec.collector));
+      //console.log('starting:methods ' + inspect(hre.__hhgrec.collector?.data.methods));
 
       await initGasReporterProvider(hre.network.provider, hre.__hhgrec);
     }
