@@ -16,8 +16,8 @@ import {
 task(TASK_TEST).setAction(
   async (args: any, hre, runSuper) => {
     await hre.run(TASK_GAS_REPORTER_START, args);
-    await runSuper();
-    return hre.run(TASK_GAS_REPORTER_STOP, args);
+    await hre.run(TASK_TEST, args);
+    await hre.run(TASK_GAS_REPORTER_STOP, args);
   }
 );
 
