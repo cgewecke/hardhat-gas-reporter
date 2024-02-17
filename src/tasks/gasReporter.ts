@@ -8,6 +8,8 @@ import { initGasReporterProvider} from "../extend";
 import { Collector } from "../lib/collector";
 import { GasDetailsTextTable} from "../lib/table"
 
+import { inspect } from "util";
+
 /**
  * Initializes gas tracking
  */
@@ -48,6 +50,9 @@ subtask(TASK_GAS_REPORTER_STOP).setAction(
 
       const table = new GasDetailsTextTable();
       table.generate(hre, hre.__hhgrec.collector!.data, options);
+
+      console.log('stopping:collector ' + inspect(hre.__hhgrec.collector));
+      console.log('stopping:methods ' + inspect(hre.__hhgrec.collector?.data.methods));
     }
   }
 );
