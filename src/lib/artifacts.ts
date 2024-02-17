@@ -1,3 +1,5 @@
+import path from "path";
+
 import { EthereumProvider, HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { RemoteContract, ContractInfo, GasReporterOptions } from "../types";
@@ -82,7 +84,7 @@ export async function getContracts(
       artifact = hre.artifacts.readArtifactSync(artifact.contractName);
       name = artifact.contractName;
     } catch (e) {
-      name = qualifiedName;
+      name = path.relative(hre.config.paths.sources, qualifiedName);;
     }
 
     contracts.push({

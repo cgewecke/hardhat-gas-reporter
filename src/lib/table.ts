@@ -1,14 +1,17 @@
-import Chalk, { ChalkInstance } from "chalk";
+import chalk from "chalk";
 
 import _ from "lodash";
 import fs from "fs";
 import Table, { HorizontalTableRow } from "cli-table3";
+import { utils } from "ethers";
 
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getSolcInfo } from "../utils/sources";
 
 import { GasReporterOptions, MethodDataItem } from "../types";
 import { GasData } from "./gasData";
+
+import { inspect } from "util";
 
 export class GasDetailsTextTable {
 
@@ -18,12 +21,11 @@ export class GasDetailsTextTable {
    * @param  {Object} data   GasData instance with `methods` and `deployments` data
    */
   public generate(hre: HardhatRuntimeEnvironment, data: GasData, options: GasReporterOptions) {
-    let chalk: ChalkInstance;
-    if (options.noColors || options.outputFile !== undefined)
-      chalk = new (Chalk as any)({level: 0});
-    else
-      chalk = new (Chalk as any)({level: 1});
-
+    if (options.noColors || options.outputFile !== undefined) {
+      chalk.level = 0;
+    } else {
+      chalk.level = 1;
+    }
     // ---------------------------------------------------------------------------------------------
     // Assemble section: methods
     // ---------------------------------------------------------------------------------------------
@@ -35,23 +37,26 @@ export class GasDetailsTextTable {
       const stats: any = {};
 
       if (method.gasData.length > 0) {
+        stats.average = utils.commify(method.average!);
         stats.cost = (method.cost === undefined) ? chalk.grey("-") : method.cost;
       } else {
         stats.average = chalk.grey("-");
         stats.cost = chalk.grey("-");
       }
 
-      const uniform = method.min === method.max;
-      stats.min = uniform ? "-" : chalk.cyan(stats.min.toString());
-      stats.max = uniform ? "-" : chalk.red(stats.max.toString());
+      if (method.min && method.max) {
+        const uniform = (method.min === method.max);
+        stats.min = uniform ? chalk.grey("-") : chalk.cyan(utils.commify(method.min!));
+        stats.max = uniform ? chalk.grey("-") : chalk.red(utils.commify(method.max!));
+      }
 
-      stats.numberOfCalls = chalk.grey(method.numberOfCalls.toString());
+      stats.numberOfCalls = chalk.cyan(method.numberOfCalls.toString());
 
       const fnName = options.showMethodSig ? method.fnSig : method.method;
 
       if (!options.onlyCalledMethods || method.numberOfCalls > 0) {
         const section: any = [];
-        section.push(chalk.grey(method.contract));
+        section.push(chalk.cyan.bold(method.contract));
         section.push(fnName);
         section.push({ hAlign: "right", content: stats.min });
         section.push({ hAlign: "right", content: stats.max });
@@ -70,7 +75,6 @@ export class GasDetailsTextTable {
     // Assemble section: deployments
     // ---------------------------------------------------------------------------------------------
     const deployRows: any = [];
-
     // Alphabetize contract names
     data.deployments.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -80,18 +84,20 @@ export class GasDetailsTextTable {
 
       stats.cost = (deployment.cost === undefined) ? chalk.grey("-") : deployment.cost;
 
-      const uniform = stats.min === stats.max;
-      stats.min = uniform ? "-" : chalk.cyan(deployment.min!.toString());
-      stats.max = uniform ? "-" : chalk.red(deployment.max!.toString());
+      if (deployment.min && deployment.max) {
+        const uniform = deployment.min === deployment.max;
+        stats.min = uniform ? chalk.grey("-") : chalk.cyan(utils.commify(deployment.min!));
+        stats.max = uniform ? chalk.grey("-") : chalk.red(utils.commify(deployment.max!));
+      }
 
       const section = [];
       section.push({ hAlign: "left", colSpan: 2, content: deployment.name });
       section.push({ hAlign: "right", content: stats.min });
       section.push({ hAlign: "right", content: stats.max });
-      section.push({ hAlign: "right", content: deployment.average });
+      section.push({ hAlign: "right", content: utils.commify(deployment.average!) });
       section.push({
         hAlign: "right",
-        content: chalk.grey(`${deployment.percent!} %`)
+        content: chalk.cyan(`${deployment.percent!} %`)
       });
       section.push({
         hAlign: "right",
@@ -136,22 +142,22 @@ export class GasDetailsTextTable {
       {
         hAlign: "center",
         colSpan: 2,
-        content: chalk.grey(`Solc version: ${solc.version}`)
+        content: chalk.cyan.bold(`Solc version: ${solc.version}`)
       },
       {
         hAlign: "center",
         colSpan: 2,
-        content: chalk.grey(`Optimizer enabled: ${solc.optimizer}`)
+        content: chalk.cyan.bold(`Optimizer enabled: ${solc.optimizer}`)
       },
       {
         hAlign: "center",
         colSpan: 1,
-        content: chalk.grey(`Runs: ${solc.runs}`)
+        content: chalk.cyan.bold(`Runs: ${solc.runs}`)
       },
       {
         hAlign: "center",
         colSpan: 2,
-        content: chalk.grey(`Block limit: ${hre.__hhgrec.blockGasLimit!} gas`)
+        content: chalk.cyan.bold(`Block limit: ${utils.commify(hre.__hhgrec.blockGasLimit!)} gas`)
       }
     ];
 
@@ -167,12 +173,12 @@ export class GasDetailsTextTable {
         {
           hAlign: "center",
           colSpan: 3,
-          content: chalk.grey(`${gwei} gwei/gas`)
+          content: chalk.cyan.bold(`${gwei} gwei/gas`)
         },
         {
           hAlign: "center",
           colSpan: 2,
-          content: chalk.red(`${rate} ${currency}/${token}`)
+          content: chalk.red.bold(`${rate} ${currency}/${token}`)
         }
       ];
     } else {

@@ -3,7 +3,7 @@ import { assert } from "chai";
 import fs from "fs";
 import path from "path";
 
-import { TASK_GAS_REPORTER_MERGE } from "../../src/task-names";
+import { TASK_GAS_REPORTER_MERGE } from "../../src/constants";
 
 import { useEnvironment } from "./../helpers";
 

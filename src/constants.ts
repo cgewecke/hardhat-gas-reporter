@@ -5,7 +5,7 @@ export const TASK_GAS_REPORTER_STOP = "gas-reporter:stop";
 
 export const DEFAULT_BLOCK_GAS_LIMIT = 10_000_000;
 export const DEFAULT_GAS_PRICE = 25;
-export const DEFAULT_CURRENCY = "eur";
+export const DEFAULT_CURRENCY = "USD";
 
 export const DEFAULT_GAS_PRICE_API_URL  = "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice"
 export const DEFAULT_COINMARKET_BASE_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/"

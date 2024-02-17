@@ -1,7 +1,7 @@
 import type { EthereumProvider, HardhatRuntimeEnvironment } from "hardhat/types";
 import type { FunctionFragment } from 'ethers/lib/utils';
 import type { Deployment, GasReporterOptions, MethodData, ContractInfo, JsonRpcBlock } from '../types';
-import ethers from "ethers";
+import { utils as ethersUtils } from "ethers";
 import { keccak256 } from "ethereum-cryptography/keccak";
 import { utf8ToBytes, bytesToHex } from "ethereum-cryptography/utils";
 import sha1 from "sha1";
@@ -11,6 +11,8 @@ import { matchBinaries } from "../utils/sources";
 import { gasToCost, gasToPercentOfLimit } from "../utils/gas";
 
 type MethodID = { fnSig: string } & FunctionFragment;
+
+import { inspect } from "util"
 
 /**
  * Data store written to by Collector and consumed by output formatters.
@@ -69,7 +71,7 @@ export class GasData {
 
       let methods: { [name: string]: FunctionFragment; };
       try {
-        methods = new ethers.utils.Interface(item.artifact.abi).functions;
+        methods = new ethersUtils.Interface(item.artifact.abi).functions;
       } catch (err: any) {
         warnEthers(contract.name, err);
         return;
@@ -78,7 +80,7 @@ export class GasData {
       // Generate sighashes and remap ethers to something similar
       // to abiDecoder.getMethodIDs
       Object.keys(methods).forEach(key => {
-        const sighash = bytesToHex(keccak256(Buffer.from(utf8ToBytes(key))).slice(0, 8));
+        const sighash = bytesToHex(keccak256(Buffer.from(utf8ToBytes(key)))).slice(0, 8);
         // @ts-ignore
         methodIDs[sighash] = {fnSig: key, ...methods[key]};
       });
@@ -139,7 +141,7 @@ export class GasData {
 
     /* Deployments */
     for (const deployment of this.deployments) {
-      if (deployment.gasData.length === 0) {
+      if (deployment.gasData.length !== 0) {
         const total = deployment.gasData.reduce((acc, datum) => acc + datum, 0);
         deployment.average = Math.round(total / deployment.gasData.length);
         deployment.percent = gasToPercentOfLimit(deployment.average, blockGasLimit);

@@ -30,7 +30,7 @@ subtask(TASK_GAS_REPORTER_START).setAction(
       const contracts = await getContracts(hre, options);
       hre.__hhgrec.collector = new Collector(options, hre.network.provider);
       hre.__hhgrec.collector.data.initialize(options, hre.network.provider, contracts);
-      initGasReporterProvider(hre.__hhgrec);
+      initGasReporterProvider(hre.network.provider, hre.__hhgrec);
     }
   }
 );

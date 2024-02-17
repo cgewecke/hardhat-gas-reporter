@@ -159,13 +159,13 @@ export interface ContractInfo {
   artifact: ArtifactInfo
 }
 
-// Partial borrowed from ethereumjs/tx to avoid adding package
+// Partial: borrowed from ethereumjs/tx to avoid adding package
 export interface JsonRpcTx {
   input: string     // the data send along with the transaction.
   to: string | null // address of the receiver. null when it's a contract creation tx.
 }
 
-// Partial borrowed from ethereumjs/block to avoid adding package
+// Partial: borrowed from ethereumjs/block to avoid adding package
 export interface JsonRpcBlock {
   gasLimit: string     // the data send along with the transaction.
 }

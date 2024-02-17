@@ -22,7 +22,6 @@ const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
-    showMethodSig: true,
     coinmarketcap: process.env.CMC_API_KEY,
   },
 };

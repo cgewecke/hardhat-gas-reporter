@@ -22,5 +22,6 @@ export function getDefaultOptions(): GasReporterOptions {
     rst: false,
     rstTitle: "",
     showMethodSig: false,
+    token: "ETH"
   };
 }

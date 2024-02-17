@@ -1,6 +1,9 @@
+import { cloneDeep } from "lodash"
 import { extendConfig, extendEnvironment, extendProvider } from "hardhat/config";
-import { HardhatConfig, HardhatUserConfig } from "hardhat/types";
+import { EIP1193Provider, HardhatConfig, HardhatUserConfig } from "hardhat/types";
+
 import "./type-extensions";
+
 import { getDefaultOptions } from './lib/options';
 import { GasReporterProvider } from "./lib/providers";
 import { GasReporterExecutionContext } from "./types";
@@ -8,7 +11,8 @@ import { GasReporterExecutionContext } from "./types";
 let _globalGasReporterProviderReference: GasReporterProvider;
 
 /* Initialize the provider with the execution context */
-export function initGasReporterProvider(context: GasReporterExecutionContext)  {
+export function initGasReporterProvider(provider: EIP1193Provider, context: GasReporterExecutionContext)  {
+  (provider as any).init()
   _globalGasReporterProviderReference._setGasReporterExecutionContext(context);
 }
 
@@ -17,8 +21,9 @@ extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
     let options = getDefaultOptions();
 
+    // Deep clone userConfig otherwise HH will throw unauthorized modification error
     if (userConfig.gasReporter !== undefined) {
-      options = Object.assign(options, userConfig.gasReporter);
+      options = Object.assign(options, cloneDeep(userConfig.gasReporter));
     }
     (config as any).gasReporter = options;
   }

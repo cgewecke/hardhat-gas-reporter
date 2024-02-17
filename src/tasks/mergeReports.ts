@@ -41,6 +41,7 @@ task(TASK_GAS_REPORTER_MERGE)
     const output = path.resolve(process.cwd(), taskArguments.output);
 
     // Parse input files and calculate glob patterns
+    // TODO: glob is deprecated at HH
     const { globSync } = await import("hardhat/internal/util/glob");
     const arrayUniq = require("array-uniq");
     const inputFiles = arrayUniq(taskArguments.input.map(globSync).flat()).map(
