@@ -11,8 +11,8 @@ import { GasReporterExecutionContext } from "./types";
 let _globalGasReporterProviderReference: GasReporterProvider;
 
 /* Initialize the provider with the execution context */
-export function initGasReporterProvider(provider: EIP1193Provider, context: GasReporterExecutionContext)  {
-  (provider as any).init()
+export async function initGasReporterProvider(provider: EIP1193Provider, context: GasReporterExecutionContext)  {
+  await (provider as any).init()
   _globalGasReporterProviderReference._setGasReporterExecutionContext(context);
 }
 

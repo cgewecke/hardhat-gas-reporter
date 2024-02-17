@@ -30,7 +30,7 @@ subtask(TASK_GAS_REPORTER_START).setAction(
       const contracts = await getContracts(hre, options);
       hre.__hhgrec.collector = new Collector(options, hre.network.provider);
       hre.__hhgrec.collector.data.initialize(options, hre.network.provider, contracts);
-      initGasReporterProvider(hre.network.provider, hre.__hhgrec);
+      await initGasReporterProvider(hre.network.provider, hre.__hhgrec);
     }
   }
 );
@@ -47,10 +47,7 @@ subtask(TASK_GAS_REPORTER_STOP).setAction(
       await hre.__hhgrec.collector?.data.runAnalysis(hre, options);
 
       const table = new GasDetailsTextTable();
-
-      setTimeout(() => {
-        table.generate(hre, hre.__hhgrec.collector!.data, options);
-      });
+      table.generate(hre, hre.__hhgrec.collector!.data, options);
     }
   }
 );
