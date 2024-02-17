@@ -11,7 +11,6 @@ import { getSolcInfo } from "../utils/sources";
 import { GasReporterOptions, MethodDataItem } from "../types";
 import { GasData } from "./gasData";
 
-import { inspect } from "util";
 
 export class GasDetailsTextTable {
 

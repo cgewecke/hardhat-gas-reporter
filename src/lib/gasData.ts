@@ -12,7 +12,6 @@ import { gasToCost, gasToPercentOfLimit } from "../utils/gas";
 
 type MethodID = { fnSig: string } & FunctionFragment;
 
-import { inspect } from "util"
 
 /**
  * Data store written to by Collector and consumed by output formatters.

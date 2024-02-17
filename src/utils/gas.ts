@@ -71,7 +71,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
   if (!options.gasPrice) {
     try {
       const response = await axiosInstance.get(gasPriceApi!);
-      console.log('got gas price: ' + response.data.result);
+      console.log(`got gas price: ${  response.data.result}`);
       options.gasPrice = Math.round(
         parseInt(response.data.result, 16) / Math.pow(10, 9)
       );
