@@ -1,4 +1,6 @@
 import { subtask } from "hardhat/config";
+import { TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
+
 import { TASK_GAS_REPORTER_START, TASK_GAS_REPORTER_STOP } from "../constants";
 
 import { getContracts } from "../lib/artifacts";
@@ -7,8 +9,6 @@ import { initGasReporterProvider} from "../extend";
 
 import { Collector } from "../lib/collector";
 import { GasDetailsTextTable} from "../lib/table"
-
-import { inspect } from "util";
 
 /**
  * Initializes gas tracking
@@ -28,15 +28,17 @@ subtask(TASK_GAS_REPORTER_START).setAction(
         return result;
       }
 
+      // We need to compile so we have access to the artifact data.
+      // This will rerun in TASK_TEST & TASK_RUN but should be a noop there.
+      if (!args.noCompile) {
+        await hre.run(TASK_COMPILE, { quiet: true });
+      }
+
       await setGasAndPriceRates(options);
       const contracts = await getContracts(hre, options);
-      console.log("starting:contracts: " + inspect(contracts));
 
       hre.__hhgrec.collector = new Collector(options, hre.network.provider);
       hre.__hhgrec.collector.data.initialize(options, hre.network.provider, contracts);
-
-      //console.log('starting:collector ' + inspect(hre.__hhgrec.collector));
-      //console.log('starting:methods ' + inspect(hre.__hhgrec.collector?.data.methods));
 
       await initGasReporterProvider(hre.network.provider, hre.__hhgrec);
     }
@@ -51,14 +53,9 @@ subtask(TASK_GAS_REPORTER_STOP).setAction(
     const options = hre.config.gasReporter;
 
     if (options.enabled === true && args.parallel !== true) {
-
       await hre.__hhgrec.collector?.data.runAnalysis(hre, options);
-
       const table = new GasDetailsTextTable();
       table.generate(hre, hre.__hhgrec.collector!.data, options);
-
-      console.log('stopping:collector ' + inspect(hre.__hhgrec.collector));
-      console.log('stopping:methods ' + inspect(hre.__hhgrec.collector?.data.methods));
     }
   }
 );

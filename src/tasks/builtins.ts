@@ -15,6 +15,7 @@ import {
  */
 task(TASK_TEST).setAction(
   async (args: any, hre, runSuper) => {
+    hre.__hhgrec.task = TASK_TEST;
     await hre.run(TASK_GAS_REPORTER_START, args);
     await runSuper(args);
     await hre.run(TASK_GAS_REPORTER_STOP, args);
@@ -26,6 +27,7 @@ task(TASK_TEST).setAction(
  */
 task(TASK_RUN).setAction(
   async (args: any, hre, runSuper) => {
+    hre.__hhgrec.task = TASK_RUN;
     await hre.run(TASK_GAS_REPORTER_START, args);
     await runSuper(args);
     await hre.run(TASK_GAS_REPORTER_STOP, args);
