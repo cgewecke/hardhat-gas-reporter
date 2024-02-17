@@ -30,6 +30,8 @@ subtask(TASK_GAS_REPORTER_START).setAction(
 
       await setGasAndPriceRates(options);
       const contracts = await getContracts(hre, options);
+      console.log("starting:contracts: " + inspect(contracts));
+
       hre.__hhgrec.collector = new Collector(options, hre.network.provider);
       hre.__hhgrec.collector.data.initialize(options, hre.network.provider, contracts);
 
