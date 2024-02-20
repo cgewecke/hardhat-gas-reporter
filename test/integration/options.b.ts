@@ -1,4 +1,6 @@
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { assert } from "chai";
 import path from "path";
 import fs from "fs";
 import { GasReporterOptions, GasReporterOutput } from "../types";
@@ -14,9 +16,10 @@ describe("Options B", function () {
     "../projects/options"
   );
 
+  // NB: test sets the outputJSONFile option
   const outputPath = path.resolve(
     __dirname,
-    "../projects/options/gasReporterOutput.json"
+    "../projects/options/gas.json"
   );
 
   const network = undefined;
@@ -30,7 +33,13 @@ describe("Options B", function () {
     options = output.options;
   })
 
-  it("wrote to file", function () {
+  it("set the options correctly", function(){
+    assert.equal(options.token, "ETC");
+    assert.equal(options.tokenPrice, "200.00");
+    assert.equal(options.gasPrice, 40);
+  });
+
+  it("wrote table to file", function () {
     const outputFileOption = options.outputFile;
     const outputFilePath = path.resolve(
       __dirname,

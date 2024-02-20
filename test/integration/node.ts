@@ -15,7 +15,7 @@ describe("Independent Node: Hardhat", function () {
   );
   const outputPath = path.resolve(
     __dirname,
-    "../projects/options/gasReporterOutput.json"
+    "../projects/options/gas.json"
   );
 
   const network = undefined;

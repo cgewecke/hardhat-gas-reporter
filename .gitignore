@@ -67,6 +67,7 @@ typings/
 test/projects/options/artifacts
 test/projects/options/cache
 test/projects/options/gasReporterOutput.json
+test/projects/options/gas.json
 test/projects/options/testGasReport.txt
 
 test/projects/waffle/artifacts

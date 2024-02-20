@@ -3,7 +3,7 @@ import { assert } from "chai";
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 import path from "path";
 
-import { DEFAULT_GAS_PRICE_API_URL } from "../../src/constants";
+import { DEFAULT_GAS_PRICE_API_URL, DEFAULT_JSON_OUTPUT_FILE } from "../../src/constants";
 import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from "../types";
 
 import { useEnvironment, findMethod, findDeployment } from "../helpers";
@@ -48,6 +48,8 @@ describe("Default Options", function () {
     assert.equal(options.rstTitle, "");
     assert.equal(options.showMethodSig, false);
     assert.equal(options.token, "ETH");
+    assert.equal(options.outputJSON, false);
+    assert.equal(options.outputJSONFile, DEFAULT_JSON_OUTPUT_FILE);
 
     // Make sure we didn't hit endpoint
     assert.equal(options.gasPrice, undefined);

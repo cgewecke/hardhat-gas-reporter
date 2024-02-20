@@ -8,27 +8,61 @@ declare module "hardhat/types/config" {
 }
 
 export interface GasReporterOptions {
-  currency?: string;
-  token?: string;
-  ethPrice?: string;
-  gasPrice?: number;
-  gasPriceApi?: string;
+  /**@property API key to access token/currency market price data with */
   coinmarketcap?: string;
-  outputFile?: string;
-  noColors?: boolean;
-  showUncalledMethods?: boolean;
-  rst?: boolean;
-  rstTitle?: string;
-  showTimeSpent?: boolean;
-  excludeContracts?: string[];
-  proxyResolver?: any;
-  showMethodSig?: boolean;
-  maxMethodDiff?: number;
-  maxDeploymentDiff?: number;
+
+  /**@property Coinmarketcap currency code to denominate network token costs in (eg: "USD") */
+  currency?: string;
+
+  /**@property Enable plugin */
   enabled?: boolean;
+
+  /**@property List of contract names to exclude from report (e.g "Ownable") */
+  excludeContracts?: string[];
+
+  /**@property Gwei price per gas unit (eg: 20) */
+  gasPrice?: number;
+
+  /**@property Etherscan-like url to fetch live network gas price from */
+  gasPriceApi?: string;
+
+  /**@property Omit terminal color in output */
+  noColors?: boolean;
+
+  /**@property Relative path to a file to output terminal table to (instead of stdout) */
+  outputFile?: string;
+
+  /**@property Write JSON object with all options, methods, deployment data to file */
+  outputJSON?: boolean
+
+  /**@property: Relative path to a file to output JSON data to */
+  outputJSONFile?: string,
+
+  /**@property User-defined async function to help reporter identify targets of proxied calls */
+  proxyResolver?: any;
+
+  /**@property List of forked-network deployed contracts to track execution costs for */
   remoteContracts?: RemoteContract[];
 
-  // Hardhat internals
+  /**@property Format table output for `rst` documentation (eg sphinx, ReadTheDocs)   */
+  rst?: boolean;
+
+  /**@property Optional title for `rst` documentation */
+  rstTitle?: string;
+
+  /**@property  Display the complete function signature of methods */
+  showMethodSig?: boolean;
+
+  /**@property Lists all methods and deployments, even if no transactions were recorded for them */
+  showUncalledMethods?: boolean;
+
+  /**@property Network token gas fees are paid in (eg:"ETH") */
+  token?: string;
+
+  /**@property Network token price per currency unit, to two decimal places (eg: "2145.00") */
+  tokenPrice?: string;
+
+  // INTERNAL: AUTOSET BY PLUGIN (ignore)
   solcInfo?: any;
   blockLimit?: number;
 }

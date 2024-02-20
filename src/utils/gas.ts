@@ -5,12 +5,12 @@ import { GasReporterOptions } from "../types";
 /**
  * Expresses gas usage as a nation-state currency price
  * @param  {Number} gas      gas used
- * @param  {Number} ethPrice e.g chf/eth
+ * @param  {Number} tokenPrice e.g chf/eth
  * @param  {Number} gasPrice in wei e.g 5000000000 (5 gwei)
  * @return {Number}          cost of gas used (0.00)
  */
-export function gasToCost(gas: number, ethPrice: string, gasPrice: number): string {
-  return ((gasPrice / 1e9) * gas * parseFloat(ethPrice)).toFixed(2);
+export function gasToCost(gas: number, tokenPrice: string, gasPrice: number): string {
+  return ((gasPrice / 1e9) * gas * parseFloat(tokenPrice)).toFixed(2);
 }
 
 /**
@@ -34,12 +34,12 @@ export function hexGasToDecimal(val: string): number {
 
 /**
  * Fetches gasPrices from etherscan and current market value of eth in currency specified by
- * the options from coinmarketcap (defaults to usd). Sets options.ethPrice, options.gasPrice
+ * the options from coinmarketcap (defaults to usd). Sets options.tokenPrice, options.gasPrice
  * unless these are already set as constants in the reporter options
  * @param  {GasReporterOptions} options
  */
 export async function setGasAndPriceRates(options: GasReporterOptions): Promise<void> {
-  if ((options.ethPrice && options.gasPrice) || !options.coinmarketcap) return;
+  if ((options.tokenPrice && options.gasPrice) || !options.coinmarketcap) return;
 
   const token = options.token!.toUpperCase();
   const gasPriceApi = options.gasPriceApi;
@@ -56,10 +56,10 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
   const currencyPath = `${requestArgs}${currencyKey}`;
 
   // Currency market data: coinmarketcap
-  if (!options.ethPrice) {
+  if (!options.tokenPrice) {
     try {
       const response = await axiosInstance.get(currencyPath);
-      options.ethPrice = response.data.data[token].quote[
+      options.tokenPrice = response.data.data[token].quote[
         currencyKey
       ].price.toFixed(2);
     } catch (error) {
