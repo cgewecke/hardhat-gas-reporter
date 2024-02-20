@@ -36,8 +36,8 @@ describe("Options A", function () {
   })
 
   it("fetched a currency price", function () {
-    assert.exists(options.ethPrice);
-    assert.isNumber(parseFloat(options.ethPrice!));
+    assert.exists(options.tokenPrice);
+    assert.isNumber(parseFloat(options.tokenPrice!));
   });
 
   it("fetched a gas price", function() {

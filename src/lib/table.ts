@@ -159,9 +159,9 @@ export class GasDetailsTextTable {
     ];
 
     let methodSubtitle;
-    if (options.ethPrice && options.gasPrice) {
+    if (options.tokenPrice && options.gasPrice) {
       const gwei = options.gasPrice;
-      const rate = parseFloat(options.ethPrice.toString()).toFixed(2);
+      const rate = parseFloat(options.tokenPrice.toString()).toFixed(2);
       const currency = `${options.currency!.toLowerCase()}`;
       const token = `${options.token!.toLowerCase()}`;
 
@@ -244,7 +244,9 @@ export class GasDetailsTextTable {
       console.log(tableOutput);
     }
 
-    this.writeJSON(data, options);
+    if (options.outputJSON || process.env.CI) {
+      this.writeJSON(data, options);
+    }
   }
 
   /**
@@ -261,8 +263,6 @@ export class GasDetailsTextTable {
       data
     };
 
-    if (process.env.CI) {
-      fs.writeFileSync("./gasReporterOutput.json", JSON.stringify(output));
-    }
+    fs.writeFileSync(options.outputJSONFile!, JSON.stringify(output));
   }
 }

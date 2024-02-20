@@ -1,4 +1,4 @@
-import { DEFAULT_CURRENCY, DEFAULT_GAS_PRICE_API_URL } from "../constants";
+import { DEFAULT_CURRENCY, DEFAULT_GAS_PRICE_API_URL, DEFAULT_JSON_OUTPUT_FILE } from "../constants";
 
 import { GasReporterOptions } from "../types";
 
@@ -13,6 +13,8 @@ export function getDefaultOptions(): GasReporterOptions {
     gasPriceApi: DEFAULT_GAS_PRICE_API_URL,
     noColors: false,
     showUncalledMethods: false,
+    outputJSON: false,
+    outputJSONFile: DEFAULT_JSON_OUTPUT_FILE,
     proxyResolver: null,
     rst: false,
     rstTitle: "",

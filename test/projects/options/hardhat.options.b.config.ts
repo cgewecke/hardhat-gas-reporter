@@ -22,8 +22,12 @@ const config: HardhatUserConfig = {
   },
   gasReporter: {
     enabled: true,
+    token: "ETC",
+    tokenPrice: "200.00",
+    gasPrice: 40,
     showUncalledMethods: true,
     outputFile: "./testGasReport.txt",
+    outputJSONFile: "./gas.json",
   }
 };
 

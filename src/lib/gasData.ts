@@ -123,10 +123,10 @@ export class GasData {
         const total = method.gasData.reduce((acc: number, datum: number) => acc + datum, 0);
         method.average = Math.round(total / method.gasData.length);
         method.cost =
-          options.ethPrice && options.gasPrice
+          options.tokenPrice && options.gasPrice
             ? gasToCost(
                 method.average,
-                options.ethPrice,
+                options.tokenPrice,
                 options.gasPrice
               )
             : undefined;
@@ -146,10 +146,10 @@ export class GasData {
         deployment.percent = gasToPercentOfLimit(deployment.average, blockGasLimit);
 
         deployment.cost =
-          options.ethPrice && options.gasPrice
+          options.tokenPrice && options.gasPrice
             ? gasToCost(
                 deployment.average,
-                options.ethPrice,
+                options.tokenPrice,
                 options.gasPrice
               )
             : undefined;
@@ -165,20 +165,20 @@ export class GasData {
 
     hre.__hhgrec.methodsTotalGas = methodsTotal;
     hre.__hhgrec.methodsTotalCost =
-      options.ethPrice && options.gasPrice
+      options.tokenPrice && options.gasPrice
         ? gasToCost(
             methodsTotal,
-            options.ethPrice,
+            options.tokenPrice,
             options.gasPrice
           )
         : undefined;
 
     hre.__hhgrec.deploymentsTotalGas = deploymentsTotal;
     hre.__hhgrec.deploymentsTotalCost =
-      options.ethPrice && options.gasPrice
+      options.tokenPrice && options.gasPrice
         ? gasToCost(
             deploymentsTotal,
-            options.ethPrice,
+            options.tokenPrice,
             options.gasPrice
           )
         : undefined;
