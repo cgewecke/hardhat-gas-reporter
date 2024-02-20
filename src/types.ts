@@ -1,26 +1,26 @@
 import { Collector } from "./lib/collector";
+import { GasData } from "./lib/gasData";
 
 declare module "hardhat/types/config" {
   interface HardhatUserConfig {
-    gasReporter?: Partial<GasReporterOptions>;
+    gasReporter?: GasReporterOptions;
   }
 }
 
 export interface GasReporterOptions {
   currency?: string;
   token?: string;
-  ethPrice?: number;
+  ethPrice?: string;
   gasPrice?: number;
   gasPriceApi?: string;
   coinmarketcap?: string;
   outputFile?: string;
   noColors?: boolean;
-  onlyCalledMethods?: boolean;
+  showUncalledMethods?: boolean;
   rst?: boolean;
   rstTitle?: string;
   showTimeSpent?: boolean;
   excludeContracts?: string[];
-  src?: string;
   proxyResolver?: any;
   showMethodSig?: boolean;
   maxMethodDiff?: number;
@@ -65,52 +65,8 @@ export interface Deployment {
  */
 export interface GasReporterOutput {
   namespace: string;
-
-  config: {
-    currency: string;
-    gasPrice: number;
-    outputFile?: string;
-    rst: boolean;
-    rstTitle?: string;
-    showTimeSpent: boolean;
-    artifactType: string;
-    srcPath: string;
-    blockLimit: number;
-    ethPrice: string;
-    excludeContracts: string[];
-    onlyCalledMethods: boolean;
-    url: string;
-
-    metadata: {
-      compiler: {
-        version: string;
-      };
-
-      settings: {
-        evmVersion: string;
-        optimizer: {
-          enabled: boolean;
-          runs: number;
-        };
-      };
-    };
-  };
-
-  info?: {
-    blockLimit: number;
-
-    methods: {
-      [methodName: string]: {
-        key: string;
-        contract: string;
-        method: string;
-        gasData: number[];
-        numberOfCalls: number;
-      };
-    };
-
-    deployments: Deployment[];
-  };
+  options: GasReporterOptions,
+  data?: GasData
 }
 
 export interface MethodDataItem {

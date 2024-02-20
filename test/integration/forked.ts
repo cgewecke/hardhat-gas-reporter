@@ -1,16 +1,43 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { assert } from "chai";
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 import path from "path";
 
-import { useEnvironment } from "./../helpers";
+import { GasReporterOutput, MethodData } from "../types";
+import { useEnvironment, findMethod  } from "../helpers";
 
-describe("Forked Network", function () {
+describe("Forked Networks: remoteContract, hardhat_reset", function () {
+  let output: GasReporterOutput;
+  let methods: MethodData;
+
   const projectPath = path.resolve(
     __dirname,
-    "../projects/hardhat-forked-project"
+    "../projects/forked"
   );
-  useEnvironment(projectPath);
 
-  it("default", async function () {
+  const outputPath = path.resolve(
+    __dirname,
+    "../projects/forked/gasReporterOutput.json"
+  );
+
+  const network = undefined;
+  const configPath = "./hardhat.config.ts";
+
+  useEnvironment(projectPath, network, configPath);
+
+  before(async function(){
     await this.env.run(TASK_TEST, { testFiles: [] });
+    output = require(outputPath);
+    methods = output.data!.methods;
+  })
+
+  it("calls remoteContract WETH.deposit", function(){
+    const method = findMethod(methods, "WETH", "deposit");
+    assert(method?.numberOfCalls! > 0);
+  })
+
+  it("preserves data about calls between hardhat_reset invocations", function(){
+    const method = findMethod(methods, "ContractA", "sendFn");
+    assert(method?.numberOfCalls! === 2);
   });
 });

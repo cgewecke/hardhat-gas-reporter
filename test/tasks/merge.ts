@@ -13,7 +13,7 @@ const loadJsonFile = (filepath: any) =>
 describe("Merge gasRerpoterOutput.json files task", function () {
   const projectPath = path.resolve(
     __dirname,
-    "../projects/hardhat-merge-project"
+    "../projects/merge"
   );
 
   useEnvironment(projectPath);

@@ -8,12 +8,10 @@ import { utils } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getSolcInfo } from "../utils/sources";
 
-import { GasReporterOptions, MethodDataItem } from "../types";
+import { GasReporterOptions, GasReporterOutput, MethodDataItem } from "../types";
 import { GasData } from "./gasData";
 
-
 export class GasDetailsTextTable {
-
   /**
    * Formats and prints a gas statistics table. Optionally writes to a file.
    * Based on Alan Lu's (github.com/cag) stats for Gnosis
@@ -53,7 +51,7 @@ export class GasDetailsTextTable {
 
       const fnName = options.showMethodSig ? method.fnSig : method.method;
 
-      if (!options.onlyCalledMethods || method.numberOfCalls > 0) {
+      if (options.showUncalledMethods || method.numberOfCalls > 0) {
         const section: any = [];
         section.push(chalk.cyan.bold(method.contract));
         section.push(fnName);
@@ -246,8 +244,7 @@ export class GasDetailsTextTable {
       console.log(tableOutput);
     }
 
-    // TODO: this is broken - unserializable BigInt
-    // this.writeJSON(data, options);
+    this.writeJSON(data, options);
   }
 
   /**
@@ -256,8 +253,10 @@ export class GasDetailsTextTable {
    * @param  {Object} data  GasData instance
    */
   public writeJSON(data: GasData, options: GasReporterOptions) {
-    const output = {
-      namespace: "hardhatGasReporter",
+    delete data.provider;
+
+    const output: GasReporterOutput = {
+      namespace: "HardhatGasReporter",
       options,
       data
     };
