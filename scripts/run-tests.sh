@@ -42,7 +42,7 @@ npx mocha test/integration/forked.ts --timeout 100000 --exit
 ##########################
 # Hardhat Node (Localhost)
 ##########################
-#start_hardhat_node
+start_hardhat_node
 npx mocha test/integration/node.ts --timeout 100000 --exit
 
 cleanup

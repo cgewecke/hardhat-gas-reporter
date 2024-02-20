@@ -64,10 +64,6 @@ typings/
 .next
 
 # hardhat-project
-test/projects/truffle/artifacts
-test/projects/truffle/cache
-test/projects/truffle/gasReporterOutput.json
-
 test/projects/options/artifacts
 test/projects/options/cache
 test/projects/options/gasReporterOutput.json
