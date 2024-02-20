@@ -12,9 +12,8 @@
     "skipLibCheck": true
   },
   // "files": [], // Any hardhat plugin's main .d.ts has to be added here
-  "exclude": ["dist", "node_modules"],
+  "exclude": ["dist", "node_modules", "./test"],
   "include": [
-    "./test",
     "./src"
   ]
 }
