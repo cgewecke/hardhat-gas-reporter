@@ -39,6 +39,7 @@ subtask(TASK_GAS_REPORTER_START).setAction(
 
       hre.__hhgrec.collector = new Collector(options, hre.network.provider);
       hre.__hhgrec.collector.data.initialize(options, hre.network.provider, contracts);
+      hre.__hhgrec.usingViem = (hre as any).viem !== undefined;
 
       await initGasReporterProvider(hre.network.provider, hre.__hhgrec);
     }

@@ -36,6 +36,7 @@ export interface GasReporterOptions {
 export interface GasReporterExecutionContext {
   collector?: Collector,
   task?: string,
+  usingViem?: boolean,
   blockGasLimit?: number;
   methodsTotalGas?: number,
   methodsTotalCost?: string,

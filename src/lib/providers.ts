@@ -75,6 +75,25 @@ export class GasReporterProvider extends ProviderWrapper {
         }
       }
       return txHash;
+
+    } else if (this._executionContext.usingViem === true && args.method === "eth_sendTransaction") {
+      const txHash = await this._wrappedProvider.request(args);
+
+      if (typeof txHash === "string") {
+        const tx = await this._wrappedProvider.request({
+          method: "eth_getTransactionByHash",
+          params: [txHash],
+        });
+        const receipt: any = await this._wrappedProvider.request({
+          method: "eth_getTransactionReceipt",
+          params: [txHash],
+        });
+
+        if (receipt?.status) {
+          await this._executionContext.collector?.collectTransaction(tx as JsonRpcTx, receipt);
+        }
+      }
+      return txHash;
     }
     return this._wrappedProvider.request(args);
   }
