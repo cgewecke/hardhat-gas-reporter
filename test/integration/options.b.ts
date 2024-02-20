@@ -3,9 +3,9 @@ import path from "path";
 import fs from "fs";
 import { GasReporterOptions, GasReporterOutput } from "../types";
 
-import { useEnvironment } from "./../helpers";
+import { useEnvironment } from "../helpers";
 
-describe("Independent Node: Hardhat", function () {
+describe("Options B", function () {
   let output: GasReporterOutput;
   let options: GasReporterOptions;
 
@@ -13,6 +13,7 @@ describe("Independent Node: Hardhat", function () {
     __dirname,
     "../projects/options"
   );
+
   const outputPath = path.resolve(
     __dirname,
     "../projects/options/gasReporterOutput.json"

@@ -20,14 +20,17 @@ start_hardhat_node() {
 ########
 # Tasks
 ########
-#npx mocha test/tasks/merge.ts
+# Temporarily Skipping
+# Need to go through this and regenerate files when options and
+# data format are finalized
+# npx mocha test/tasks/merge.ts
 
 ################################
 # Hardhat EVM (Default Network)
 ################################
-npx mocha test/integration/truffle.ts --timeout 100000 --exit
-npx mocha test/integration/options.ts --timeout 100000 --exit
-npx mocha test/integration/ethers.ts --timeout 100000 --exit
+npx mocha test/integration/default.ts --timeout 100000 --exit
+npx mocha test/integration/options.a.ts --timeout 100000 --exit
+npx mocha test/integration/options.b.ts --timeout 100000 --exit
 npx mocha test/integration/forked.ts --timeout 100000 --exit
 
 # Temporarily skipping waffle test - simple txs error with internal ethers error:

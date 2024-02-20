@@ -9,8 +9,8 @@ import { GasReporterOptions } from "../types";
  * @param  {Number} gasPrice in wei e.g 5000000000 (5 gwei)
  * @return {Number}          cost of gas used (0.00)
  */
-export function gasToCost(gas: number, ethPrice: number, gasPrice: number): string {
-  return ((gasPrice / 1e9) * gas * ethPrice).toFixed(2);
+export function gasToCost(gas: number, ethPrice: string, gasPrice: number): string {
+  return ((gasPrice / 1e9) * gas * parseFloat(ethPrice)).toFixed(2);
 }
 
 /**
@@ -71,7 +71,6 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
   if (!options.gasPrice) {
     try {
       const response = await axiosInstance.get(gasPriceApi!);
-      console.log(`got gas price: ${  response.data.result}`);
       options.gasPrice = Math.round(
         parseInt(response.data.result, 16) / Math.pow(10, 9)
       );

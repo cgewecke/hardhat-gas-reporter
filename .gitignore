@@ -64,13 +64,18 @@ typings/
 .next
 
 # hardhat-project
-test/projects/hardhat-truffle-project/artifacts
-test/projects/hardhat-truffle-project/cache
-test/projects/hardhat-ethers-project/artifacts
-test/projects/hardhat-ethers-project/cache
-test/projects/hardhat-waffle-project/artifacts
-test/projects/hardhat-waffle-project/cache
-test/projects/hardhat-forked-project/artifacts
-test/projects/hardhat-forked-project/cache
+test/projects/options/artifacts
+test/projects/options/cache
+test/projects/options/gasReporterOutput.json
+test/projects/options/testGasReport.txt
+
+test/projects/waffle/artifacts
+test/projects/waffle/cache
+test/projects/waffle/gasReporterOutput.json
+
+test/projects/forked/artifacts
+test/projects/forked/cache
+test/projects/forked/gasReporterOutput.json
+
 dist/
 
