@@ -14,6 +14,9 @@ export interface GasReporterOptions {
   /**@property Coinmarketcap currency code to denominate network token costs in (eg: "USD") */
   currency?: string;
 
+  /**@property Use colors easier to see on dark backgrounds when rendering to terminal  */
+  darkMode?: boolean;
+
   /**@property Enable plugin */
   enabled?: boolean;
 
@@ -25,6 +28,15 @@ export interface GasReporterOptions {
 
   /**@property Etherscan-like url to fetch live network gas price from */
   gasPriceApi?: string;
+
+  /**@property L2 Network to calculate execution costs for */
+  L2?: "optimism" | "arbitrum"
+
+  /**@property L2 Gwei price per gas unit (eg: .00035) */
+  L2gasPrice?: number,
+
+  /**@property Etherscan-like url to fetch live network gas price from */
+  L2gasPriceApi?: string,
 
   /**@property Omit terminal color in output */
   noColors?: boolean;
@@ -43,6 +55,9 @@ export interface GasReporterOptions {
 
   /**@property List of forked-network deployed contracts to track execution costs for */
   remoteContracts?: RemoteContract[];
+
+  /**@property Report format identfiers */
+  reportFormat?: "legacy" | "terminal" | "markdown";
 
   /**@property Format table output for `rst` documentation (eg sphinx, ReadTheDocs)   */
   rst?: boolean;
@@ -109,11 +124,13 @@ export interface MethodDataItem {
   contract: string,
   method: string,
   fnSig: string,
+  callData: string[],
   gasData: number[],
   numberOfCalls: number,
   min?: number,
   max?: number,
   average?: number,
+  averageL2?: number,
   cost?: string,
 }
 
@@ -123,10 +140,12 @@ export interface Deployment {
   name: string,
   bytecode: string,
   deployedBytecode: string,
+  callData: string[],
   gasData: number[],
   min?: number,
   max?: number,
   average?: number,
+  averageL2?: number,
   cost?: string,
   percent?: number
 }

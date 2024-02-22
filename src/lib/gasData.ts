@@ -53,7 +53,8 @@ export class GasData {
         name: item.name,
         bytecode: item.artifact.bytecode,
         deployedBytecode: item.artifact.deployedBytecode,
-        gasData: []
+        gasData: [],
+        callData: []
       };
       this.deployments.push(contract);
 
@@ -96,6 +97,7 @@ export class GasData {
             contract: contract.name,
             method: methodIDs[key].name,
             fnSig: methodIDs[key].fnSig,
+            callData: [],
             gasData: [],
             numberOfCalls: 0
           };
