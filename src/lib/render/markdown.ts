@@ -1,4 +1,4 @@
-const { markdownTable } = require("markdown-table");
+import  table from "markdown-table";
 
 import _ from "lodash";
 import { utils } from "ethers";
@@ -6,10 +6,9 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { GasReporterOptions, MethodDataItem } from "../../types";
 import { GasData } from "../gasData";
 import { getSolcInfo } from "../../utils/sources";
-import { indent, entitleMarkdown } from "../../utils/ui";
+import { indentMarkdown, entitleMarkdown } from "../../utils/ui";
 
-type Section = {row: string[], contractName: string, methodName: string};
-
+interface Section {row: string[], contractName: string, methodName: string}
 
 /**
  * Generates a gas statistics table in markdown format.
@@ -45,17 +44,18 @@ export function generateMarkdownTable(
     rate = `${parseFloat(options.tokenPrice).toFixed(2)} ${currency}/${token}`;
   }
 
-  const optionsRows: (readonly string[])[] = [
+  const optionsRows: readonly string[][] = [
     ["Option", "Settings"],
     ["solc: version", solc.version],
     ["solc: optimized", solc.optimizer],
     ["solc: runs", solc.runs.toString()],
+    ["solc: viaIR", solc.viaIR.toString()],
     ["gas: block limit", utils.commify(hre.__hhgrec.blockGasLimit!)],
     ["gas: price", gwei],
-    [`gas: currency/${token} rate`, rate]
+    ["market: currency rate", rate]
   ];
 
-  const optionsTable = markdownTable(optionsRows);
+  const optionsTable = table(optionsRows);
 
   // ---------------------------------------------------------------------------------------------
   // Assemble section: methods
@@ -63,11 +63,10 @@ export function generateMarkdownTable(
 
   const methodRows: Section[] = [];
   const methodHeader = [
-    " ",
-    "Gas",
-    " ",
-    "Diff",
-    "Diff %",
+    "",
+    "Min",
+    "Max",
+    "Avg",
     "Calls",
     `${currency} avg`
   ];
@@ -78,10 +77,10 @@ export function generateMarkdownTable(
     const stats: any = {};
 
     if (method.gasData.length > 0) {
-      stats.average = utils.commify(method.average!);
+      stats.executionGasAverage = utils.commify(method.executionGasAverage!);
       stats.cost = (method.cost === undefined) ? "-" : method.cost;
     } else {
-      stats.average = "-";
+      stats.executionGasAverage = "-";
       stats.cost = "-";
     }
 
@@ -108,7 +107,6 @@ export function generateMarkdownTable(
             " ",
             " ",
             " ",
-            " "
           ],
           contractName: method.contract,
           methodName: "0"
@@ -120,15 +118,15 @@ export function generateMarkdownTable(
       // Method row
       const methodSection = {
         row: [
-          indent(method.method),
-          utils.commify(stats.min),
-          utils.commify(stats.max),
-          utils.commify(stats.average),
+          indentMarkdown(fnName),
+          stats.min,
+          stats.max,
+          stats.executionGasAverage,
           method.numberOfCalls.toString(),
           stats.cost.toString()
         ],
         contractName: method.contract,
-        methodName: method.method
+        methodName: fnName
       }
 
       methodRows.push(methodSection);
@@ -143,16 +141,16 @@ export function generateMarkdownTable(
 
   const rows = methodRows.map(val => val.row);
 
-  alignment = { align: ["l", "r", "c", "r", "r", "r", "r", "r"] };
+  alignment = { align: ["l", "r", "r", "r", "r", "r", "r", "r"] };
   rows.unshift(methodHeader);
-  const methodTable = markdownTable(rows, alignment);
+  const methodTable = table(rows, alignment);
 
   // ---------------------------------------------------------------------------------------------
   // Assemble section: deployments
   // ---------------------------------------------------------------------------------------------
   const deployRows = [];
   const deployHeader = [
-    " ",
+    "",
     "Min",
     "Max ",
     "Avg",
@@ -164,7 +162,7 @@ export function generateMarkdownTable(
   data.deployments.sort((a, b) => a.name.localeCompare(b.name));
 
   data.deployments.forEach(deployment => {
-    let stats: any = {};
+    const stats: any = {};
     if (!deployment.gasData.length) return;
 
     stats.cost = (deployment.cost === undefined) ? "-" : deployment.cost;
@@ -175,14 +173,14 @@ export function generateMarkdownTable(
       stats.max = uniform ? "-" : utils.commify(deployment.max!);
     }
 
-    stats.average = utils.commify(deployment.average!);
+    stats.executionGasAverage = utils.commify(deployment.executionGasAverage!);
     stats.percent = deployment.percent;
 
     const section = [
       entitleMarkdown(deployment.name),
       stats.min,
       stats.max,
-      stats.average,
+      stats.executionGasAverage,
       `${stats.percent} %`,
       stats.cost
     ];
@@ -190,9 +188,9 @@ export function generateMarkdownTable(
     deployRows.push(section);
   });
 
-  alignment = { align: ["l", "r", "c", "r", "r", "r", "r"] };
+  alignment = { align: ["l", "r", "r", "r", "r", "r", "r"] };
   deployRows.unshift(deployHeader);
-  const deployTable = markdownTable(deployRows, alignment);
+  const deployTable = table(deployRows, alignment);
 
   // ---------------------------------------------------------------------------------------------
   // Final assembly
@@ -203,15 +201,15 @@ export function generateMarkdownTable(
   const deployTitle = "## Deployments\n";
 
   const md =
-    methodTitle +
-    methodTable +
-    `\n\n` +
-    deployTitle +
-    deployTable +
-    `\n\n` +
-    optionsTitle +
-    optionsTable +
-    `\n\n`;
+    `${methodTitle +
+    methodTable
+    }\n\n${
+    deployTitle
+    }${deployTable
+    }\n\n${
+    optionsTitle
+    }${optionsTable
+    }\n\n`;
 
   // ---------------------------------------------------------------------------------------------
   // Finish

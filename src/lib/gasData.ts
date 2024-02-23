@@ -123,11 +123,11 @@ export class GasData {
 
       if (method.gasData.length > 0) {
         const total = method.gasData.reduce((acc: number, datum: number) => acc + datum, 0);
-        method.average = Math.round(total / method.gasData.length);
+        method.executionGasAverage = Math.round(total / method.gasData.length);
         method.cost =
           options.tokenPrice && options.gasPrice
             ? gasToCost(
-                method.average,
+                method.executionGasAverage,
                 options.tokenPrice,
                 options.gasPrice
               )
@@ -136,7 +136,7 @@ export class GasData {
         const sortedData = method.gasData.sort((a: number, b: number) => a - b);
         method.min = sortedData[0];
         method.max = sortedData[sortedData.length - 1];
-        methodsTotal += method.average;
+        methodsTotal += method.executionGasAverage;
       }
     }
 
@@ -144,13 +144,13 @@ export class GasData {
     for (const deployment of this.deployments) {
       if (deployment.gasData.length !== 0) {
         const total = deployment.gasData.reduce((acc, datum) => acc + datum, 0);
-        deployment.average = Math.round(total / deployment.gasData.length);
-        deployment.percent = gasToPercentOfLimit(deployment.average, blockGasLimit);
+        deployment.executionGasAverage = Math.round(total / deployment.gasData.length);
+        deployment.percent = gasToPercentOfLimit(deployment.executionGasAverage, blockGasLimit);
 
         deployment.cost =
           options.tokenPrice && options.gasPrice
             ? gasToCost(
-                deployment.average,
+                deployment.executionGasAverage,
                 options.tokenPrice,
                 options.gasPrice
               )
@@ -159,7 +159,7 @@ export class GasData {
         const sortedData = deployment.gasData.sort((a, b) => a - b);
         deployment.min = sortedData[0];
         deployment.max = sortedData[sortedData.length - 1];
-        deploymentsTotal += deployment.average;
+        deploymentsTotal += deployment.executionGasAverage;
       }
     }
 

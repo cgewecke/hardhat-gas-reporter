@@ -1,7 +1,6 @@
 import chalk, {Chalk} from "chalk";
 
 import _ from "lodash";
-import fs from "fs";
 import Table, { HorizontalTableRow } from "cli-table3";
 import { utils } from "ethers";
 
@@ -54,10 +53,10 @@ export function generateLegacyTextTable(
     const stats: any = {};
 
     if (method.gasData.length > 0) {
-      stats.average = utils.commify(method.average!);
+      stats.executionGasAverage = utils.commify(method.executionGasAverage!);
       stats.cost = (method.cost === undefined) ? chalk.grey("-") : method.cost;
     } else {
-      stats.average = chalk.grey("-");
+      stats.executionGasAverage = chalk.grey("-");
       stats.cost = chalk.grey("-");
     }
 
@@ -77,7 +76,7 @@ export function generateLegacyTextTable(
       section.push(fnName);
       section.push({ hAlign: "right", content: stats.min });
       section.push({ hAlign: "right", content: stats.max });
-      section.push({ hAlign: "right", content: stats.average });
+      section.push({ hAlign: "right", content: stats.executionGasAverage });
       section.push({ hAlign: "right", content: stats.numberOfCalls });
       section.push({
         hAlign: "right",
@@ -111,7 +110,7 @@ export function generateLegacyTextTable(
     section.push({ hAlign: "left", colSpan: 2, content: deployment.name });
     section.push({ hAlign: "right", content: stats.min });
     section.push({ hAlign: "right", content: stats.max });
-    section.push({ hAlign: "right", content: utils.commify(deployment.average!) });
+    section.push({ hAlign: "right", content: utils.commify(deployment.executionGasAverage!) });
     section.push({
       hAlign: "right",
       content: optionalColor(`${deployment.percent!} %`)

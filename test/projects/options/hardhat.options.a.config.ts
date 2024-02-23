@@ -25,6 +25,8 @@ const config: HardhatUserConfig = {
     token: "MATIC",
     gasPriceApi: "https://api.polygonscan.com/api?module=proxy&action=eth_gasPrice",
     coinmarketcap: process.env.CMC_API_KEY,
+    L2: "optimism",
+    reportFormat: "markdown",
     rst: true,
     rstTitle: "Polygon Report",
     excludeContracts: ["EtherRouter/EtherRouter.sol"],

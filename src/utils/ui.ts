@@ -3,7 +3,11 @@ import { TABLE_NAME_LEGACY, TABLE_NAME_MARKDOWN, TABLE_NAME_TERMINAL } from "../
 
 const log = console.log;
 
-export function indent(val: string) {
+export function indentText(val: string) {
+  return `    ${val}`;
+}
+
+export function indentMarkdown(val: string) {
   return `       *${val}*`;
 }
 
@@ -38,7 +42,7 @@ export function warnReportFormat(name: string | undefined) {
   log();
   log(chalk.red(`>>>>> WARNING <<<<<<`));
   log(
-    `Failed to generate gas report for format: "${name}". The available formats are: `
+    `Failed to generate gas report for format: "${name!}". The available formats are: `
   );
   log(`> "${TABLE_NAME_TERMINAL}"`);
   log(`> "${TABLE_NAME_MARKDOWN}"`);

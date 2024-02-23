@@ -1,13 +1,13 @@
+import type { GasData } from "../gasData";
 import { writeFileSync } from "fs";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { GasReporterOptions } from "../../types";
-import type { GasData } from "../gasData";
+import { warnReportFormat } from "../../utils/ui";
+import { TABLE_NAME_LEGACY, TABLE_NAME_MARKDOWN, TABLE_NAME_TERMINAL } from "../../constants";
 import { generateTerminalTextTable } from "./terminal";
 import { generateLegacyTextTable } from "./legacy";
 import { generateMarkdownTable} from "./markdown";
 import { generateJSONData } from "./json";
-import { warnReportFormat } from "../../utils/ui";
-import { TABLE_NAME_LEGACY, TABLE_NAME_MARKDOWN, TABLE_NAME_TERMINAL } from "../../constants";
 
 /**
  * Manages table rendering and file saving

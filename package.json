@@ -43,6 +43,7 @@
     "@types/chai-as-promised": "7.1.8",
     "@types/fs-extra": "^5.0.4",
     "@types/lodash": "^4.14.202",
+    "@types/markdown-table": "2.0.0",
     "@types/mocha": "7",
     "@types/node": "^8.10.38",
     "@types/sha1": "^1.1.5",
