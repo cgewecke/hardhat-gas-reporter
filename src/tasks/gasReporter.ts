@@ -8,7 +8,8 @@ import { setGasAndPriceRates } from "../utils/gas";
 import { initGasReporterProvider} from "../extend";
 
 import { Collector } from "../lib/collector";
-import { GasDetailsTextTable} from "../lib/table"
+import { render } from "../lib/render"
+import { warnParallel } from "../utils/ui";
 
 /**
  * Initializes gas tracking
@@ -21,10 +22,7 @@ subtask(TASK_GAS_REPORTER_START).setAction(
       // Temporarily skipping when in parallel mode because it crashes and unsure how to resolve...
       if (args.parallel === true) {
         const result = await runSuper();
-        console.log(
-          "Note: Gas reporting has been skipped because plugin `hardhat-gas-reporter` " +
-          "does not support the --parallel flag."
-        );
+        warnParallel();
         return result;
       }
 
@@ -55,8 +53,7 @@ subtask(TASK_GAS_REPORTER_STOP).setAction(
 
     if (options.enabled === true && args.parallel !== true) {
       await hre.__hhgrec.collector?.data.runAnalysis(hre, options);
-      const table = new GasDetailsTextTable();
-      table.generate(hre, hre.__hhgrec.collector!.data, options);
+      render(hre, hre.__hhgrec.collector!.data, options);
     }
   }
 );

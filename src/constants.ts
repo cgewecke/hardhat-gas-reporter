@@ -3,7 +3,13 @@ export const TASK_GAS_REPORTER_MERGE = "gas-reporter:merge";
 export const TASK_GAS_REPORTER_START = "gas-reporter:start";
 export const TASK_GAS_REPORTER_STOP = "gas-reporter:stop";
 
+export const TABLE_NAME_LEGACY = "legacy";
+export const TABLE_NAME_TERMINAL = "terminal";
+export const TABLE_NAME_MARKDOWN = "markdown";
+
 export const DEFAULT_CURRENCY = "USD";
 export const DEFAULT_JSON_OUTPUT_FILE = "./gasReporterOutput.json";
 export const DEFAULT_GAS_PRICE_API_URL  = "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice"
 export const DEFAULT_COINMARKET_BASE_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/"
+
+export const UNICODE_TRIANGLE = "△";

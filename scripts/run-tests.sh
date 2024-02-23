@@ -31,6 +31,7 @@ start_hardhat_node() {
 npx mocha test/integration/default.ts --timeout 100000 --exit
 npx mocha test/integration/options.a.ts --timeout 100000 --exit
 npx mocha test/integration/options.b.ts --timeout 100000 --exit
+npx mocha test/integration/options.c.ts --timeout 100000 --exit
 npx mocha test/integration/forked.ts --timeout 100000 --exit
 npx mocha test/integration/viem.ts --timeout 100000 --exit
 

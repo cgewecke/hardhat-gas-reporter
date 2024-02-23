@@ -20,11 +20,13 @@ export function getMethodID(contractName: string, code: string): string {
 export function getSolcInfo(solcConfig: SolcConfig): SolcInfo {
   const info: any = {};
   const optimizer = solcConfig.settings.optimizer;
+  const viaIR = solcConfig.settings.viaIR
 
   if (solcConfig) {
     info.version = solcConfig.version;
     info.optimizer = (optimizer) ? optimizer.enabled : "----"
     info.runs = (optimizer) ? optimizer.runs : "----"
+    info.viaIR = (viaIR !== undefined) ? viaIR : false;
   }
   return info;
 }

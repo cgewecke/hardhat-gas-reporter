@@ -8,58 +8,73 @@ declare module "hardhat/types/config" {
 }
 
 export interface GasReporterOptions {
-  /**@property API key to access token/currency market price data with */
+  /** @property API key to access token/currency market price data with */
   coinmarketcap?: string;
 
-  /**@property Coinmarketcap currency code to denominate network token costs in (eg: "USD") */
+  /** @property Coinmarketcap currency code to denominate network token costs in (eg: "USD") */
   currency?: string;
 
-  /**@property Enable plugin */
+  /** @property Use colors easier to see on dark backgrounds when rendering to terminal  */
+  darkMode?: boolean;
+
+  /** @property Enable plugin */
   enabled?: boolean;
 
-  /**@property List of contract names to exclude from report (e.g "Ownable") */
+  /** @property List of contract names to exclude from report (e.g "Ownable") */
   excludeContracts?: string[];
 
-  /**@property Gwei price per gas unit (eg: 20) */
+  /** @property Gwei price per gas unit (eg: 20) */
   gasPrice?: number;
 
-  /**@property Etherscan-like url to fetch live network gas price from */
+  /** @property Etherscan-like url to fetch live network gas price from */
   gasPriceApi?: string;
 
-  /**@property Omit terminal color in output */
+  /** @property L2 Network to calculate execution costs for */
+  L2?: "optimism" | "arbitrum"
+
+  /** @property L2 Gwei price per gas unit (eg: .00035) */
+  L2gasPrice?: number,
+
+  /** @property Etherscan-like url to fetch live network gas price from */
+  L2gasPriceApi?: string,
+
+  /** @property Omit terminal color in output */
   noColors?: boolean;
 
-  /**@property Relative path to a file to output terminal table to (instead of stdout) */
+  /** @property Relative path to a file to output terminal table to (instead of stdout) */
   outputFile?: string;
 
-  /**@property Write JSON object with all options, methods, deployment data to file */
+  /** @property Write JSON object with all options, methods, deployment data to file */
   outputJSON?: boolean
 
-  /**@property: Relative path to a file to output JSON data to */
+  /** @property: Relative path to a file to output JSON data to */
   outputJSONFile?: string,
 
-  /**@property User-defined async function to help reporter identify targets of proxied calls */
+  /** @property User-defined async function to help reporter identify targets of proxied calls */
   proxyResolver?: any;
 
-  /**@property List of forked-network deployed contracts to track execution costs for */
+  /** @property List of forked-network deployed contracts to track execution costs for */
   remoteContracts?: RemoteContract[];
 
-  /**@property Format table output for `rst` documentation (eg sphinx, ReadTheDocs)   */
+  /** @property Report format identfiers */
+  reportFormat?: "legacy" | "terminal" | "markdown";
+
+  /** @property Format table output for `rst` documentation (eg sphinx, ReadTheDocs)   */
   rst?: boolean;
 
-  /**@property Optional title for `rst` documentation */
+  /** @property Optional title for `rst` documentation */
   rstTitle?: string;
 
-  /**@property  Display the complete function signature of methods */
+  /** @property  Display the complete function signature of methods */
   showMethodSig?: boolean;
 
-  /**@property Lists all methods and deployments, even if no transactions were recorded for them */
+  /** @property Lists all methods and deployments, even if no transactions were recorded for them */
   showUncalledMethods?: boolean;
 
-  /**@property Network token gas fees are paid in (eg:"ETH") */
+  /** @property Network token gas fees are paid in (eg:"ETH") */
   token?: string;
 
-  /**@property Network token price per currency unit, to two decimal places (eg: "2145.00") */
+  /** @property Network token price per currency unit, to two decimal places (eg: "2145.00") */
   tokenPrice?: string;
 
   // INTERNAL: AUTOSET BY PLUGIN (ignore)
@@ -109,11 +124,13 @@ export interface MethodDataItem {
   contract: string,
   method: string,
   fnSig: string,
+  callData: string[],
   gasData: number[],
   numberOfCalls: number,
   min?: number,
   max?: number,
-  average?: number,
+  executionGasAverage?: number,
+  calldataGasAverage?: number,
   cost?: string,
 }
 
@@ -123,10 +140,12 @@ export interface Deployment {
   name: string,
   bytecode: string,
   deployedBytecode: string,
+  callData: string[],
   gasData: number[],
   min?: number,
   max?: number,
-  average?: number,
+  executionGasAverage?: number,
+  calldataGasAverage?: number,
   cost?: string,
   percent?: number
 }
@@ -134,7 +153,8 @@ export interface Deployment {
 export interface SolcInfo {
   version: string,
   optimizer: string,
-  runs: number | string
+  runs: number | string,
+  viaIR: boolean
 }
 
 export interface ArtifactInfo {
