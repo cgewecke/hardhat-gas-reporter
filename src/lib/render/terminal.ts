@@ -33,10 +33,6 @@ export function generateTerminalTextTable(
   let executionGasAverageTitle = "Avg"
   let calldataGasAverageTitle = "";
 
-  if (options.L2 !== undefined) {
-
-  }
-
   let optionalColor: Chalk;
 
   if (options.noColors || options.outputFile !== undefined) {

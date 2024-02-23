@@ -6,31 +6,20 @@ import { HardhatUserConfig } from "hardhat/types";
 import "../../../src/index";
 
 const config: HardhatUserConfig = {
-  solidity: {
-    version: "0.8.24",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 10_000
-      },
-      viaIR: true,
-      evmVersion: "shanghai"
-    }
-  },
+  solidity: "0.8.24",
   mocha: {
     reporter: 'dot'
   },
   gasReporter: {
     currency: "CHF",
-    token: "MATIC",
-    gasPriceApi: "https://api.polygonscan.com/api?module=proxy&action=eth_gasPrice",
+    token: "ETH",
+    gasPriceApi: "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice",
     coinmarketcap: process.env.CMC_API_KEY,
-    rst: true,
-    rstTitle: "Polygon Report",
-    excludeContracts: ["EtherRouter/EtherRouter.sol"],
+    L2: "optimism",
+    L2gasPriceApi: "https://api-optimistic.etherscan.io/api?module=proxy&action=eth_gasPrice",
+    reportFormat: "markdown",
     showMethodSig: true,
     enabled: true,
-    darkMode: true
   }
 };
 

@@ -86,10 +86,10 @@ describe("Default Options", function () {
     assert.equal(dataItem?.gasData.length, 4);
     assert.exists(dataItem?.min);
     assert.exists(dataItem?.max);
-    assert.exists(dataItem?.average);
+    assert.exists(dataItem?.executionGasAverage);
     assert(dataItem!.min! < dataItem!.max!);
-    assert(dataItem!.min! < dataItem!.average!);
-    assert(dataItem!.average! < dataItem!.max!)
+    assert(dataItem!.min! < dataItem!.executionGasAverage!);
+    assert(dataItem!.executionGasAverage! < dataItem!.max!)
   });
 
   it("should collect deployment data for contracts with names that shadow each other", function(){
@@ -106,10 +106,10 @@ describe("Default Options", function () {
     assert(deployment?.gasData!.length! > 1);
     assert.exists(deployment?.min);
     assert.exists(deployment?.max);
-    assert.exists(deployment?.average);
+    assert.exists(deployment?.executionGasAverage);
     assert(deployment!.min! < deployment!.max!);
-    assert(deployment!.min! < deployment!.average!);
-    assert(deployment!.average! < deployment!.max!)
+    assert(deployment!.min! < deployment!.executionGasAverage!);
+    assert(deployment!.executionGasAverage! < deployment!.max!)
     assert(deployment!.percent! > 0);
   });
 });

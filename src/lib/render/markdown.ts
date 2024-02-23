@@ -22,10 +22,14 @@ export function generateMarkdownTable(
   data: GasData,
   options: GasReporterOptions
 ): string {
-
+  let gasAverageTitle = ["Avg"]
   let alignment;
 
   const addedContracts: string[] = [];
+
+  if (options.L2 !== undefined) {
+    gasAverageTitle = ["L2 Avg", "L1 Avg"];
+  }
 
   // ---------------------------------------------------------------------------------------------
   // Assemble section: Build options
@@ -66,7 +70,7 @@ export function generateMarkdownTable(
     "",
     "Min",
     "Max",
-    "Avg",
+    ...gasAverageTitle,
     "Calls",
     `${currency} avg`
   ];
@@ -79,6 +83,10 @@ export function generateMarkdownTable(
     if (method.gasData.length > 0) {
       stats.executionGasAverage = utils.commify(method.executionGasAverage!);
       stats.cost = (method.cost === undefined) ? "-" : method.cost;
+
+      if (method.calldataGasAverage !== undefined) {
+        stats.calldataGasAverage = utils.commify(method.calldataGasAverage)
+      };
     } else {
       stats.executionGasAverage = "-";
       stats.cost = "-";
@@ -115,13 +123,17 @@ export function generateMarkdownTable(
         methodRows.push(titleSection)
       }
 
+      const averages = (options.L2 !== undefined)
+        ? [stats.executionGasAverage, stats.calldataGasAverage]
+        : [stats.executionGasAverage];
+
       // Method row
       const methodSection = {
         row: [
           indentMarkdown(fnName),
           stats.min,
           stats.max,
-          stats.executionGasAverage,
+          ...averages,
           method.numberOfCalls.toString(),
           stats.cost.toString()
         ],
@@ -153,7 +165,7 @@ export function generateMarkdownTable(
     "",
     "Min",
     "Max ",
-    "Avg",
+    ...gasAverageTitle,
     "Block %",
     `${currency} avg`
   ];
@@ -173,14 +185,22 @@ export function generateMarkdownTable(
       stats.max = uniform ? "-" : utils.commify(deployment.max!);
     }
 
-    stats.executionGasAverage = utils.commify(deployment.executionGasAverage!);
     stats.percent = deployment.percent;
+    stats.executionGasAverage = utils.commify(deployment.executionGasAverage!);
+
+    if (deployment.calldataGasAverage !== undefined) {
+      stats.calldataGasAverage = utils.commify(deployment.calldataGasAverage)
+    };
+
+    const averages = (options.L2 !== undefined)
+      ? [stats.executionGasAverage, stats.calldataGasAverage]
+      : [stats.executionGasAverage];
 
     const section = [
       entitleMarkdown(deployment.name),
       stats.min,
       stats.max,
-      stats.executionGasAverage,
+      ...averages,
       `${stats.percent} %`,
       stats.cost
     ];
