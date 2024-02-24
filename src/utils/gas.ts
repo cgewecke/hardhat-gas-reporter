@@ -249,7 +249,7 @@ export function gasToCost(
 
   if (options.L2) {
     const cost = getCalldataCostForNetwork(options, calldataGas);
-    calldataCost =  (cost / 1e9) * executionGas * parseFloat(options.tokenPrice!);
+    calldataCost =  (cost / 1e9) * parseFloat(options.tokenPrice!);
   }
 
   const executionCost = (options.gasPrice! / 1e9) * executionGas * parseFloat(options.tokenPrice!);
