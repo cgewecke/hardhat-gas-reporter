@@ -16,16 +16,13 @@ export interface GasReporterOptions {
 
   /** @property Gwei base fee per gas unit. */
   /*
-   * NB: This is not the gas price, rather it's used to calculate L1 calldata costs for
-   * L2 transactions and typically obtained via api call to etherscan for the latest blockheader
+   * NB: Used to calculate L1 calldata costs for L2 transactions and typically obtained via api call
+   * to etherscan for the latest blockheader via option `getBlockApi`
    */
   baseFee?: number;
 
   /** @property Gwei blob base fee per gas unit . Used to calculate L1 calldata costs post EIP-7516*/
   blobBaseFee?: number;
-
-  /** @property  Etherscan-like url to fetch L1 block header from */
-  blockApi?: string
 
   /** @property API key to access token/currency market price data with */
   coinmarketcap?: string;
@@ -48,14 +45,11 @@ export interface GasReporterOptions {
   /** @property Etherscan-like url to fetch live execution network gas price from */
   gasPriceApi?: string;
 
+  /** @property  Etherscan-like url to fetch L1 block header from */
+  getBlockApi?: string
+
   /** @property L2 Network to calculate execution costs for */
   L2?: "optimism" | "arbitrum"
-
-  /** @property L2 Gwei price per gas unit (eg: .00035) */
-  L2gasPrice?: number,
-
-  /** @property Etherscan-like url to fetch live network gas price from */
-  L2gasPriceApi?: string,
 
   /** @property Omit terminal color in output */
   noColors?: boolean;

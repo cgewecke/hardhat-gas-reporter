@@ -1,3 +1,10 @@
+/**
+ * TESTS:
+ * + user-configured token and gasPrice
+ * + write-to-custom-file-name (JSON & txt)
+ * + show uncalled methods
+ */
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import "@nomiclabs/hardhat-ethers";
 import { HardhatUserConfig } from "hardhat/types";

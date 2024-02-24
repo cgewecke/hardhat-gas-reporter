@@ -43,6 +43,12 @@ l1_data_fee = tx_total_gas * ethereum_base_fee
 Source: https://docs.optimism.io/stack/transactions/fees#formula
 
 */
+
+/**
+ * Gets the scaled calldata gas usage for a tx (an input into the function below)
+ * @param txInput `input` field of JSONRPC getTransaction response
+ * @returns
+ */
 export function getOptimismBedrockL1Gas(txInput: string): number {
   const txDataGas = getTxCalldataGas(txInput);
 
@@ -54,14 +60,13 @@ export function getOptimismBedrockL1Gas(txInput: string): number {
 }
 
 /**
- * Multiplies baseFee and calldata gas amount. The reporter runs this in the GasData.analysis step
- * right before printing table
- * @param totalTxDataGas       amount obtained from `getOptimismBedrockL1Gas`
+ * Gets the native token denominated cost of registering tx calldata to L1
+ * @param txDataGas       amount obtained from `getOptimismBedrockL1Gas`
  * @param baseFee              amount obtained from previous block
  * @returns
  */
-export function getOptimismBedrockL1Cost(totalTxDataGas: number, baseFee: number): number {
-  return totalTxDataGas * baseFee;
+export function getOptimismBedrockL1Cost(txDataGas: number, baseFee: number): number {
+  return txDataGas * baseFee;
 }
 
 /*
@@ -90,18 +95,31 @@ export function getOptimismBedrockL1Cost(totalTxDataGas: number, baseFee: number
 * l1_data_fee = tx_compressed_size * weighted_gas_price
 * ```
 */
+
+/**
+ * Gets compressed transaction calldata gas usage (an input into the cost function below)
+ * @param txInput `input` field of JSONRPC getTransaction response
+ * @returns
+ */
 export function getOptimismEcotoneL1Gas(txInput: string) {
   return Math.floor(getTxCalldataGas(txInput) / 16);
 }
 
+/**
+ * Gets the native token denominated cost of registering tx calldata to L1
+ * @param txCompressed
+ * @param baseFee
+ * @param blobBaseFee
+ * @returns
+ */
 export function getOptimismEcotoneL1Cost(
-  txCompressedSize: number,
+  txCompressed: number,
   baseFee: number,
   blobBaseFee: number
 ): number {
   const weightedBaseFee = 16 * OPTIMISM_ECOTONE_BASE_FEE_SCALAR * baseFee;
   const weightedBlobBaseFee = OPTIMISM_ECOTONE_BLOB_BASE_FEE_SCALAR * blobBaseFee;
-  return txCompressedSize * (weightedBaseFee + weightedBlobBaseFee);
+  return txCompressed * (weightedBaseFee + weightedBlobBaseFee);
 }
 
 // ==========================
@@ -286,8 +304,9 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
 
   let block;
   const token = options.token!.toUpperCase();
+  const getBlockApi = options.getBlockApi;
+
   const gasPriceApi = options.gasPriceApi;
-  const blockApi = options.blockApi;
 
   const axiosInstance = axios.create({
     baseURL: DEFAULT_COINMARKET_BASE_URL
@@ -316,9 +335,8 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
   if (!options.gasPrice) {
     try {
       const response = await axiosInstance.get(gasPriceApi!);
-      options.gasPrice = Math.round(
-        parseInt(response.data.result, 16) / Math.pow(10, 9)
-      );
+      const gasPrice = parseInt(response.data.result, 16) / Math.pow(10, 9);
+      options.gasPrice = (gasPrice >= 1 ) ? Math.round(gasPrice) : gasPrice;;
     } catch (error) {
       options.gasPrice = 0;
     }
@@ -326,13 +344,12 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
 
   if (options.L2 && !options.baseFee) {
     try {
-      block = await axiosInstance.get(blockApi!);
+      block = await axiosInstance.get(getBlockApi!);
       options.baseFee = Math.round(
         parseInt(block.data.result.baseFeePerGas, 16) / Math.pow(10, 9)
       );
     } catch (error) {
       options.baseFee = 0;
-      options.blobBaseFee = 0;
     }
   }
 
@@ -342,7 +359,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     // TODO: DENCUN
     /* if (block === undefined) {
       try {
-        block = await axiosInstance.get(blockApi!);
+        block = await axiosInstance.get(getBlockApi!);
       } catch (error) {
         options.blobBaseFee = 0;
         return;

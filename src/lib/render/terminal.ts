@@ -10,6 +10,11 @@ import { getSolcInfo } from "../../utils/sources";
 import { GasReporterOptions, MethodDataItem } from "../../types";
 import { GasData } from "../gasData";
 import { indentText } from "../../utils/ui";
+import {
+  DEFAULT_SUBZERO_GAS_PRICE_PRECISION,
+  UNICODE_AIR,
+  UNICODE_OMEGA
+} from "../../constants";
 
 interface Section {row: HorizontalTableRow, contractName: string, methodName: string}
 
@@ -44,7 +49,7 @@ export function generateTerminalTextTable(
   if (options.darkMode) {
     optionalColor = chalk.cyan;
   } else {
-    optionalColor = chalk.grey;
+    optionalColor = chalk.bold;
   }
 
   if (options.L2 !== undefined) {
@@ -52,12 +57,15 @@ export function generateTerminalTextTable(
     blockLimitColumnWidth = 3;
     deploymentsTitleSpacerWidth = 3;
     contractTitleSpacerWidth = 6;
-    executionGasAverageTitle = "L2 Avg";
-    calldataGasAverageTitle = "L1 Avg"
+    executionGasAverageTitle = "L2 Avg (Exec)";
+    calldataGasAverageTitle = "L1 Avg (Data)"
   }
 
+  // eslint-disable-next-line
+  const emptyRow = [{ colSpan: numberOfCols, content:"" }]
+
   // ---------------------------------------------------------------------------------------------
-  // Assemble section: methods
+  // Methods: section assembly
   // ---------------------------------------------------------------------------------------------
   const methodRows: Section[] = [];
   const addedContracts: any[] = [];
@@ -95,13 +103,16 @@ export function generateTerminalTextTable(
       stats.cost = chalk.grey("-");
     }
 
+    // Notify when value is below is precision
+    if (typeof stats.cost === "number" && stats.cost < .01) {
+      stats.cost = UNICODE_AIR;
+    }
+
     if (method.min && method.max) {
       const uniform = (method.min === method.max);
       stats.min = uniform ? chalk.grey("-") : chalk.cyan(utils.commify(method.min!));
       stats.max = uniform ? chalk.grey("-") : chalk.red(utils.commify(method.max!));
     }
-
-    stats.numberOfCalls = optionalColor(method.numberOfCalls.toString());
 
     const fnName = options.showMethodSig ? method.fnSig : method.method;
 
@@ -116,7 +127,7 @@ export function generateTerminalTextTable(
         row.push({ hAlign: "right", colSpan: 1, content: stats.calldataGasAverage });
       }
 
-      row.push({ hAlign: "right", colSpan: 1, content: stats.numberOfCalls });
+      row.push({ hAlign: "right", colSpan: 1, content: method.numberOfCalls });
       row.push({
         hAlign: "right",
         colSpan: 1,
@@ -134,7 +145,7 @@ export function generateTerminalTextTable(
   });
 
   // ---------------------------------------------------------------------------------------------
-  // Assemble section: deployments
+  // Deployments: section assembly
   // ---------------------------------------------------------------------------------------------
   const deployRows: any = [];
   // Alphabetize contract names
@@ -145,6 +156,12 @@ export function generateTerminalTextTable(
     if (deployment.gasData.length === 0) return;
 
     stats.cost = (deployment.cost === undefined) ? chalk.grey("-") : deployment.cost;
+
+    // Notify when value is below precision
+    if (typeof stats.cost === "number" && stats.cost < .01) {
+      stats.cost = UNICODE_AIR;
+    }
+
     stats.calldataGasAverage = (deployment.calldataGasAverage === undefined )
       ? ""
       : utils.commify(deployment.calldataGasAverage);
@@ -168,7 +185,7 @@ export function generateTerminalTextTable(
     section.push({
       hAlign: "right",
       colSpan: 1,
-      content: optionalColor(`${deployment.percent!} %`)
+      content: `${deployment.percent!} %`
     });
     section.push({
       hAlign: "right",
@@ -180,7 +197,7 @@ export function generateTerminalTextTable(
   });
 
   // ---------------------------------------------------------------------------------------------
-  // Assemble section: headers
+  // Headers: section assembly
   // ---------------------------------------------------------------------------------------------
 
   // Configure indentation for RTD
@@ -202,100 +219,159 @@ export function generateTerminalTextTable(
       "bottom-left": `${leftPad}·`,
       "bottom-right": "·",
       middle: "·",
-      top: "-",
-      bottom: "-",
+      top: "·",
+      bottom: "·",
       "bottom-mid": "|"
     }
   });
 
+  const title: HorizontalTableRow = [
+    {
+      hAlign: "left",
+      colSpan: numberOfCols,
+      content: chalk.green.bold(`Solidity and Network Configuration`)
+    }
+  ];
+
+  // ============
+  // SOLC CONFIG
+  // ============
   const solc = getSolcInfo(hre.config.solidity.compilers[0]);
 
   // Format and load methods metrics
-  const title: HorizontalTableRow = [
+  const solcConfig: HorizontalTableRow = [
     {
-      hAlign: "center",
+      hAlign: "left",
       colSpan: 2,
-      content: optionalColor(`Solc: ${solc.version}`)
+      content: chalk.cyan(`Solidity: ${solc.version}`)
     },
     {
-      hAlign: "center",
-      colSpan: 2,
-      content: optionalColor(`Optimizer enabled: ${solc.optimizer}`)
-    },
-    {
-      hAlign: "center",
+      hAlign: "left",
       colSpan: 1,
-      content: optionalColor(`Runs: ${solc.runs}`)
+      content: chalk.cyan(`Optimizer: ${solc.optimizer}`)
+    },
+    {
+      hAlign: "left",
+      colSpan: 1,
+      content: chalk.cyan(`viaIR: ${solc.viaIR}`)
+    },
+    {
+      hAlign: "left",
+      colSpan: 1,
+      content: chalk.cyan(`Runs: ${solc.runs}`)
     },
     {
       hAlign: "center",
       colSpan: blockLimitColumnWidth,
-      content: optionalColor(`Block limit: ${utils.commify(hre.__hhgrec.blockGasLimit!)} gas`)
+      content: chalk.cyan(`Block limit: ${utils.commify(hre.__hhgrec.blockGasLimit!)} gas`)
     }
   ];
 
-  let methodSubtitle: HorizontalTableRow = [];
+  // ==============
+  // NETWORK CONFIG
+  // ==============
+  let networkConfig: HorizontalTableRow = [];
+
   if (options.tokenPrice && options.gasPrice) {
-    const L1gwei = options.gasPrice;
-    const L2gwei = (options.L2gasPrice === undefined) ? "" : options.L2gasPrice;
-    const network = (options.L2 === undefined) ? "L1 EVM" : `${options.L2}`
+    let L1gwei: string | number = (options.L2 === undefined)
+      ? options.gasPrice
+      : options.baseFee!;
+
+    let L2gwei: string | number = (options.L2 === undefined)
+      ? ""
+      : options.gasPrice;
+
+    const network = (options.L2 === undefined)
+      ? "L1 EVM"
+      : `${options.L2}`
+
+    // Truncate subzero gas prices to 5 decimal precision
+    if (typeof L1gwei === "number" && L1gwei < 1) {
+      L1gwei = parseFloat(L1gwei.toString()).toFixed(DEFAULT_SUBZERO_GAS_PRICE_PRECISION);
+    }
+
+    if (typeof L2gwei === "number" && L2gwei < 1) {
+      L2gwei = parseFloat(L2gwei.toString()).toFixed(DEFAULT_SUBZERO_GAS_PRICE_PRECISION);
+    }
 
     const rate = parseFloat(options.tokenPrice.toString()).toFixed(2);
     const currency = `${options.currency!.toLowerCase()}`;
     const token = `${options.token!.toLowerCase()}`;
 
-    methodSubtitle.push({
-      hAlign: "center",
+    networkConfig.push({
+      hAlign: "left",
       colSpan: 2,
-      content: chalk.green.bold(`Network: ${network}`)
+      content: chalk.cyan(`Network: ${network}`)
     });
 
-    methodSubtitle.push({
-      hAlign: "center",
+    // TODO: Clarify that this is baseFee not gasPrice when L2
+    networkConfig.push({
+      hAlign: "left",
       colSpan: 2,
-      content: chalk.cyan.bold(`L1: ${L1gwei} gwei/gas`)
+      content: chalk.cyan(`L1: ${L1gwei} gwei/gas`)
     });
 
     if (options.L2 !== undefined) {
-      methodSubtitle.push({
-        hAlign: "center",
+      networkConfig.push({
+        hAlign: "left",
         colSpan: 2,
-        content: chalk.cyan.bold(`L2: ${L2gwei} gwei/gas`)
+        content: chalk.cyan(`L2: ${L2gwei} gwei/gas`)
       });
     } else {
-      methodSubtitle.push({ colSpan: 1, content: " " })
+      networkConfig.push({ colSpan: 1, content: " " })
     }
 
-    methodSubtitle.push({
+    networkConfig.push({
         hAlign: "center",
         colSpan: 2,
-        content: chalk.red.bold(`${rate} ${currency}/${token}`)
+        content: chalk.red(`${rate} ${currency}/${token}`)
     });
   } else {
-    methodSubtitle = [
+    networkConfig = [
       { hAlign: "left", colSpan: numberOfCols, content: chalk.green.bold("Methods") }
     ];
   }
 
-  const header: HorizontalTableRow = [];
-  header.push({ hAlign: "left", colSpan: 2, content: chalk.bold("Contracts / Methods") });
-  header.push({ hAlign: "left", colSpan: 1, content: chalk.green("Min") });
-  header.push({ hAlign: "left", colSpan: 1, content: chalk.green("Max") });
-  header.push({ hAlign: "left", colSpan: 1, content: chalk.green(executionGasAverageTitle) })
+  // ===============
+  // METHODS HEADER
+  // ===============
+  const methodsHeader: HorizontalTableRow = [];
+  methodsHeader.push({ hAlign: "left", colSpan: 2, content: chalk.green.bold("Contracts / Methods") });
+  methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.green("Min") });
+  methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.green("Max") });
+  methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.green(executionGasAverageTitle) })
 
   if (options.L2 !== undefined) {
-    header.push({ hAlign: "left", colSpan: 1, content: chalk.green(calldataGasAverageTitle) })
+    methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.green(calldataGasAverageTitle) })
   }
 
-  header.push({ hAlign: "left", colSpan: 1, content: chalk.bold("# calls") });
-  header.push({ hAlign: "left", colSpan: 1, content: chalk.bold(`${options.currency!.toLowerCase()} (avg)`) });
+  methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.bold("# calls") });
+  methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.bold(`${options.currency!.toLowerCase()} (avg)`) });
+
+  // ===============
+  // SYMBOL KEY
+  // ===============
+  const air = "Cost was non-zero but below the 2 decimal precision threshold of the currency display";
+  const call = "Execution gas vals for methods with this symbol do not include intrinsic gas overhead " +
+               "(due to `eth_call` or user preference)";
+
+  const keyTitle: HorizontalTableRow = [{
+    hAlign: "left", colSpan: numberOfCols, content: chalk.green.bold("Key")
+  }];
+  const keyCall: HorizontalTableRow =[{
+    hAlign: "left", colSpan: numberOfCols, content: `${chalk.red(UNICODE_OMEGA)}: ${call}`
+  }];
+  const keyAir: HorizontalTableRow = [{
+    hAlign: "left", colSpan: numberOfCols, content: `${chalk.red(UNICODE_AIR)}: ${air}`
+  }];
 
   // ---------------------------------------------------------------------------------------------
-  // Final assembly
+  // Final table assembly
   // ---------------------------------------------------------------------------------------------
   table.push(title);
-  table.push(methodSubtitle);
-  table.push(header);
+  table.push(solcConfig);
+  table.push(networkConfig);
+  table.push(methodsHeader);
 
   methodRows.sort((a, b) => {
     const contractName = a.contractName.localeCompare(b.contractName);
@@ -321,6 +397,10 @@ export function generateTerminalTextTable(
     table.push(deploymentsSubtitle as HorizontalTableRow);
     deployRows.forEach((row: any) => table.push(row));
   }
+
+  table.push(keyTitle);
+  table.push(keyCall);
+  table.push(keyAir);
 
   return table.toString();
 }

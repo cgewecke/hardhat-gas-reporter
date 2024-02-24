@@ -1,7 +1,7 @@
 import { HardhatUserConfig } from "hardhat/types";
 import {
   DEFAULT_ARBITRUM_HARDFORK,
-  DEFAULT_BLOCK_API_URL,
+  DEFAULT_GET_BLOCK_API_URL,
   DEFAULT_CURRENCY,
   DEFAULT_GAS_PRICE_API_URL,
   DEFAULT_JSON_OUTPUT_FILE,
@@ -55,7 +55,7 @@ export function getDefaultOptions(userConfig: Readonly<HardhatUserConfig>): GasR
 
   return {
     arbitrumHardfork,
-    blockApi: DEFAULT_BLOCK_API_URL,
+    getBlockApi: DEFAULT_GET_BLOCK_API_URL,
     currency: DEFAULT_CURRENCY,
     darkMode: false,
     enabled: true,

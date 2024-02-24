@@ -9,8 +9,9 @@ export const TABLE_NAME_MARKDOWN = "markdown";
 
 export const DEFAULT_CURRENCY = "USD";
 export const DEFAULT_JSON_OUTPUT_FILE = "./gasReporterOutput.json";
+export const DEFAULT_SUBZERO_GAS_PRICE_PRECISION = 5;
 
-export const DEFAULT_BLOCK_API_URL = "https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=latest&boolean=true"
+export const DEFAULT_GET_BLOCK_API_URL = "https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=latest&boolean=true"
 export const DEFAULT_GAS_PRICE_API_URL  = "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice"
 export const DEFAULT_COINMARKET_BASE_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/"
 
@@ -27,4 +28,5 @@ export const OPTIMISM_BEDROCK_DYNAMIC_OVERHEAD = 0.684;
 export const OPTIMISM_ECOTONE_BASE_FEE_SCALAR = 11000
 export const OPTIMISM_ECOTONE_BLOB_BASE_FEE_SCALAR = 1087000
 
-export const UNICODE_TRIANGLE = "△";
+export const UNICODE_OMEGA = "Ω";
+export const UNICODE_AIR = "🜁"

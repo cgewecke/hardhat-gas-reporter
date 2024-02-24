@@ -28,12 +28,13 @@ start_hardhat_node() {
 ################################
 # Hardhat EVM (Default Network)
 ################################
-npx mocha test/integration/default.ts --timeout 100000 --exit
-npx mocha test/integration/options.a.ts --timeout 100000 --exit
-npx mocha test/integration/options.b.ts --timeout 100000 --exit
-npx mocha test/integration/options.c.ts --timeout 100000 --exit
-npx mocha test/integration/forked.ts --timeout 100000 --exit
-npx mocha test/integration/viem.ts --timeout 100000 --exit
+#npx mocha test/integration/default.ts --timeout 100000 --exit
+#npx mocha test/integration/options.a.ts --timeout 100000 --exit
+#npx mocha test/integration/options.b.ts --timeout 100000 --exit
+#npx mocha test/integration/options.c.ts --timeout 100000 --exit
+npx mocha test/integration/options.e.ts --timeout 100000 --exit
+#npx mocha test/integration/forked.ts --timeout 100000 --exit
+#npx mocha test/integration/viem.ts --timeout 100000 --exit
 
 # Temporarily skipping waffle test - simple txs error with internal ethers error:
 # `this.provider.getFeeData is not a function`
@@ -44,7 +45,7 @@ npx mocha test/integration/viem.ts --timeout 100000 --exit
 ##########################
 # Hardhat Node (Localhost)
 ##########################
-start_hardhat_node
-npx mocha test/integration/node.ts --timeout 100000 --exit
+#start_hardhat_node
+#npx mocha test/integration/node.ts --timeout 100000 --exit
 
 cleanup

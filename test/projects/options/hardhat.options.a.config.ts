@@ -1,3 +1,14 @@
+/**
+ * TESTS:
+ * + Complex compiler details
+ * + Non-ethereum L1 (polygon) with live market price
+ * + Custom gasPrice API call
+ * + Exclude contracts from reporting
+ * + Display full method signature
+ * + Dark mode
+ * + RST titles
+ */
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import "@nomiclabs/hardhat-ethers";
 import { HardhatUserConfig } from "hardhat/types";

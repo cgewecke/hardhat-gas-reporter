@@ -1,8 +1,8 @@
 /**
  * TESTS:
- * + Markdown format
+ * + Default Terminal Format
  * + L2: Optimism
- * + Live market prices in CHF
+ * + Live market prices
  */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import "@nomiclabs/hardhat-ethers";
@@ -17,12 +17,9 @@ const config: HardhatUserConfig = {
     reporter: 'dot'
   },
   gasReporter: {
-    currency: "CHF",
-    token: "ETH",
     coinmarketcap: process.env.CMC_API_KEY,
     L2: "optimism",
     gasPriceApi: "https://api-optimistic.etherscan.io/api?module=proxy&action=eth_gasPrice",
-    reportFormat: "markdown",
     enabled: true,
   }
 };
