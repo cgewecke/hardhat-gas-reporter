@@ -1,7 +1,7 @@
 import type { RpcReceiptOutput } from "hardhat/internal/hardhat-network/provider/output"
 import { EthereumProvider } from "hardhat/types";
 import { GasReporterOptions, JsonRpcTx } from "../types"
-import { hexGasToDecimal } from "../utils/gas";
+import { getCalldataGasForNetwork, hexGasToDecimal } from "../utils/gas";
 import { getMethodID } from "../utils/sources";
 import { GasData } from "./gasData";
 
@@ -12,10 +12,12 @@ import { ProxyResolver } from "./proxyResolver";
  */
 export class Collector {
   public data: GasData;
+  public options: GasReporterOptions;
   public resolver: ProxyResolver;
 
   constructor(options: GasReporterOptions, provider: EthereumProvider) {
     this.data = new GasData();
+    this.options = options;
     this.resolver = new ProxyResolver(options, provider, this.data);
   }
 
@@ -45,7 +47,12 @@ export class Collector {
         match.name,
         receipt.contractAddress!
       );
-      match.gasData.push(hexGasToDecimal(receipt.gasUsed));
+
+      const executionGas = hexGasToDecimal(receipt.gasUsed);
+      const calldataGas = getCalldataGasForNetwork(this.options, tx.input);
+
+      match.gasData.push(executionGas);
+      match.callData.push(calldataGas);
     }
   }
 
@@ -76,7 +83,11 @@ export class Collector {
     const id = getMethodID(contractName!, tx.input);
 
     if (this.data.methods[id] !== undefined) {
-      this.data.methods[id].gasData.push(hexGasToDecimal(receipt.gasUsed));
+      const executionGas = hexGasToDecimal(receipt.gasUsed);
+      const calldataGas = getCalldataGasForNetwork(this.options, tx.input);
+
+      this.data.methods[id].gasData.push(executionGas);
+      this.data.methods[id].callData.push(calldataGas);
       this.data.methods[id].numberOfCalls += 1;
     } else {
       this.resolver.unresolvedCalls++;
