@@ -24,22 +24,22 @@ describe("Options C", function () {
     "../projects/options/gasReporterOutput.json"
   );
 
-  const variableCostsPath = path.resolve(
-    __dirname,
-    "../projects/options/test/variableCosts.ts"
-  );
-
-  const walletPath = path.resolve(
-    __dirname,
-    "../projects/options/test/wallet.ts"
-  );
-
   const network = undefined;
   const configPath = "./hardhat.options.c.config.ts";
 
   useEnvironment(projectPath, network, configPath);
 
   before(async function(){
+    const variableCostsPath = path.join(
+      this.env.config.paths.root,
+      "test/variableCosts.ts"
+    );
+
+    const walletPath = path.join(
+      this.env.config.paths.root,
+      "test/wallet.ts"
+    );
+
     await this.env.run(TASK_TEST, { testFiles: [variableCostsPath, walletPath] });
     output = require(outputPath);
     options = output.options;
