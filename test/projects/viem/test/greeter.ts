@@ -6,6 +6,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpe
 import chaiAsPromised  from "chai-as-promised";
 
 import { viem } from "hardhat";
+import { KeyedClient } from "@nomicfoundation/hardhat-viem/types";
 
 use(chaiAsPromised);
 
@@ -21,7 +22,7 @@ describe("Greeter contract", function() {
     const greeterAsOther = await viem.getContractAt(
       "Greeter",
       greeter.address,
-      { walletClient: other }
+      { client: { wallet: other  } }
     );
 
     return {
