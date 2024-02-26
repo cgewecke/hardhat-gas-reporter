@@ -106,9 +106,9 @@ export function getCommonTableVals(options: GasReporterOptions) {
     l2gwei = parseFloat(l2gwei.toString()).toFixed(DEFAULT_GAS_PRICE_PRECISION);
   }
 
-  const nonZeroMsg = "Cost was non-zero but below the 2 decimal precision threshold of the currency display";
+  const nonZeroMsg = "Cost was non-zero but below the precision setting for the currency display";
   const intrinsicMsg = "Execution gas vals for methods with this symbol do not include intrinsic gas overhead " +
-               "(due to `eth_call` or user preference)";
+               "(due to `eth_call` or option settings)";
 
   return {
     l1gwei,
