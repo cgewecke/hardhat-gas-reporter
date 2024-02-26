@@ -164,13 +164,13 @@ export function getTxCalldataGas(tx: JsonRpcTx): number {
   const serializedTx = serializeTransaction({
     to: tx.to as Hex,
     gasPrice: hexToBigInt(tx.gasPrice),
-    //maxFeePerGas: hexToBigInt(tx.maxFeePerGas!),
-    //maxPriorityFeePerGas: hexToBigInt(tx.maxPriorityFeePerGas!),
+    // maxFeePerGas: hexToBigInt(tx.maxFeePerGas!),
+    // maxPriorityFeePerGas: hexToBigInt(tx.maxPriorityFeePerGas!),
     data: tx.data as Hex ? tx.data! as Hex : tx.input! as Hex,
     value: hexToBigInt(tx.value),
     chainId: parseInt(tx.chainId!),
     type: tx.type,
-    //accessList: tx.accessList,
+    // accessList: tx.accessList,
     nonce: parseInt(tx.nonce)
   })
 

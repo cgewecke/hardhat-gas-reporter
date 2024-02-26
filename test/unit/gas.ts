@@ -1,18 +1,14 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assert } from "chai";
 import { getCalldataGasForNetwork, gasToCost } from "../../src/utils/gas";
+import { GasReporterOptions } from "../types";
 import { cases as optimismCases } from "./cases/optimism";
 
-import { GasReporterOptions } from "../types";
 
 function getPercentDiff(valA: number, valB: number) {
-  if (valA > valB) {
-    const diff = valA - valB;
-    return diff / valA;
-  }
-
-  const diff = valB - valA;
-  return diff/ valB;
+  return (valA > valB)
+    ? (valA - valB) / valA
+    : (valB - valA) / valB;
 }
 
 describe("getCalldataCostForNetwork", function () {

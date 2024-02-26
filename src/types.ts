@@ -202,8 +202,8 @@ export interface JsonRpcTx {
   hash: string
   nonce: string
   value: string
-  //maxFeePerBlobGas?: string // QUANTITY - max data fee for blob transactions
-  //blobVersionedHashes?: string[] // DATA - array of 32 byte versioned hashes for blob transactions
+  // maxFeePerBlobGas?: string // QUANTITY - max data fee for blob transactions
+  // blobVersionedHashes?: string[] // DATA - array of 32 byte versioned hashes for blob transactions
 }
 
 // Partial: borrowed from ethereumjs/block to avoid adding package
