@@ -1,7 +1,7 @@
 import type { RpcReceiptOutput } from "hardhat/internal/hardhat-network/provider/output"
 import { EthereumProvider } from "hardhat/types";
 import { GasReporterOptions, JsonRpcTx } from "../types"
-import { getCalldataGasForNetwork, hexGasToDecimal } from "../utils/gas";
+import { getCalldataGasForNetwork, hexToDecimal } from "../utils/gas";
 import { getMethodID } from "../utils/sources";
 import { GasData } from "./gasData";
 
@@ -40,7 +40,7 @@ export class Collector {
    * @param  {TransactionReceipt} receipt
    */
   private async _collectDeploymentsData(tx: JsonRpcTx, receipt: RpcReceiptOutput): Promise<void> {
-    const match = this.data.getContractByDeploymentInput(tx.input);
+    const match = this.data.getContractByDeploymentInput(tx.input!);
 
     if (match !== null) {
       await this.data.trackNameByAddress(
@@ -48,8 +48,8 @@ export class Collector {
         receipt.contractAddress!
       );
 
-      const executionGas = hexGasToDecimal(receipt.gasUsed);
-      const calldataGas = getCalldataGasForNetwork(this.options, tx.input);
+      const executionGas = hexToDecimal(receipt.gasUsed);
+      const calldataGas = getCalldataGasForNetwork(this.options, tx);
 
       match.gasData.push(executionGas);
       match.callData.push(calldataGas);
@@ -65,7 +65,7 @@ export class Collector {
     let contractName = await this.data.getNameByAddress(tx.to);
 
     // Case: proxied call
-    if (this._isProxied(contractName, tx.input)) {
+    if (this._isProxied(contractName, tx.input!)) {
       contractName = this.resolver.resolveByProxy(tx);
 
       // Case: hidden contract factory deployment
@@ -80,11 +80,11 @@ export class Collector {
       contractName = this.resolver.resolveByMethodSignature(tx);
     }
 
-    const id = getMethodID(contractName!, tx.input);
+    const id = getMethodID(contractName!, tx.input!);
 
     if (this.data.methods[id] !== undefined) {
-      const executionGas = hexGasToDecimal(receipt.gasUsed);
-      const calldataGas = getCalldataGasForNetwork(this.options, tx.input);
+      const executionGas = hexToDecimal(receipt.gasUsed);
+      const calldataGas = getCalldataGasForNetwork(this.options, tx);
 
       this.data.methods[id].gasData.push(executionGas);
       this.data.methods[id].callData.push(calldataGas);

@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 // TODO: REMOVE LINT DISABLE
+/* eslint-disable */
 import { assert } from "chai";
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 import path from "path";
@@ -7,7 +8,7 @@ import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from ".
 
 import { useEnvironment, findMethod, findDeployment } from "../helpers";
 
-describe("Options D", function () {
+describe("Options E", function () {
   let output: GasReporterOutput;
   let options: GasReporterOptions;
   let methods: MethodData;
@@ -29,7 +30,7 @@ describe("Options D", function () {
   useEnvironment(projectPath, network, configPath);
 
   before(async function(){
-    await this.env.run(TASK_TEST, { testFiles: [] });
+    await this.env.run(TASK_TEST, { testFiles: ["test/variableCosts.ts", "test/wallet.ts"] });
     output = require(outputPath);
     options = output.options;
     methods = output.data!.methods;

@@ -9,11 +9,10 @@ import { getSolcInfo } from "../../utils/sources";
 
 import { GasReporterOptions, MethodDataItem } from "../../types";
 import { GasData } from "../gasData";
-import { indentText } from "../../utils/ui";
+import { getCommonTableVals, indentText } from "../../utils/ui";
 import {
-  DEFAULT_SUBZERO_GAS_PRICE_PRECISION,
-  UNICODE_AIR,
-  UNICODE_OMEGA
+  UNICODE_CIRCLE,
+  UNICODE_TRIANGLE
 } from "../../constants";
 
 interface Section {row: HorizontalTableRow, contractName: string, methodName: string}
@@ -105,7 +104,7 @@ export function generateTerminalTextTable(
 
     // Notify when value is below is precision
     if (typeof stats.cost === "number" && stats.cost < .01) {
-      stats.cost = UNICODE_AIR;
+      stats.cost = UNICODE_TRIANGLE;
     }
 
     if (method.min && method.max) {
@@ -159,7 +158,7 @@ export function generateTerminalTextTable(
 
     // Notify when value is below precision
     if (typeof stats.cost === "number" && stats.cost < .01) {
-      stats.cost = UNICODE_AIR;
+      stats.cost = UNICODE_TRIANGLE;
     }
 
     stats.calldataGasAverage = (deployment.calldataGasAverage === undefined )
@@ -173,7 +172,7 @@ export function generateTerminalTextTable(
     }
 
     const section: any = [];
-    section.push({ hAlign: "left", colSpan: 2, content: deployment.name });
+    section.push({ hAlign: "left", colSpan: 2, content: chalk.bold(deployment.name) });
     section.push({ hAlign: "right", colSpan: 1, content: stats.min });
     section.push({ hAlign: "right", colSpan: 1, content: stats.max });
     section.push({ hAlign: "right", colSpan: 1, content: utils.commify(deployment.executionGasAverage!) });
@@ -253,7 +252,7 @@ export function generateTerminalTextTable(
     {
       hAlign: "left",
       colSpan: 1,
-      content: chalk.cyan(`viaIR: ${solc.viaIR}`)
+      content: chalk.cyan(`viaIR: ${solc.viaIR.toString()}`)
     },
     {
       hAlign: "left",
@@ -273,30 +272,16 @@ export function generateTerminalTextTable(
   let networkConfig: HorizontalTableRow = [];
 
   if (options.tokenPrice && options.gasPrice) {
-    let L1gwei: string | number = (options.L2 === undefined)
-      ? options.gasPrice
-      : options.baseFee!;
-
-    let L2gwei: string | number = (options.L2 === undefined)
-      ? ""
-      : options.gasPrice;
-
-    const network = (options.L2 === undefined)
-      ? "L1 EVM"
-      : `${options.L2}`
-
-    // Truncate subzero gas prices to 5 decimal precision
-    if (typeof L1gwei === "number" && L1gwei < 1) {
-      L1gwei = parseFloat(L1gwei.toString()).toFixed(DEFAULT_SUBZERO_GAS_PRICE_PRECISION);
-    }
-
-    if (typeof L2gwei === "number" && L2gwei < 1) {
-      L2gwei = parseFloat(L2gwei.toString()).toFixed(DEFAULT_SUBZERO_GAS_PRICE_PRECISION);
-    }
-
-    const rate = parseFloat(options.tokenPrice.toString()).toFixed(2);
-    const currency = `${options.currency!.toLowerCase()}`;
-    const token = `${options.token!.toLowerCase()}`;
+    const {
+      l1gwei,
+      l2gwei,
+      l1gweiNote,
+      l2gweiNote,
+      network,
+      rate,
+      currency,
+      token
+    } = getCommonTableVals(options);
 
     networkConfig.push({
       hAlign: "left",
@@ -308,14 +293,14 @@ export function generateTerminalTextTable(
     networkConfig.push({
       hAlign: "left",
       colSpan: 2,
-      content: chalk.cyan(`L1: ${L1gwei} gwei/gas`)
+      content: chalk.cyan(`L1: ${l1gwei} gwei ${l1gweiNote}`)
     });
 
     if (options.L2 !== undefined) {
       networkConfig.push({
         hAlign: "left",
         colSpan: 2,
-        content: chalk.cyan(`L2: ${L2gwei} gwei/gas`)
+        content: chalk.cyan(`L2: ${l2gwei} gwei ${l2gweiNote}`)
       });
     } else {
       networkConfig.push({ colSpan: 1, content: " " })
@@ -324,7 +309,7 @@ export function generateTerminalTextTable(
     networkConfig.push({
         hAlign: "center",
         colSpan: 2,
-        content: chalk.red(`${rate} ${currency}/${token}`)
+        content: chalk.magenta(`${rate} ${currency}/${token}`)
     });
   } else {
     networkConfig = [
@@ -337,12 +322,12 @@ export function generateTerminalTextTable(
   // ===============
   const methodsHeader: HorizontalTableRow = [];
   methodsHeader.push({ hAlign: "left", colSpan: 2, content: chalk.green.bold("Contracts / Methods") });
-  methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.green("Min") });
-  methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.green("Max") });
-  methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.green(executionGasAverageTitle) })
+  methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.bold("Min") });
+  methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.bold("Max") });
+  methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.bold(executionGasAverageTitle) })
 
   if (options.L2 !== undefined) {
-    methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.green(calldataGasAverageTitle) })
+    methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.bold(calldataGasAverageTitle) })
   }
 
   methodsHeader.push({ hAlign: "left", colSpan: 1, content: chalk.bold("# calls") });
@@ -351,18 +336,19 @@ export function generateTerminalTextTable(
   // ===============
   // SYMBOL KEY
   // ===============
-  const air = "Cost was non-zero but below the 2 decimal precision threshold of the currency display";
-  const call = "Execution gas vals for methods with this symbol do not include intrinsic gas overhead " +
-               "(due to `eth_call` or user preference)";
+  const {
+    intrinsicMsg,
+    nonZeroMsg
+  } = getCommonTableVals(options);
 
   const keyTitle: HorizontalTableRow = [{
     hAlign: "left", colSpan: numberOfCols, content: chalk.green.bold("Key")
   }];
   const keyCall: HorizontalTableRow =[{
-    hAlign: "left", colSpan: numberOfCols, content: `${chalk.red(UNICODE_OMEGA)}: ${call}`
+    hAlign: "left", colSpan: numberOfCols, content: `${chalk.magenta.bold(UNICODE_CIRCLE)}  ${intrinsicMsg}`
   }];
   const keyAir: HorizontalTableRow = [{
-    hAlign: "left", colSpan: numberOfCols, content: `${chalk.red(UNICODE_AIR)}: ${air}`
+    hAlign: "left", colSpan: numberOfCols, content: `${chalk.magenta.bold(UNICODE_TRIANGLE)}  ${nonZeroMsg}`
   }];
 
   // ---------------------------------------------------------------------------------------------

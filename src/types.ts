@@ -188,8 +188,22 @@ export interface ContractInfo {
 
 // Partial: borrowed from ethereumjs/tx to avoid adding package
 export interface JsonRpcTx {
-  input: string     // the data send along with the transaction.
-  to: string | null // address of the receiver. null when it's a contract creation tx.
+  input: string
+  data?: string
+  to: string | null
+  from: string
+  gas: string
+  gasPrice: string
+  maxFeePerGas?: string
+  maxPriorityFeePerGas?: string
+  type: string
+  accessList?: any['accessList']
+  chainId?: string
+  hash: string
+  nonce: string
+  value: string
+  //maxFeePerBlobGas?: string // QUANTITY - max data fee for blob transactions
+  //blobVersionedHashes?: string[] // DATA - array of 32 byte versioned hashes for blob transactions
 }
 
 // Partial: borrowed from ethereumjs/block to avoid adding package

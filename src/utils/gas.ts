@@ -1,4 +1,5 @@
 import axios from "axios";
+import { serializeTransaction, Hex } from 'viem';
 import {
   DEFAULT_COINMARKET_BASE_URL,
   OPTIMISM_BEDROCK_DYNAMIC_OVERHEAD,
@@ -7,66 +8,48 @@ import {
   OPTIMISM_ECOTONE_BLOB_BASE_FEE_SCALAR
 } from "../constants";
 
-import { GasReporterOptions } from "../types";
+import { GasReporterOptions, JsonRpcTx } from "../types";
 
 /**
 ==========================
 OPTIMISM BEDROCK
 ==========================
-Prior to the Ecotone upgrade, the L1 Data Fee is calculated based on the following parameters:
-
-The signed transaction serialized according to the standard Ethereum transaction RLP encoding.
-The current Ethereum base fee (trustlessly relayed from Ethereum).
+Given:
 
 + A fixed overhead cost for publishing a transaction (currently set to 188 gas).
 + A dynamic overhead cost which scales with the size of the transaction (currently set to 0.684).
 
-The L1 Data Fee calculation first begins with counting the number of zero bytes and non-zero bytes
-in the transaction data. Each zero byte costs 4 gas and each non-zero byte costs 16 gas.
-This is the same way that Ethereum calculates the gas cost of transaction data.
-
+Count the number of zero bytes and non-zero bytes in the transaction data. Each zero byte
+costs 4 gas and each non-zero byte costs 16 gas.
+```
 tx_data_gas = count_zero_bytes(tx_data) * 4 + count_non_zero_bytes(tx_data) * 16
-
-After calculating the gas cost of the transaction data, the fixed and dynamic overhead values are
-applied.
-
-```
 tx_total_gas = (tx_data_gas + fixed_overhead) * dynamic_overhead
-```
-
-Finally, the total L1 Data Fee is calculated by multiplying the total gas cost by the current
-Ethereum base fee.
-
-```
 l1_data_fee = tx_total_gas * ethereum_base_fee
 ```
 Source: https://docs.optimism.io/stack/transactions/fees#formula
-
 */
 
 /**
- * Gets the scaled calldata gas usage for a tx (an input into the function below)
- * @param txInput `input` field of JSONRPC getTransaction response
+ * Gets calldata gas plus overhead for a tx (an input into the function below)
+ * @param tx        JSONRPC formatted getTransaction response
  * @returns
  */
-export function getOptimismBedrockL1Gas(txInput: string): number {
-  const txDataGas = getTxCalldataGas(txInput);
-
-  const totalTxDataGas = Math.floor(
-    (txDataGas + OPTIMISM_BEDROCK_FIXED_OVERHEAD) * OPTIMISM_BEDROCK_DYNAMIC_OVERHEAD
-  );
-
-  return totalTxDataGas;
+export function getOptimismBedrockL1Gas(tx: JsonRpcTx): number {
+  // TODO: Am getting a small underestimate here compared to Etherscan, plus
+  // its weird to split up the overhead calc into different functions? (Just doing this
+  // so the numbers look right compared to scan but seems wrong)
+  const txDataGas = getTxCalldataGas(tx);
+  return txDataGas + OPTIMISM_BEDROCK_FIXED_OVERHEAD;
 }
 
 /**
  * Gets the native token denominated cost of registering tx calldata to L1
- * @param txDataGas       amount obtained from `getOptimismBedrockL1Gas`
+ * @param txDataGas            amount obtained from `getOptimismBedrockL1Gas`
  * @param baseFee              amount obtained from previous block
  * @returns
  */
 export function getOptimismBedrockL1Cost(txDataGas: number, baseFee: number): number {
-  return txDataGas * baseFee;
+  return Math.floor(OPTIMISM_BEDROCK_DYNAMIC_OVERHEAD * txDataGas) * baseFee;
 }
 
 /*
@@ -98,11 +81,11 @@ export function getOptimismBedrockL1Cost(txDataGas: number, baseFee: number): nu
 
 /**
  * Gets compressed transaction calldata gas usage (an input into the cost function below)
- * @param txInput `input` field of JSONRPC getTransaction response
+ * @param tx    JSONRPC formatted getTransaction response
  * @returns
  */
-export function getOptimismEcotoneL1Gas(txInput: string) {
-  return Math.floor(getTxCalldataGas(txInput) / 16);
+export function getOptimismEcotoneL1Gas(tx: JsonRpcTx) {
+  return Math.floor(getTxCalldataGas(tx) / 16);
 }
 
 /**
@@ -128,12 +111,12 @@ export function getOptimismEcotoneL1Cost(
 
 // STUB
 // eslint-disable-next-line
-export function getArbitrum_OS11_L1Gas(txInput: string) {
+export function getArbitrum_OS11_L1Gas(tx: JsonRpcTx) {
   return 0;
 }
 
 // eslint-disable-next-line
-export function getArbitrum_OS20_L1Gas(txInput: string) {
+export function getArbitrum_OS20_L1Gas(tx: JsonRpcTx) {
   return 0;
 }
 
@@ -174,13 +157,27 @@ export function getArbitrum_OS20_L1Cost(gas: number) {
  *
  * SOURCE: optimism/packages/contracts/contracts/L2/predeploys/OVM_GasPriceOracle.sol
  */
-export function getTxCalldataGas(txInput: string): number {
+export function getTxCalldataGas(tx: JsonRpcTx): number {
   let total = 0;
 
+  // TODO: Upgrade to Viem2 (Errors are thrown on EIP1559 stuff and methods' missing)
+  const serializedTx = serializeTransaction({
+    to: tx.to as Hex,
+    gasPrice: hexToBigInt(tx.gasPrice),
+    //maxFeePerGas: hexToBigInt(tx.maxFeePerGas!),
+    //maxPriorityFeePerGas: hexToBigInt(tx.maxPriorityFeePerGas!),
+    data: tx.data as Hex ? tx.data! as Hex : tx.input! as Hex,
+    value: hexToBigInt(tx.value),
+    chainId: parseInt(tx.chainId!),
+    type: tx.type,
+    //accessList: tx.accessList,
+    nonce: parseInt(tx.nonce)
+  })
+
   // String hex-prefixed, 1 byte = 2 hex chars
-  for (let i = 2; i < txInput.length; i++) {
+  for (let i = 2; i < serializedTx.length; i++) {
     if (i % 2 === 0) {
-      total = (txInput[i] === "0" && txInput[i + 1] === "0")
+      total = (serializedTx[i] === "0" && serializedTx[i + 1] === "0")
         ? total + 4
         : total + 16;
     }
@@ -192,25 +189,25 @@ export function getTxCalldataGas(txInput: string): number {
 /**
  * Gets calldata gas amount for network by hardfork
  * @param options      GasReporterOptions
- * @param txInput     `input` field of JSONRPC transaction
+ * @param tx           JSONRPC formatted transaction
  * @returns
  */
 export function getCalldataGasForNetwork(
   options: GasReporterOptions,
-  txInput: string
+  tx: JsonRpcTx
 ) : number {
   if (options.L2 === "optimism") {
     switch (options.optimismHardfork){
-      case "bedrock": return getOptimismBedrockL1Gas(txInput);
-      case "ecotone": return getOptimismEcotoneL1Gas(txInput);
+      case "bedrock": return getOptimismBedrockL1Gas(tx);
+      case "ecotone": return getOptimismEcotoneL1Gas(tx);
       default: return 0; /** This shouldn't happen */
     }
   }
 
   if (options.L2 === "arbitrum") {
     switch (options.arbitrumHardfork){
-      case "arbOS11": return getArbitrum_OS11_L1Gas(txInput);
-      case "arbOS20": return getArbitrum_OS20_L1Gas(txInput);
+      case "arbOS11": return getArbitrum_OS11_L1Gas(tx);
+      case "arbOS20": return getArbitrum_OS20_L1Gas(tx);
       default: return 0; /** This shouldn't happen */
     }
   }
@@ -271,7 +268,7 @@ export function gasToCost(
   }
 
   const executionCost = (options.gasPrice! / 1e9) * executionGas * parseFloat(options.tokenPrice!);
-  return (executionCost + calldataCost).toFixed(2);
+  return (executionCost + calldataCost).toFixed(8);
 }
 
 /**
@@ -285,12 +282,21 @@ export function gasToPercentOfLimit(gasUsed: number, blockLimit: number): number
 }
 
 /**
- * Converts hex gas to decimal
- * @param  {bigint} val hex gas returned by RPC
- * @return {Number}     decimal gas
+ * Converts hex to decimal
+ * @param  {string}     hex JSONRPC val
+ * @return {Number}     decimal
  */
-export function hexGasToDecimal(val: string): number {
+export function hexToDecimal(val: string): number {
   return parseInt(val, 16);
+}
+
+/**
+ * Converts hex to bigint
+ * @param  {string}     hex JSONRPC val
+ * @return {BigInt}     bigint
+ */
+export function hexToBigInt(val: string): bigint {
+  return BigInt(parseInt(val, 16));
 }
 
 /**

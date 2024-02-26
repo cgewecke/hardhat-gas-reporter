@@ -6,7 +6,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { GasReporterOptions, MethodDataItem } from "../../types";
 import { GasData } from "../gasData";
 import { getSolcInfo } from "../../utils/sources";
-import { indentMarkdown, entitleMarkdown } from "../../utils/ui";
+import { indentMarkdown, entitleMarkdown, getCommonTableVals } from "../../utils/ui";
 
 interface Section {row: string[], contractName: string, methodName: string}
 
@@ -28,35 +28,49 @@ export function generateMarkdownTable(
   const addedContracts: string[] = [];
 
   if (options.L2 !== undefined) {
-    gasAverageTitle = ["L2 Avg", "L1 Avg"];
+    gasAverageTitle = ["L2 Avg (Exec)", "L1 Avg (Data)"];
   }
 
   // ---------------------------------------------------------------------------------------------
   // Assemble section: Build options
   // ---------------------------------------------------------------------------------------------
-  let gwei = "-";
-  let currency = "-";
-  let rate = "-";
-  let token = "-";
+  let gasPrices: string[][];
+  let l1gwei: string | number | undefined;
+  let l2gwei: string | number | undefined;
+  const { network, currency } = getCommonTableVals(options);
+  let tokenPrice = "-";
+  let rate: string;
+  let token: string;
 
   const solc = getSolcInfo(hre.config.solidity.compilers[0]);
 
   if (options.tokenPrice && options.gasPrice) {
-    gwei = `${options.gasPrice} gwei/gas`;
-    currency = `${options.currency!.toLowerCase()}`;
-    token = options.token!.toLowerCase();
-    rate = `${parseFloat(options.tokenPrice).toFixed(2)} ${currency}/${token}`;
+    ({
+      l1gwei,
+      l2gwei,
+      rate,
+      token
+    } = getCommonTableVals(options));
+
+    gasPrices = (options.L2)
+      ? [[`L1 Base Fee`, `${l1gwei} gwei`], [`L2 Gas Price`, `${l2gwei} gwei` ]]
+      : [[`L1 Gas Price`, `${l1gwei} gwei`]];
+
+    tokenPrice = `${rate} ${currency}/${token}`
+  } else {
+    gasPrices = [["Gas Price", "-" ]];
   }
 
   const optionsRows: readonly string[][] = [
     ["Option", "Settings"],
-    ["solc: version", solc.version],
-    ["solc: optimized", solc.optimizer],
-    ["solc: runs", solc.runs.toString()],
-    ["solc: viaIR", solc.viaIR.toString()],
-    ["gas: block limit", utils.commify(hre.__hhgrec.blockGasLimit!)],
-    ["gas: price", gwei],
-    ["market: currency rate", rate]
+    ["Solidity: version", solc.version],
+    ["Solidity: optimized", solc.optimizer],
+    ["Solidity: runs", solc.runs.toString()],
+    ["Solidity: viaIR", solc.viaIR.toString()],
+    ["Block Limit", utils.commify(hre.__hhgrec.blockGasLimit!)],
+    ...gasPrices,
+    ["Token Price", tokenPrice],
+    ["Network", network]
   ];
 
   const optionsTable = table(optionsRows);
@@ -216,7 +230,7 @@ export function generateMarkdownTable(
   // Final assembly
   // ---------------------------------------------------------------------------------------------
 
-  const optionsTitle = "## Build Configuration\n";
+  const optionsTitle = "## Solidity and Network Config\n";
   const methodTitle = "## Methods\n";
   const deployTitle = "## Deployments\n";
 
