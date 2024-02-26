@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assert } from "chai";
 import { getCalldataGasForNetwork, gasToCost } from "../../src/utils/gas";
-import { DEFAULT_CURRENCY_DISPLAY_PRECISION } from "../constants";
 import { GasReporterOptions } from "../types";
 import { cases as optimismCases } from "./cases/optimism";
 

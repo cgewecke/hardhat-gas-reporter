@@ -9,7 +9,7 @@ import { getSolcInfo } from "../../utils/sources";
 
 import { GasReporterOptions, MethodDataItem } from "../../types";
 import { GasData } from "../gasData";
-import { getCommonTableVals, indentText } from "../../utils/ui";
+import { getCommonTableVals, getSmallestPrecisionVal, indentText } from "../../utils/ui";
 import {
   UNICODE_CIRCLE,
   UNICODE_TRIANGLE
@@ -103,7 +103,7 @@ export function generateTerminalTextTable(
     }
 
     // Notify when value is below is precision
-    if (typeof stats.cost === "number" && stats.cost < .01) {
+    if (typeof stats.cost === "number" && stats.cost < getSmallestPrecisionVal(options.currencyDisplayPrecision!)) {
       stats.cost = UNICODE_TRIANGLE;
     }
 
@@ -157,7 +157,7 @@ export function generateTerminalTextTable(
     stats.cost = (deployment.cost === undefined) ? chalk.grey("-") : deployment.cost;
 
     // Notify when value is below precision
-    if (typeof stats.cost === "number" && stats.cost < .01) {
+    if (typeof stats.cost === "number" && stats.cost < getSmallestPrecisionVal(options.currencyDisplayPrecision!)) {
       stats.cost = UNICODE_TRIANGLE;
     }
 

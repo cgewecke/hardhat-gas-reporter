@@ -21,6 +21,15 @@ export function entitleMarkdown(val: string) {
   return `**${val}**`;
 }
 
+export function getSmallestPrecisionVal(precision: number): number {
+  let start = "."
+  for (let i = 0; i < precision - 1; i++ ) {
+    start += "0";
+  }
+  start += "1";
+  return parseFloat(start);
+}
+
 /**
  * Message for un-parseable ABI (ethers)
  * @param  {string} name contract name

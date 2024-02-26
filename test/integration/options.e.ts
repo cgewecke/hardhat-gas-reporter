@@ -30,17 +30,7 @@ describe("Options E", function () {
   useEnvironment(projectPath, network, configPath);
 
   before(async function(){
-    const variableCostsPath = path.join(
-      this.env.config.paths.root,
-      "test/variableCosts.ts"
-    );
-
-    const walletPath = path.join(
-      this.env.config.paths.root,
-      "test/wallet.ts"
-    );
-
-    await this.env.run(TASK_TEST, { testFiles: [variableCostsPath, walletPath] });
+    await this.env.run(TASK_TEST, { testFiles: [] });
     output = require(outputPath);
     options = output.options;
     methods = output.data!.methods;
