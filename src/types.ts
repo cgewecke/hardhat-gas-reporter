@@ -30,6 +30,9 @@ export interface GasReporterOptions {
   /** @property Coinmarketcap currency code to denominate network token costs in (eg: "USD") */
   currency?: string;
 
+  /** @property: Decimal precision of nation state currency costs display */
+  currencyDisplayPrecision?: number;
+
   /** @property Use colors easier to see on dark backgrounds when rendering to terminal  */
   darkMode?: boolean;
 

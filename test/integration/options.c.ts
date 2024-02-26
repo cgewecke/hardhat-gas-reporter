@@ -30,7 +30,7 @@ describe("Options C", function () {
   useEnvironment(projectPath, network, configPath);
 
   before(async function(){
-    await this.env.run(TASK_TEST, { testFiles: ["test/variableCosts.ts", "test/wallet.ts"] });
+    await this.env.run(TASK_TEST, { testFiles: ["./test/variableCosts.ts", "./test/wallet.ts"] });
     output = require(outputPath);
     options = output.options;
     methods = output.data!.methods;

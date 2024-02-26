@@ -158,21 +158,21 @@ export function getArbitrum_OS20_L1Cost(gas: number) {
  * SOURCE: optimism/packages/contracts/contracts/L2/predeploys/OVM_GasPriceOracle.sol
  */
 export function getTxCalldataGas(tx: JsonRpcTx): number {
-  let total = 0;
+  const type = normalizeTxType(tx.type);
 
-  // TODO: Upgrade to Viem2 (Errors are thrown on EIP1559 stuff and methods' missing)
-  const serializedTx = serializeTransaction({
+  const serializedTx = serializeTransaction ({
     to: tx.to as Hex,
-    gasPrice: hexToBigInt(tx.gasPrice),
-    // maxFeePerGas: hexToBigInt(tx.maxFeePerGas!),
-    // maxPriorityFeePerGas: hexToBigInt(tx.maxPriorityFeePerGas!),
+    maxFeePerGas: hexToBigInt(tx.maxFeePerGas!),
+    maxPriorityFeePerGas: hexToBigInt(tx.maxPriorityFeePerGas!),
     data: tx.data as Hex ? tx.data! as Hex : tx.input! as Hex,
     value: hexToBigInt(tx.value),
     chainId: parseInt(tx.chainId!),
-    type: tx.type,
-    // accessList: tx.accessList,
+    type,
+    accessList: tx.accessList,
     nonce: parseInt(tx.nonce)
   })
+
+  let total = 0;
 
   // String hex-prefixed, 1 byte = 2 hex chars
   for (let i = 2; i < serializedTx.length; i++) {
@@ -268,7 +268,7 @@ export function gasToCost(
   }
 
   const executionCost = (options.gasPrice! / 1e9) * executionGas * parseFloat(options.tokenPrice!);
-  return (executionCost + calldataCost).toFixed(8);
+  return (executionCost + calldataCost).toFixed(options.currencyDisplayPrecision);
 }
 
 /**
@@ -287,7 +287,7 @@ export function gasToPercentOfLimit(gasUsed: number, blockLimit: number): number
  * @return {Number}     decimal
  */
 export function hexToDecimal(val: string): number {
-  return parseInt(val, 16);
+  return parseInt(val.toString(), 16);
 }
 
 /**
@@ -297,6 +297,17 @@ export function hexToDecimal(val: string): number {
  */
 export function hexToBigInt(val: string): bigint {
   return BigInt(parseInt(val, 16));
+}
+
+export function normalizeTxType(_type: string) {
+  switch(hexToDecimal(_type)) {
+    case 0: return 'legacy';
+    case 1: return 'eip2930;'
+    case 2: return 'eip1559';
+
+    // This will error within in viem.serializeTransaction
+    default: return _type;
+  }
 }
 
 /**

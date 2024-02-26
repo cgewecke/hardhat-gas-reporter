@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assert } from "chai";
 import { getCalldataGasForNetwork, gasToCost } from "../../src/utils/gas";
+import { DEFAULT_CURRENCY_DISPLAY_PRECISION } from "../constants";
 import { GasReporterOptions } from "../types";
 import { cases as optimismCases } from "./cases/optimism";
 
@@ -20,7 +21,8 @@ describe("getCalldataCostForNetwork", function () {
       optimismHardfork: "bedrock",
       gasPrice: fn.l2GasPrice,
       baseFee: fn.l1BaseFee,
-      tokenPrice: "1"
+      tokenPrice: "1",
+      currencyDisplayPrecision: 8,
     }
 
     const gas = getCalldataGasForNetwork(options, fn.tx);
@@ -39,7 +41,8 @@ describe("getCalldataCostForNetwork", function () {
       optimismHardfork: "bedrock",
       gasPrice: fn.l2GasPrice,
       baseFee: fn.l1BaseFee,
-      tokenPrice: "1"
+      tokenPrice: "1",
+      currencyDisplayPrecision: 8
     }
 
     const gas = getCalldataGasForNetwork(options, fn.tx);
@@ -58,7 +61,8 @@ describe("getCalldataCostForNetwork", function () {
       optimismHardfork: "bedrock",
       gasPrice: fn.l2GasPrice,
       baseFee: fn.l1BaseFee,
-      tokenPrice: "1"
+      tokenPrice: "1",
+      currencyDisplayPrecision: 8
     }
 
     const gas = getCalldataGasForNetwork(options, fn.tx);

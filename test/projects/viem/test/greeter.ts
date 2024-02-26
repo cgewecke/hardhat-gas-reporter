@@ -1,12 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assert, expect, use } from "chai";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import chaiAsPromised  from "chai-as-promised";
-
 import { viem } from "hardhat";
-import { KeyedClient } from "@nomicfoundation/hardhat-viem/types";
 
 use(chaiAsPromised);
 

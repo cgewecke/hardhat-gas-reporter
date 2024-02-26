@@ -8,8 +8,9 @@ export const TABLE_NAME_TERMINAL = "terminal";
 export const TABLE_NAME_MARKDOWN = "markdown";
 
 export const DEFAULT_CURRENCY = "USD";
+export const DEFAULT_CURRENCY_DISPLAY_PRECISION = 2;
 export const DEFAULT_JSON_OUTPUT_FILE = "./gasReporterOutput.json";
-export const DEFAULT_GAS_PRICE_PRECISION = 2;
+export const DEFAULT_GAS_PRICE_PRECISION = 5;
 
 export const DEFAULT_GET_BLOCK_API_URL = "https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=latest&boolean=true"
 export const DEFAULT_GAS_PRICE_API_URL  = "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice"
@@ -19,9 +20,7 @@ export const DEFAULT_OPTIMISM_HARDFORK = "bedrock";
 export const DEFAULT_ARBITRUM_HARDFORK = "arbOS11";
 
 // Source:
-// Dynamic Overhead val: https://docs.optimism.io/stack/transactions/fees#bedrock
-// Fixed Overhead (Gas Oracle contract)
-// https://optimistic.etherscan.io/address/0x19106f0212293c062ca8d64826e1b0b663255071
+// https://docs.optimism.io/stack/transactions/fees#bedrock
 export const OPTIMISM_BEDROCK_FIXED_OVERHEAD = 188;
 export const OPTIMISM_BEDROCK_DYNAMIC_OVERHEAD = 0.684;
 
