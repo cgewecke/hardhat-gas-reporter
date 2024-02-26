@@ -19,7 +19,7 @@ export async function initGasReporterProvider(provider: EIP1193Provider, context
 /* Config */
 extendConfig(
   (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
-    let options = getDefaultOptions();
+    let options = getDefaultOptions(userConfig);
 
     // Deep clone userConfig otherwise HH will throw unauthorized modification error
     if (userConfig.gasReporter !== undefined) {

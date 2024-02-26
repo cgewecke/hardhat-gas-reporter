@@ -114,29 +114,36 @@ export class GasData {
     const block = await hre.network.provider.send("eth_getBlockByNumber", ["latest", false]);
     const blockGasLimit = parseInt((block as JsonRpcBlock).gasLimit);
 
-    let methodsTotal = 0;
-    let deploymentsTotal = 0;
+    let methodsExecutionTotal = 0;
+    let methodsCalldataTotal = 0;
+    let deploymentsExecutionTotal = 0;
+    let deploymentsCalldataTotal = 0
 
     /* Methods */
     for (const key of Object.keys(this.methods)){
       const method = this.methods[key];
 
       if (method.gasData.length > 0) {
-        const total = method.gasData.reduce((acc: number, datum: number) => acc + datum, 0);
-        method.executionGasAverage = Math.round(total / method.gasData.length);
+        const executionTotal = method.gasData.reduce((acc: number, datum: number) => acc + datum, 0);
+        method.executionGasAverage = Math.round(executionTotal / method.gasData.length);
+
+        const calldataTotal = method.callData.reduce((acc: number, datum: number) => acc + datum, 0);
+        method.calldataGasAverage = Math.round(calldataTotal / method.gasData.length);
+
         method.cost =
           options.tokenPrice && options.gasPrice
             ? gasToCost(
                 method.executionGasAverage,
-                options.tokenPrice,
-                options.gasPrice
+                method.calldataGasAverage,
+                options
               )
             : undefined;
 
         const sortedData = method.gasData.sort((a: number, b: number) => a - b);
         method.min = sortedData[0];
         method.max = sortedData[sortedData.length - 1];
-        methodsTotal += method.executionGasAverage;
+        methodsExecutionTotal += method.executionGasAverage;
+        methodsCalldataTotal += method.calldataGasAverage;
       }
     }
 
@@ -145,43 +152,48 @@ export class GasData {
       if (deployment.gasData.length !== 0) {
         const total = deployment.gasData.reduce((acc, datum) => acc + datum, 0);
         deployment.executionGasAverage = Math.round(total / deployment.gasData.length);
+
+        const calldataTotal = deployment.callData.reduce((acc: number, datum: number) => acc + datum, 0);
+        deployment.calldataGasAverage = Math.round(calldataTotal / deployment.callData.length);
+
         deployment.percent = gasToPercentOfLimit(deployment.executionGasAverage, blockGasLimit);
 
         deployment.cost =
           options.tokenPrice && options.gasPrice
             ? gasToCost(
                 deployment.executionGasAverage,
-                options.tokenPrice,
-                options.gasPrice
+                deployment.calldataGasAverage,
+                options
               )
             : undefined;
 
         const sortedData = deployment.gasData.sort((a, b) => a - b);
         deployment.min = sortedData[0];
         deployment.max = sortedData[sortedData.length - 1];
-        deploymentsTotal += deployment.executionGasAverage;
+        deploymentsExecutionTotal += deployment.executionGasAverage;
+        deploymentsCalldataTotal += deployment.calldataGasAverage;
       }
     }
 
     hre.__hhgrec.blockGasLimit = blockGasLimit;
 
-    hre.__hhgrec.methodsTotalGas = methodsTotal;
+    hre.__hhgrec.methodsTotalGas = methodsExecutionTotal;
     hre.__hhgrec.methodsTotalCost =
       options.tokenPrice && options.gasPrice
         ? gasToCost(
-            methodsTotal,
-            options.tokenPrice,
-            options.gasPrice
+            methodsExecutionTotal,
+            methodsCalldataTotal,
+            options
           )
         : undefined;
 
-    hre.__hhgrec.deploymentsTotalGas = deploymentsTotal;
+    hre.__hhgrec.deploymentsTotalGas = deploymentsExecutionTotal;
     hre.__hhgrec.deploymentsTotalCost =
       options.tokenPrice && options.gasPrice
         ? gasToCost(
-            deploymentsTotal,
-            options.tokenPrice,
-            options.gasPrice
+            deploymentsExecutionTotal,
+            deploymentsCalldataTotal,
+            options
           )
         : undefined;
   }

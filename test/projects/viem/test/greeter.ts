@@ -1,10 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assert, expect, use } from "chai";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import chaiAsPromised  from "chai-as-promised";
-
 import { viem } from "hardhat";
 
 use(chaiAsPromised);
@@ -21,7 +20,7 @@ describe("Greeter contract", function() {
     const greeterAsOther = await viem.getContractAt(
       "Greeter",
       greeter.address,
-      { walletClient: other }
+      { client: { wallet: other  } }
     );
 
     return {

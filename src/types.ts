@@ -7,12 +7,31 @@ declare module "hardhat/types/config" {
   }
 }
 
+export type ArbitrumHardfork = "arbOS11" | "arbOS20" | undefined;
+export type OptimismHardfork = "bedrock" | "ecotone" | undefined;
+
 export interface GasReporterOptions {
+  /** @property Arbitrum client version to emulate gas costs for. Only applied when L2 is "arbitrum" */
+  arbitrumHardfork?: ArbitrumHardfork,
+
+  /** @property Gwei base fee per gas unit. */
+  /*
+   * NB: Used to calculate L1 calldata costs for L2 transactions and typically obtained via api call
+   * to etherscan for the latest blockheader via option `getBlockApi`
+   */
+  baseFee?: number;
+
+  /** @property Gwei blob base fee per gas unit . Used to calculate L1 calldata costs post EIP-7516*/
+  blobBaseFee?: number;
+
   /** @property API key to access token/currency market price data with */
   coinmarketcap?: string;
 
   /** @property Coinmarketcap currency code to denominate network token costs in (eg: "USD") */
   currency?: string;
+
+  /** @property: Decimal precision of nation state currency costs display */
+  currencyDisplayPrecision?: number;
 
   /** @property Use colors easier to see on dark backgrounds when rendering to terminal  */
   darkMode?: boolean;
@@ -26,20 +45,20 @@ export interface GasReporterOptions {
   /** @property Gwei price per gas unit (eg: 20) */
   gasPrice?: number;
 
-  /** @property Etherscan-like url to fetch live network gas price from */
+  /** @property Etherscan-like url to fetch live execution network gas price from */
   gasPriceApi?: string;
+
+  /** @property  Etherscan-like url to fetch L1 block header from */
+  getBlockApi?: string
 
   /** @property L2 Network to calculate execution costs for */
   L2?: "optimism" | "arbitrum"
 
-  /** @property L2 Gwei price per gas unit (eg: .00035) */
-  L2gasPrice?: number,
-
-  /** @property Etherscan-like url to fetch live network gas price from */
-  L2gasPriceApi?: string,
-
   /** @property Omit terminal color in output */
   noColors?: boolean;
+
+  /** @property Optimism client version to emulate gas costs for. Only applied when L2 is "optimism" */
+  optimismHardfork?: OptimismHardfork,
 
   /** @property Relative path to a file to output terminal table to (instead of stdout) */
   outputFile?: string;
@@ -124,7 +143,7 @@ export interface MethodDataItem {
   contract: string,
   method: string,
   fnSig: string,
-  callData: string[],
+  callData: number[],
   gasData: number[],
   numberOfCalls: number,
   min?: number,
@@ -140,7 +159,7 @@ export interface Deployment {
   name: string,
   bytecode: string,
   deployedBytecode: string,
-  callData: string[],
+  callData: number[],
   gasData: number[],
   min?: number,
   max?: number,
@@ -172,13 +191,28 @@ export interface ContractInfo {
 
 // Partial: borrowed from ethereumjs/tx to avoid adding package
 export interface JsonRpcTx {
-  input: string     // the data send along with the transaction.
-  to: string | null // address of the receiver. null when it's a contract creation tx.
+  input: string
+  data?: string
+  to: string | null
+  from: string
+  gas: string
+  gasPrice: string
+  maxFeePerGas?: string
+  maxPriorityFeePerGas?: string
+  type: string
+  accessList?: any['accessList']
+  chainId?: string
+  hash: string
+  nonce: string
+  value: string
+  // maxFeePerBlobGas?: string // QUANTITY - max data fee for blob transactions
+  // blobVersionedHashes?: string[] // DATA - array of 32 byte versioned hashes for blob transactions
 }
 
 // Partial: borrowed from ethereumjs/block to avoid adding package
 export interface JsonRpcBlock {
-  gasLimit: string     // the data send along with the transaction.
+  gasLimit: string        // the data send along with the transaction.
+  baseFeePerGas: string   // If EIP-1559 is enabled for this block, returns the base fee per gas
 }
 
 
