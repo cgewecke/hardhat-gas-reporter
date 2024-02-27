@@ -35,12 +35,6 @@ npx mocha test/unit/*.ts
 ################################
 npx mocha test/integration/*.ts --timeout 100000 --exit
 
-# Temporarily skipping waffle test - simple txs error with internal ethers error:
-# `this.provider.getFeeData is not a function`
-# Not sure if this is a problem here or because hardhat-waffle is deprecated
-# Also see: https://github.com/NomicFoundation/hardhat/issues/1866
-# npx mocha test/integration/waffle.ts --timeout 100000 --exit
-
 ##########################
 # Hardhat Node (Localhost)
 ##########################
