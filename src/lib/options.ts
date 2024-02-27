@@ -65,6 +65,7 @@ export function getDefaultOptions(userConfig: Readonly<HardhatUserConfig>): GasR
     gasPriceApi: DEFAULT_GAS_PRICE_API_URL,
     noColors: false,
     showUncalledMethods: false,
+    offline: false,
     optimismHardfork,
     outputJSON: false,
     outputJSONFile: DEFAULT_JSON_OUTPUT_FILE,
