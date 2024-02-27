@@ -46,6 +46,9 @@ export interface GasReporterOptions {
   /** @property List of contract names to exclude from report (e.g "Ownable") */
   excludeContracts?: string[];
 
+  /** @property Write to terminal even when saving output to file */
+  forceTerminalOutput?: boolean;
+
   /** @property Gwei price per gas unit (eg: 20) */
   gasPrice?: number;
 

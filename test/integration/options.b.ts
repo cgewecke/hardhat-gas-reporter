@@ -50,6 +50,13 @@ describe("Options B", function () {
     );
 
     const file = fs.readFileSync(outputFilePath, "utf8");
+    assert.isString(file);
+    assert.isAbove(file.length, 100);
+
+    // Should be decolorized while terminal output in full color
     console.log(file);
+
+    // Clean up
+    execSync(`rm ${outputFilePath}`);
   });
 });

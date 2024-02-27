@@ -35,6 +35,7 @@ const config: HardhatUserConfig = {
     showUncalledMethods: true,
     outputFile: "./testGasReport.txt",
     outputJSONFile: "./gas.json",
+    forceTerminalOutput: true
   }
 };
 

@@ -10,20 +10,31 @@ import { generateMarkdownTable} from "./markdown";
 import { generateJSONData } from "./json";
 
 /**
+ * Table format selector
+ * @param {HardhatRuntimeEnvironment} hre
+ * @param {GasData}                   data
+ * @param {GasReporterOptions}        options
+ * @returns {string}                  table
+ */
+export function getTableForFormat(hre: HardhatRuntimeEnvironment, data: GasData, options: GasReporterOptions): string {
+  switch (options.reportFormat) {
+    case TABLE_NAME_LEGACY:    return generateLegacyTextTable(hre, data, options);
+    case TABLE_NAME_TERMINAL:  return generateTerminalTextTable(hre, data, options);
+    case TABLE_NAME_MARKDOWN:  return generateMarkdownTable(hre, data, options);
+    default: warnReportFormat(options.reportFormat); return "";
+  }
+}
+
+/**
  * Manages table rendering and file saving
  * @param {HardhatRuntimeEnvironment} hre
  * @param {GasData}                   data
  * @param {GasReporterOptions}        options
  */
 export function render(hre: HardhatRuntimeEnvironment, data: GasData, options: GasReporterOptions) {
-  let table: string = "";
 
-  switch (options.reportFormat) {
-    case TABLE_NAME_LEGACY:    table = generateLegacyTextTable(hre, data, options);   break;
-    case TABLE_NAME_TERMINAL:  table = generateTerminalTextTable(hre, data, options); break;
-    case TABLE_NAME_MARKDOWN:  table = generateMarkdownTable(hre, data, options);     break;
-    default: warnReportFormat(options.reportFormat);
-  }
+  // Get table
+  let table = getTableForFormat(hre, data, options);
 
   // ---------------------------------------------------------------------------------------------
   // RST / ReadTheDocs / Sphinx output
@@ -42,6 +53,21 @@ export function render(hre: HardhatRuntimeEnvironment, data: GasData, options: G
   // ---------------------------------------------------------------------------------------------
   if (options.outputFile) {
     writeFileSync(options.outputFile, table);
+
+    // Regenerate the table with full color if also logging to console
+    if (options.forceTerminalOutput){
+      const originalOutputFile = options.outputFile;
+      const originalNoColors = options.noColors;
+      options.outputFile = undefined;
+      options.noColors = false;
+
+      table = getTableForFormat(hre, data, options);
+      console.log(table);
+
+      // Reset the options, since they might be read in JSON below here
+      options.outputFile = originalOutputFile;
+      options.noColors = originalNoColors;
+    }
   } else {
     console.log(table);
   }

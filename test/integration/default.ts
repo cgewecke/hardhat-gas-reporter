@@ -59,6 +59,7 @@ describe("Default Options", function () {
     assert.equal(options.currencyDisplayPrecision, DEFAULT_CURRENCY_DISPLAY_PRECISION );
     assert.equal(options.getBlockApi, DEFAULT_GET_BLOCK_API_URL);
     assert.equal(options.offline, false);
+    assert.equal(options.forceTerminalOutput, false);
 
     // Make sure we didn't hit endpoint
     assert.equal(options.gasPrice, undefined);
