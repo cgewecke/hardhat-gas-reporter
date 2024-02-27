@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assert } from "chai";
+import { execSync } from "child_process";
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 import path from "path";
 
@@ -7,6 +8,7 @@ import { DEFAULT_GAS_PRICE_API_URL, DEFAULT_JSON_OUTPUT_FILE, TABLE_NAME_TERMINA
 import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from "../types";
 
 import { useEnvironment, findMethod, findDeployment } from "../helpers";
+import { readFileSync } from "fs";
 
 describe("Default Options", function () {
   let output: GasReporterOutput;
@@ -31,11 +33,13 @@ describe("Default Options", function () {
 
   before(async function(){
     await this.env.run(TASK_TEST, { testFiles: [] });
-    output = require(outputPath);
+    output = JSON.parse(readFileSync(outputPath, 'utf-8'));
     options = output.options;
     methods = output.data!.methods;
     deployments = output.data!.deployments;
   })
+
+  after(() => execSync(`rm ${outputPath}`));
 
   it("default options", async function () {
     assert.equal(options.currency, "USD");

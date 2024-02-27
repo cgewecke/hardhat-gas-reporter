@@ -20,6 +20,8 @@
     "lint:fix": "npm run eslint -- --fix",
     "eslint": "eslint 'src/**/*.ts' 'test/**/*.ts' -c ./eslintrc.js",
     "test": "scripts/run-tests.sh",
+    "test:integration": "mocha test/integration/*.ts --timeout 100000 --exit",
+    "test:unit": "mocha test/unit/*.ts",
     "prepublishOnly": "tsc --project tsconfig.prod.json",
     "build": "tsc --project tsconfig.prod.json",
     "buidl": "tsc",

@@ -1,6 +1,7 @@
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assert } from "chai";
+import { execSync } from "child_process";
 import path from "path";
 import fs from "fs";
 import { GasReporterOptions, GasReporterOutput } from "../types";
@@ -29,9 +30,11 @@ describe("Options B", function () {
 
   before(async function(){
     await this.env.run(TASK_TEST, { testFiles: [] });
-    output = require(outputPath);
+    output = JSON.parse(fs.readFileSync(outputPath, 'utf-8'));
     options = output.options;
   })
+
+  after(() => execSync(`rm ${outputPath}`));
 
   it("set the options correctly", function(){
     assert.equal(options.token, "ETC");

@@ -24,12 +24,16 @@ describe("Independent Node: Hardhat", function () {
   useEnvironment(projectPath, network, configPath);
 
   before(async function(){
+    if(!process.env.STAND_ALONE) this.skip();
+
     await this.env.run(TASK_TEST, { testFiles: [] });
-    output = require(outputPath);
+    output = JSON.parse(fs.readFileSync(outputPath, 'utf-8'));
     options = output.options;
   })
 
   it("wrote to file", function () {
+    if(!process.env.STAND_ALONE) this.skip();
+
     const outputFileOption = options.outputFile;
     const outputFilePath = path.resolve(
       __dirname,

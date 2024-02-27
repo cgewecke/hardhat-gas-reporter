@@ -41,7 +41,6 @@ export function useEnvironment(
   before("Loading hardhat environment", async function () {
     process.chdir(projectPath);
 
-    // Writes the data to a JSON file
     process.env.CI = "true";
 
     if (networkName !== undefined) {
@@ -55,7 +54,7 @@ export function useEnvironment(
     this.env = require("hardhat");
   });
 
-  afterEach("Resetting hardhat", function () {
+  after("Resetting hardhat", function () {
     resetHardhatContext();
   });
 }
