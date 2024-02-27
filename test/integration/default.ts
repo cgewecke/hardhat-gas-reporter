@@ -4,11 +4,11 @@ import { execSync } from "child_process";
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 import path from "path";
 
+import { readFileSync } from "fs";
 import { DEFAULT_GAS_PRICE_API_URL, DEFAULT_JSON_OUTPUT_FILE, TABLE_NAME_TERMINAL } from "../../src/constants";
 import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from "../types";
 
 import { useEnvironment, findMethod, findDeployment } from "../helpers";
-import { readFileSync } from "fs";
 
 describe("Default Options", function () {
   let output: GasReporterOutput;
