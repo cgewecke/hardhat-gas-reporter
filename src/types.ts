@@ -21,7 +21,11 @@ export interface GasReporterOptions {
    */
   baseFee?: number;
 
-  /** @property Gwei blob base fee per gas unit . Used to calculate L1 calldata costs post EIP-7516*/
+  /** @property Gwei blob base fee per gas unit */
+  /*
+   * Used to calculate L1 calldata costs post EIP-7516 and typically obtained via api call
+   *to etherscan for the latest blockheader via option `getBlockApi`
+   */
   blobBaseFee?: number;
 
   /** @property API key to access token/currency market price data with */
@@ -56,6 +60,9 @@ export interface GasReporterOptions {
 
   /** @property Omit terminal color in output */
   noColors?: boolean;
+
+  /** @property Never make a remote call to fetch data */
+  offline?: boolean;
 
   /** @property Optimism client version to emulate gas costs for. Only applied when L2 is "optimism" */
   optimismHardfork?: OptimismHardfork,
@@ -93,7 +100,7 @@ export interface GasReporterOptions {
   /** @property Network token gas fees are paid in (eg:"ETH") */
   token?: string;
 
-  /** @property Network token price per currency unit, to two decimal places (eg: "2145.00") */
+  /** @property Network token price per nation state currency unit, to two decimal places (eg: "2145.00") */
   tokenPrice?: string;
 
   // INTERNAL: AUTOSET BY PLUGIN (ignore)

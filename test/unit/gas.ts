@@ -28,46 +28,40 @@ describe("gasToPercentOfLimit", function(){
 
 describe("EVM L1: gasToCost", function() {
     const precision = 7;
+    const options: GasReporterOptions = {
+      tokenPrice: "1",
+      currencyDisplayPrecision: precision
+    }
 
     it ("calculates cost for function call", function(){
       const fn = evmCases.function_1;
-
-      const options: GasReporterOptions = {
-        gasPrice: fn.gasPrice,
-        tokenPrice: "1",
-        currencyDisplayPrecision: precision
-      };
-
+      options.gasPrice = fn.gasPrice;
       const cost = gasToCost(fn.gas, 0, options);
+
       assert(cost, fn.txFeeETH.toFixed(precision));
     })
 
     it ("calculates cost for deployment", function(){
       const fn = evmCases.deployment;
-
-      const options: GasReporterOptions = {
-        gasPrice: fn.gasPrice,
-        tokenPrice: "1",
-        currencyDisplayPrecision: precision
-      };
-
+      options.gasPrice = fn.gasPrice;
       const cost = gasToCost(fn.gas, 0, options);
+
       assert(cost, fn.txFeeETH.toFixed(precision));
     })
 });
 
 describe("Optimism: getCalldataCostForNetwork", function () {
+  const options: GasReporterOptions = {
+    L2: "optimism",
+    optimismHardfork: "bedrock",
+    tokenPrice: "1",
+    currencyDisplayPrecision: 8,
+  }
+
   it("calculates gas cost for small function call tx (bedrock", function () {
     const fn = optimismCases.bedrockFunction_1;
-
-    const options: GasReporterOptions = {
-      L2: "optimism",
-      optimismHardfork: "bedrock",
-      gasPrice: fn.l2GasPrice,
-      baseFee: fn.l1BaseFee,
-      tokenPrice: "1",
-      currencyDisplayPrecision: 8,
-    }
+    options.gasPrice = fn.l2GasPrice;
+    options.baseFee = fn.l1BaseFee;
 
     const gas = getCalldataGasForNetwork(options, fn.tx);
     const cost = gasToCost(fn.l2GasUsed, gas, options);
@@ -79,15 +73,8 @@ describe("Optimism: getCalldataCostForNetwork", function () {
 
   it("calculates gas cost for larger function call tx (bedrock)", function(){
     const fn = optimismCases.bedrockFunction_2;
-
-    const options: GasReporterOptions = {
-      L2: "optimism",
-      optimismHardfork: "bedrock",
-      gasPrice: fn.l2GasPrice,
-      baseFee: fn.l1BaseFee,
-      tokenPrice: "1",
-      currencyDisplayPrecision: 8
-    }
+    options.gasPrice = fn.l2GasPrice;
+    options.baseFee = fn.l1BaseFee;
 
     const gas = getCalldataGasForNetwork(options, fn.tx);
     const cost = gasToCost(fn.l2GasUsed, gas, options);
@@ -99,15 +86,8 @@ describe("Optimism: getCalldataCostForNetwork", function () {
 
   it("calculates gas cost for deployment tx (bedrock)", function(){
     const fn = optimismCases.bedrockDeployment;
-
-    const options: GasReporterOptions = {
-      L2: "optimism",
-      optimismHardfork: "bedrock",
-      gasPrice: fn.l2GasPrice,
-      baseFee: fn.l1BaseFee,
-      tokenPrice: "1",
-      currencyDisplayPrecision: 8
-    }
+    options.gasPrice = fn.l2GasPrice;
+    options.baseFee = fn.l1BaseFee;
 
     const gas = getCalldataGasForNetwork(options, fn.tx);
     const cost = gasToCost(fn.l2GasUsed, gas, options);

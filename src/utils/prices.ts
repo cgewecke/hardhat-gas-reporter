@@ -3,18 +3,29 @@ import { DEFAULT_COINMARKET_BASE_URL } from "../constants";
 import { GasReporterOptions } from "../types";
 
 /**
- * Fetches gasPrices from etherscan and current market value of eth in currency specified by
- * the options from coinmarketcap (defaults to usd). Sets options.tokenPrice, options.gasPrice
- * unless these are already set as constants in the reporter options
+ * Fetches gas, base, & blob fee rates from etherscan as well as current market value of
+ * network token in nation state currency specified by the options from coinmarketcap
+ * (defaults to usd). Sets
+ *
+ * + options.tokenPrice
+ * + options.gasPrice
+ * + options.baseFee
+ * + options.blobBaseFee
+ *
+ * ... unless these are already set as constants in the reporter options
  * @param  {GasReporterOptions} options
  */
 export async function setGasAndPriceRates(options: GasReporterOptions): Promise<void> {
-  if ((options.tokenPrice && options.gasPrice) || !options.coinmarketcap) return;
+  if (
+    (options.offline) ||
+    !options.coinmarketcap ||
+    (!options.L2 && options.tokenPrice && options.gasPrice) ||
+    (options.L2 && options.tokenPrice && options.gasPrice && options.baseFee && options.blobBaseFee)
+  ) return;
 
   let block;
   const token = options.token!.toUpperCase();
   const getBlockApi = options.getBlockApi;
-
   const gasPriceApi = options.gasPriceApi;
 
   const axiosInstance = axios.create({
@@ -51,6 +62,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     }
   }
 
+  // baseFee data: etherscan (or `getBlockAPI`)
   if (options.L2 && !options.baseFee) {
     try {
       block = await axiosInstance.get(getBlockApi!);
@@ -62,6 +74,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     }
   }
 
+  // blobBaseFee data: etherscan (or `getBlockAPI`)
   if (options.L2 && !options.blobBaseFee) {
     options.blobBaseFee = 0;
 

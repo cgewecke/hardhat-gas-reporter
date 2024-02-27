@@ -1,5 +1,6 @@
 import { serializeTransaction, Hex } from 'viem';
 import {
+  EVM_BASE_TX_COST,
   OPTIMISM_BEDROCK_DYNAMIC_OVERHEAD,
   OPTIMISM_BEDROCK_FIXED_OVERHEAD,
   OPTIMISM_ECOTONE_BASE_FEE_SCALAR,
@@ -182,6 +183,16 @@ export function getTxCalldataGas(tx: JsonRpcTx): number {
   }
   // Assume VRS components are non-zero
   return total + (68 * 16);
+}
+
+/**
+ * Returns estimate of the intrinsic gas used for executing a tx on L1 EVM;
+ * @param tx
+ * @returns
+ */
+export function getIntrinsicGas(tx: JsonRpcTx): number {
+  const calldataGas = getTxCalldataGas(tx);
+  return calldataGas + EVM_BASE_TX_COST;
 }
 
 /**

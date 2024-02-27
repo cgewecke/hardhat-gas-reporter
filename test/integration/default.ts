@@ -58,6 +58,7 @@ describe("Default Options", function () {
     assert.equal(options.reportFormat, TABLE_NAME_TERMINAL);
     assert.equal(options.currencyDisplayPrecision, DEFAULT_CURRENCY_DISPLAY_PRECISION );
     assert.equal(options.getBlockApi, DEFAULT_GET_BLOCK_API_URL);
+    assert.equal(options.offline, false);
 
     // Make sure we didn't hit endpoint
     assert.equal(options.gasPrice, undefined);
@@ -70,6 +71,11 @@ describe("Default Options", function () {
     // Also checking that there's no doubling here
     assert(dataItemA!.numberOfCalls === 1);
     assert(dataItemB!.numberOfCalls === 1);
+  });
+
+  it ("should collect method data for contracts that use immutable vars", function(){
+    const dataItemA = findMethod(methods, "Immutable", "setVal");
+    assert(dataItemA!.numberOfCalls === 1);
   });
 
   // methodThatThrows is called twice: success and failure - we should only see one call though.
@@ -104,6 +110,11 @@ describe("Default Options", function () {
 
     assert(deploymentA!.gasData.length > 0);
     assert(deploymentB!.gasData.length > 0);
+  });
+
+  it ("should collect deployment data for contracts that use immutable vars", function(){
+    const deployment = findDeployment(deployments, "Immutable");
+    assert(deployment!.gasData.length > 0);
   });
 
   it("should collect deployment data for multiple deployments and set min, max, avg", function(){

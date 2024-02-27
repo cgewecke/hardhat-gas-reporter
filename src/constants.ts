@@ -19,6 +19,9 @@ export const DEFAULT_COINMARKET_BASE_URL = "https://pro-api.coinmarketcap.com/v1
 export const DEFAULT_OPTIMISM_HARDFORK = "bedrock";
 export const DEFAULT_ARBITRUM_HARDFORK = "arbOS11";
 
+// EVM
+export const EVM_BASE_TX_COST = 21000;
+
 // Source:
 // https://docs.optimism.io/stack/transactions/fees#bedrock
 export const OPTIMISM_BEDROCK_FIXED_OVERHEAD = 188;
