@@ -5,7 +5,7 @@ import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 import path from "path";
 
 import { readFileSync } from "fs";
-import { DEFAULT_GAS_PRICE_API_URL, DEFAULT_JSON_OUTPUT_FILE, TABLE_NAME_TERMINAL } from "../../src/constants";
+import { DEFAULT_CURRENCY_DISPLAY_PRECISION, DEFAULT_GAS_PRICE_API_URL, DEFAULT_GET_BLOCK_API_URL, DEFAULT_JSON_OUTPUT_FILE, TABLE_NAME_TERMINAL } from "../../src/constants";
 import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from "../types";
 
 import { useEnvironment, findMethod, findDeployment } from "../helpers";
@@ -56,6 +56,8 @@ describe("Default Options", function () {
     assert.equal(options.outputJSONFile, DEFAULT_JSON_OUTPUT_FILE);
     assert.equal(options.darkMode, false);
     assert.equal(options.reportFormat, TABLE_NAME_TERMINAL);
+    assert.equal(options.currencyDisplayPrecision, DEFAULT_CURRENCY_DISPLAY_PRECISION );
+    assert.equal(options.getBlockApi, DEFAULT_GET_BLOCK_API_URL);
 
     // Make sure we didn't hit endpoint
     assert.equal(options.gasPrice, undefined);

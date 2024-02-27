@@ -4,7 +4,7 @@ import { TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
 import { TASK_GAS_REPORTER_START, TASK_GAS_REPORTER_STOP } from "../constants";
 
 import { getContracts } from "../lib/artifacts";
-import { setGasAndPriceRates } from "../utils/gas";
+import { setGasAndPriceRates } from "../utils/prices";
 import { initGasReporterProvider} from "../extend";
 
 import { Collector } from "../lib/collector";
@@ -31,8 +31,6 @@ subtask(TASK_GAS_REPORTER_START).setAction(
       if (!args.noCompile) {
         await hre.run(TASK_COMPILE, { quiet: true });
       }
-
-      await setGasAndPriceRates(options);
       const contracts = await getContracts(hre, options);
 
       hre.__hhgrec.collector = new Collector(options, hre.network.provider);
@@ -52,6 +50,7 @@ subtask(TASK_GAS_REPORTER_STOP).setAction(
     const options = hre.config.gasReporter;
 
     if (options.enabled === true && args.parallel !== true) {
+      await setGasAndPriceRates(options);
       await hre.__hhgrec.collector?.data.runAnalysis(hre, options);
       render(hre, hre.__hhgrec.collector!.data, options);
     }
