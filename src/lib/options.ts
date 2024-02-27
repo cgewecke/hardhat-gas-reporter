@@ -62,6 +62,7 @@ export function getDefaultOptions(userConfig: Readonly<HardhatUserConfig>): GasR
     darkMode: false,
     enabled: true,
     excludeContracts: [],
+    forceTerminalOutput: false,
     gasPriceApi: DEFAULT_GAS_PRICE_API_URL,
     noColors: false,
     showUncalledMethods: false,
