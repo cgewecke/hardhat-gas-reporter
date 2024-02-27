@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assert } from "chai";
+import { execSync } from "child_process";
+import { readFileSync } from "fs";
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 import path from "path";
 
@@ -27,9 +29,11 @@ describe("Forked Networks: remoteContract, hardhat_reset", function () {
 
   before(async function(){
     await this.env.run(TASK_TEST, { testFiles: [] });
-    output = require(outputPath);
+    output = JSON.parse(readFileSync(outputPath, 'utf-8'));
     methods = output.data!.methods;
   })
+
+  after(() => execSync(`rm ${outputPath}`));
 
   it("calls remoteContract WETH.deposit", function(){
     const method = findMethod(methods, "WETH", "deposit");

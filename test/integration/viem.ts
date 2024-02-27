@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assert } from "chai";
+import { execSync } from "child_process";
+import { readFileSync } from "fs";
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 import path from "path";
 
@@ -29,10 +31,12 @@ describe("Viem", function () {
 
   before(async function(){
     await this.env.run(TASK_TEST, { testFiles: [] });
-    output = require(outputPath);
+    output = JSON.parse(readFileSync(outputPath, 'utf-8'));
     methods = output.data!.methods;
     deployments = output.data!.deployments;
   })
+
+  after(() => execSync(`rm ${outputPath}`));
 
   it ("should record transactions made with the publicClient", function(){
     const method = findMethod(methods, "Greeter", "setGreeting");

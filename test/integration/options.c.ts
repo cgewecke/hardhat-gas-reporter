@@ -2,6 +2,8 @@
 // TODO: REMOVE LINT DISABLE
 /* eslint-disable */
 import { assert } from "chai";
+import { execSync } from "child_process";
+import { readFileSync } from "fs";
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 import path from "path";
 import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from "../types";
@@ -31,11 +33,13 @@ describe("Options C", function () {
 
   before(async function(){
     await this.env.run(TASK_TEST, { testFiles: [] });
-    output = require(outputPath);
+    output = JSON.parse(readFileSync(outputPath, 'utf-8'));
     options = output.options;
     methods = output.data!.methods;
     deployments = output.data!.deployments;
   })
+
+  after(() => execSync(`rm ${outputPath}`));
 
   it("prints", function () {
   });
