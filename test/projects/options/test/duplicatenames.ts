@@ -11,11 +11,11 @@ describe("Duplicate contract names", function() {
 
   it("a", async function() {
     const d = await DuplicateA.deploy();
-    await d.functions.a();
+    await d.a();
   });
 
   it("b", async function() {
     const d = await DuplicateB.deploy();
-    await d.functions.b();
+    await d.b();
   });
 });

@@ -5,9 +5,15 @@ import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 import path from "path";
 
 import { readFileSync } from "fs";
-import { DEFAULT_CURRENCY_DISPLAY_PRECISION, DEFAULT_GAS_PRICE_API_URL, DEFAULT_GET_BLOCK_API_URL, DEFAULT_JSON_OUTPUT_FILE, TABLE_NAME_TERMINAL } from "../../src/constants";
-import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from "../types";
+import {
+  DEFAULT_CURRENCY_DISPLAY_PRECISION,
+  DEFAULT_GAS_PRICE_API_URL,
+  DEFAULT_GET_BLOCK_API_URL,
+  DEFAULT_JSON_OUTPUT_FILE,
+  TABLE_NAME_TERMINAL
+} from "../../src/constants";
 
+import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from "../types";
 import { useEnvironment, findMethod, findDeployment } from "../helpers";
 
 describe("Default Options", function () {

@@ -1,7 +1,7 @@
 import  table from "markdown-table";
 
 import _ from "lodash";
-import { utils } from "ethers";
+import { commify } from "@ethersproject/units";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { GasReporterOptions, MethodDataItem } from "../../types";
 import { GasData } from "../gasData";
@@ -67,7 +67,7 @@ export function generateMarkdownTable(
     ["Solidity: optimized", solc.optimizer],
     ["Solidity: runs", solc.runs.toString()],
     ["Solidity: viaIR", solc.viaIR.toString()],
-    ["Block Limit", utils.commify(hre.__hhgrec.blockGasLimit!)],
+    ["Block Limit", commify(hre.__hhgrec.blockGasLimit!)],
     ...gasPrices,
     ["Token Price", tokenPrice],
     ["Network", network]
@@ -95,11 +95,11 @@ export function generateMarkdownTable(
     const stats: any = {};
 
     if (method.gasData.length > 0) {
-      stats.executionGasAverage = utils.commify(method.executionGasAverage!);
+      stats.executionGasAverage = commify(method.executionGasAverage!);
       stats.cost = (method.cost === undefined) ? "-" : method.cost;
 
       if (method.calldataGasAverage !== undefined) {
-        stats.calldataGasAverage = utils.commify(method.calldataGasAverage)
+        stats.calldataGasAverage = commify(method.calldataGasAverage)
       };
     } else {
       stats.executionGasAverage = "-";
@@ -108,8 +108,8 @@ export function generateMarkdownTable(
 
     if (method.min && method.max) {
       const uniform = (method.min === method.max);
-      stats.min = uniform ? "-" : utils.commify(method.min!);
-      stats.max = uniform ? "-" : utils.commify(method.max!);
+      stats.min = uniform ? "-" : commify(method.min!);
+      stats.max = uniform ? "-" : commify(method.max!);
     }
 
     stats.numberOfCalls = method.numberOfCalls.toString();
@@ -195,15 +195,15 @@ export function generateMarkdownTable(
 
     if (deployment.min && deployment.max) {
       const uniform = deployment.min === deployment.max;
-      stats.min = uniform ? "-" : utils.commify(deployment.min!);
-      stats.max = uniform ? "-" : utils.commify(deployment.max!);
+      stats.min = uniform ? "-" : commify(deployment.min!);
+      stats.max = uniform ? "-" : commify(deployment.max!);
     }
 
     stats.percent = deployment.percent;
-    stats.executionGasAverage = utils.commify(deployment.executionGasAverage!);
+    stats.executionGasAverage = commify(deployment.executionGasAverage!);
 
     if (deployment.calldataGasAverage !== undefined) {
-      stats.calldataGasAverage = utils.commify(deployment.calldataGasAverage)
+      stats.calldataGasAverage = commify(deployment.calldataGasAverage)
     };
 
     const averages = (options.L2 !== undefined)

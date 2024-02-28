@@ -1,12 +1,12 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable import/no-extraneous-dependencies */
 import "@nomicfoundation/hardhat-ethers";
+import '@openzeppelin/hardhat-upgrades';
 import { HardhatUserConfig } from "hardhat/types";
 
-// We load the plugin here.
 import "../../../src/index";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.19",
+  solidity: "0.8.20",
   mocha: {
     reporter: "dot"
   }

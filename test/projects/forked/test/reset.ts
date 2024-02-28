@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { Contract } from "ethers";
 import { network, ethers } from "hardhat";
 

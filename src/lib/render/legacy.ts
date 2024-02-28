@@ -2,7 +2,7 @@ import chalk, {Chalk} from "chalk";
 
 import _ from "lodash";
 import Table, { HorizontalTableRow } from "cli-table3";
-import { utils } from "ethers";
+import { commify } from "@ethersproject/units";
 
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getSolcInfo } from "../../utils/sources";
@@ -53,7 +53,7 @@ export function generateLegacyTextTable(
     const stats: any = {};
 
     if (method.gasData.length > 0) {
-      stats.executionGasAverage = utils.commify(method.executionGasAverage!);
+      stats.executionGasAverage = commify(method.executionGasAverage!);
       stats.cost = (method.cost === undefined) ? chalk.grey("-") : method.cost;
     } else {
       stats.executionGasAverage = chalk.grey("-");
@@ -62,8 +62,8 @@ export function generateLegacyTextTable(
 
     if (method.min && method.max) {
       const uniform = (method.min === method.max);
-      stats.min = uniform ? chalk.grey("-") : chalk.cyan(utils.commify(method.min!));
-      stats.max = uniform ? chalk.grey("-") : chalk.red(utils.commify(method.max!));
+      stats.min = uniform ? chalk.grey("-") : chalk.cyan(commify(method.min!));
+      stats.max = uniform ? chalk.grey("-") : chalk.red(commify(method.max!));
     }
 
     stats.numberOfCalls = optionalColor(method.numberOfCalls.toString());
@@ -102,15 +102,15 @@ export function generateLegacyTextTable(
 
     if (deployment.min && deployment.max) {
       const uniform = deployment.min === deployment.max;
-      stats.min = uniform ? chalk.grey("-") : chalk.cyan(utils.commify(deployment.min!));
-      stats.max = uniform ? chalk.grey("-") : chalk.red(utils.commify(deployment.max!));
+      stats.min = uniform ? chalk.grey("-") : chalk.cyan(commify(deployment.min!));
+      stats.max = uniform ? chalk.grey("-") : chalk.red(commify(deployment.max!));
     }
 
     const section: any = [];
     section.push({ hAlign: "left", colSpan: 2, content: deployment.name });
     section.push({ hAlign: "right", content: stats.min });
     section.push({ hAlign: "right", content: stats.max });
-    section.push({ hAlign: "right", content: utils.commify(deployment.executionGasAverage!) });
+    section.push({ hAlign: "right", content: commify(deployment.executionGasAverage!) });
     section.push({
       hAlign: "right",
       content: optionalColor(`${deployment.percent!} %`)
@@ -173,7 +173,7 @@ export function generateLegacyTextTable(
     {
       hAlign: "center",
       colSpan: 2,
-      content: optionalColor.bold(`Block limit: ${utils.commify(hre.__hhgrec.blockGasLimit!)} gas`)
+      content: optionalColor.bold(`Block limit: ${commify(hre.__hhgrec.blockGasLimit!)} gas`)
     }
   ];
 

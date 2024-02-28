@@ -1,7 +1,6 @@
 import type { EthereumProvider, HardhatRuntimeEnvironment } from "hardhat/types";
-import type { FunctionFragment } from 'ethers/lib/utils';
 import type { Deployment, GasReporterOptions, MethodData, ContractInfo, JsonRpcBlock } from '../types';
-import { utils as ethersUtils } from "ethers";
+import { FunctionFragment, Interface } from "@ethersproject/abi";
 import { keccak256 } from "ethereum-cryptography/keccak";
 import { utf8ToBytes, bytesToHex } from "ethereum-cryptography/utils";
 import sha1 from "sha1";
@@ -71,7 +70,7 @@ export class GasData {
 
       let methods: { [name: string]: FunctionFragment; };
       try {
-        methods = new ethersUtils.Interface(item.artifact.abi).functions;
+        methods = new Interface(item.artifact.abi).functions;
       } catch (err: any) {
         warnEthers(contract.name, err);
         return;

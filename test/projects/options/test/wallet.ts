@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable import/no-extraneous-dependencies */
 import { assert } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
@@ -14,10 +14,10 @@ describe("Wallet", function() {
   });
 
   it("should should allow transfers and sends", async () => {
-    await walletA.fallback({ value: 100 });
-    await walletA.functions.sendPayment(50, walletB.address);
-    await walletA.functions.transferPayment(50, walletB.address);
-    const balance = await walletB.functions.getBalance();
+    await walletA.fallback!({ value: 100 });
+    await walletA.sendPayment(50, await walletB.getAddress());
+    await walletA.transferPayment(50, await walletB.getAddress());
+    const balance = await walletB.getBalance();
     assert.equal(parseInt(balance.toString()), 100);
   });
 });

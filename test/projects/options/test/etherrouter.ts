@@ -27,7 +27,7 @@ describe("EtherRouter Proxy", function() {
     versionA = await VersionA.deploy();
 
     // Emulate internal deployment
-    await factory.functions.deployVersionB();
+    await factory.deployVersionB();
     const versionBAddress = await factory.versionB();
     versionB = VersionB.attach(versionBAddress);
   });
@@ -35,14 +35,14 @@ describe("EtherRouter Proxy", function() {
   it("Resolves methods routed through an EtherRouter proxy", async function() {
     const options: any = {};
 
-    await router.setResolver(resolver.address);
+    await router.setResolver(await resolver.getAddress());
 
-    await resolver.functions.register("setValue()", versionA.address);
+    await resolver.register("setValue()", await versionA.getAddress());
     options.data = versionA.interface.encodeFunctionData("setValue");
-    await router.fallback(options);
+    await router.fallback!(options);
 
-    await resolver.register("setValue()", versionB.address);
+    await resolver.register("setValue()", await versionB.getAddress());
     options.data = versionB.interface.encodeFunctionData("setValue");
-    await router.fallback(options);
+    await router.fallback!(options);
   });
 });

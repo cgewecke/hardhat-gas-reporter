@@ -5,7 +5,7 @@
  * + Live market prices
  */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import "@nomiclabs/hardhat-ethers";
+import "@nomicfoundation/hardhat-ethers";
 import { HardhatUserConfig } from "hardhat/types";
 
 // We load the plugin here.
