@@ -58,8 +58,14 @@ export function render(hre: HardhatRuntimeEnvironment, data: GasData, options: G
     if (options.forceTerminalOutput){
       const originalOutputFile = options.outputFile;
       const originalNoColors = options.noColors;
+      const originalReportFormat = options.reportFormat;
+
       options.outputFile = undefined;
       options.noColors = false;
+
+      options.reportFormat = (options.forceTerminalOutputFormat)
+        ? options.forceTerminalOutputFormat
+        : options.reportFormat;
 
       table = getTableForFormat(hre, data, options);
       console.log(table);
@@ -67,6 +73,7 @@ export function render(hre: HardhatRuntimeEnvironment, data: GasData, options: G
       // Reset the options, since they might be read in JSON below here
       options.outputFile = originalOutputFile;
       options.noColors = originalNoColors;
+      options.reportFormat = originalReportFormat;
     }
   } else {
     console.log(table);

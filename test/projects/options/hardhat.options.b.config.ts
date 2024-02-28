@@ -2,6 +2,7 @@
  * TESTS:
  * + user-configured token and gasPrice
  * + write-to-custom-file-name (JSON & txt)
+ * + force terminal output w/ custom output
  * + show uncalled methods
  */
 
@@ -35,7 +36,8 @@ const config: HardhatUserConfig = {
     showUncalledMethods: true,
     outputFile: "./testGasReport.txt",
     outputJSONFile: "./gas.json",
-    forceTerminalOutput: true
+    forceTerminalOutput: true,
+    forceTerminalOutputFormat: 'legacy'
   }
 };
 
