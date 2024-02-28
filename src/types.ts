@@ -49,6 +49,9 @@ export interface GasReporterOptions {
   /** @property Write to terminal even when saving output to file */
   forceTerminalOutput?: boolean;
 
+  /** @property Table format to output forced terminal output in */
+  forceTerminalOutputFormat?: 'legacy' | 'terminal' | 'markdown';
+
   /** @property Gwei price per gas unit (eg: 20) */
   gasPrice?: number;
 

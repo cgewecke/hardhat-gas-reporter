@@ -40,6 +40,9 @@ describe("Options B", function () {
     assert.equal(options.token, "ETC");
     assert.equal(options.tokenPrice, "200.00");
     assert.equal(options.gasPrice, 40);
+    assert.equal(options.forceTerminalOutput, true);
+    assert.equal(options.forceTerminalOutputFormat, 'legacy');
+    assert.equal(options.reportFormat, 'terminal');
   });
 
   it("wrote table to file", function () {
