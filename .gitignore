@@ -82,5 +82,9 @@ test/projects/viem/artifacts
 test/projects/viem/cache
 test/projects/viem/gasReporterOutput.json
 
+test/projects/oz/artifacts
+test/projects/oz/cache
+test/projects/oz/gasReporterOutput.json
+
 dist/
 

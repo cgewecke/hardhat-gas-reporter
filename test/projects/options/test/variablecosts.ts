@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable import/no-extraneous-dependencies */
 import { assert } from "chai";
 import { ethers } from "hardhat";
 import { Contract } from "ethers";
@@ -18,59 +18,59 @@ describe("VariableCosts", function() {
   });
 
   it("should add one", async () => {
-    await instance.functions.addToMap(one);
+    await instance.addToMap(one);
   });
 
   it("should add three", async () => {
-    await instance.functions.addToMap(three);
+    await instance.addToMap(three);
   });
 
   it("should add even 5!", async () => {
-    await instance.functions.addToMap(five);
+    await instance.addToMap(five);
   });
 
   it("should delete one", async () => {
-    await instance.functions.removeFromMap(one);
+    await instance.removeFromMap(one);
   });
 
   it("should delete three", async () => {
-    await instance.functions.removeFromMap(three);
+    await instance.removeFromMap(three);
   });
 
   it("should delete five", async () => {
-    await instance.functions.removeFromMap(five);
+    await instance.removeFromMap(five);
   });
 
   it("should add five and delete one", async () => {
-    await instance.functions.addToMap(five);
-    await instance.functions.removeFromMap(one);
+    await instance.addToMap(five);
+    await instance.removeFromMap(one);
   });
 
   it("methods that do not throw", async () => {
-    await instance.functions.methodThatThrows(false);
+    await instance.methodThatThrows(false);
   });
 
   it("methods that throw", async () => {
     try {
-      await instance.functions.methodThatThrows(true);
+      await instance.methodThatThrows(true);
     } catch (e) {}
   });
 
   it("methods that call methods in other contracts", async () => {
-    await instance.functions.otherContractMethod();
+    await instance.otherContractMethod();
   });
 
   // VariableCosts is Wallet. We also have Wallet tests. So we should see
   // separate entries for `sendPayment` / `transferPayment` under VariableCosts
   // and Wallet in the report
   it("should allow contracts to have identically named methods", async () => {
-    await instance.fallback({
+    await instance.fallback!({
       value: 100,
     });
-    await instance.functions.sendPayment(50, walletB.address, {
+    await instance.sendPayment(50, await walletB.getAddress(), {
       // from: accounts[0].address
     });
-    await instance.functions.transferPayment(50, walletB.address, {
+    await instance.transferPayment(50, await walletB.getAddress(), {
       // from: accounts[0].address
     });
     const balance = await walletB.getBalance();

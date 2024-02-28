@@ -2,7 +2,7 @@ import chalk, {Chalk} from "chalk";
 
 import _ from "lodash";
 import Table, { HorizontalTableRow } from "cli-table3";
-import { utils } from "ethers";
+import { commify } from "@ethersproject/units";
 
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getSolcInfo } from "../../utils/sources";
@@ -90,11 +90,11 @@ export function generateTerminalTextTable(
     const stats: any = {};
 
     if (method.gasData.length > 0) {
-      stats.executionGasAverage = utils.commify(method.executionGasAverage!);
+      stats.executionGasAverage = commify(method.executionGasAverage!);
       stats.cost = (method.cost === undefined) ? chalk.grey("-") : method.cost;
 
       stats.calldataGasAverage = (method.calldataGasAverage !== undefined)
-        ?  utils.commify(method.calldataGasAverage)
+        ?  commify(method.calldataGasAverage)
         : "";
 
     } else {
@@ -109,8 +109,8 @@ export function generateTerminalTextTable(
 
     if (method.min && method.max) {
       const uniform = (method.min === method.max);
-      stats.min = uniform ? chalk.grey("-") : chalk.cyan(utils.commify(method.min!));
-      stats.max = uniform ? chalk.grey("-") : chalk.red(utils.commify(method.max!));
+      stats.min = uniform ? chalk.grey("-") : chalk.cyan(commify(method.min!));
+      stats.max = uniform ? chalk.grey("-") : chalk.red(commify(method.max!));
     }
 
     const fnName = options.showMethodSig ? method.fnSig : method.method;
@@ -163,19 +163,19 @@ export function generateTerminalTextTable(
 
     stats.calldataGasAverage = (deployment.calldataGasAverage === undefined )
       ? ""
-      : utils.commify(deployment.calldataGasAverage);
+      : commify(deployment.calldataGasAverage);
 
     if (deployment.min && deployment.max) {
       const uniform = deployment.min === deployment.max;
-      stats.min = uniform ? chalk.grey("-") : chalk.cyan(utils.commify(deployment.min!));
-      stats.max = uniform ? chalk.grey("-") : chalk.red(utils.commify(deployment.max!));
+      stats.min = uniform ? chalk.grey("-") : chalk.cyan(commify(deployment.min!));
+      stats.max = uniform ? chalk.grey("-") : chalk.red(commify(deployment.max!));
     }
 
     const section: any = [];
     section.push({ hAlign: "left", colSpan: 2, content: chalk.bold(deployment.name) });
     section.push({ hAlign: "right", colSpan: 1, content: stats.min });
     section.push({ hAlign: "right", colSpan: 1, content: stats.max });
-    section.push({ hAlign: "right", colSpan: 1, content: utils.commify(deployment.executionGasAverage!) });
+    section.push({ hAlign: "right", colSpan: 1, content: commify(deployment.executionGasAverage!) });
 
     if (options.L2 !== undefined) {
       section.push({ hAlign: "right", colSpan: 1, content: stats.calldataGasAverage! })
@@ -262,7 +262,7 @@ export function generateTerminalTextTable(
     {
       hAlign: "center",
       colSpan: blockLimitColumnWidth,
-      content: chalk.cyan(`Block: ${utils.commify(hre.__hhgrec.blockGasLimit!)} gas`)
+      content: chalk.cyan(`Block: ${commify(hre.__hhgrec.blockGasLimit!)} gas`)
     }
   ];
 

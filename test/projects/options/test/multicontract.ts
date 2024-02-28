@@ -13,7 +13,7 @@ describe("MultiContractFiles", function() {
   });
 
   it("a and b", async function() {
-    await a.functions.hello();
-    await b.functions.goodbye();
+    await a.hello();
+    await b.goodbye();
   });
 });

@@ -10,6 +10,6 @@ describe("Immutable", function() {
   });
 
   it("a and b", async function() {
-    await a.functions.setVal(5);
+    await a.setVal(5);
   });
 });
