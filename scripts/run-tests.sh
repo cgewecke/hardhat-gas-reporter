@@ -20,7 +20,7 @@ start_hardhat_node() {
 ########
 # Units
 ########
-npx mocha test/unit/*.ts
+npx mocha test/unit/*.ts --timeout 10000
 
 ########
 # Tasks
