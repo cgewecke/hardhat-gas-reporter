@@ -247,12 +247,7 @@ export function generateTerminalTextTable(
     {
       hAlign: "left",
       colSpan: 1,
-      content: chalk.cyan(`Optimizer: ${solc.optimizer}`)
-    },
-    {
-      hAlign: "left",
-      colSpan: 1,
-      content: chalk.cyan(`viaIR: ${solc.viaIR.toString()}`)
+      content: chalk.cyan(`Optim: ${solc.optimizer}`)
     },
     {
       hAlign: "left",
@@ -260,9 +255,14 @@ export function generateTerminalTextTable(
       content: chalk.cyan(`Runs: ${solc.runs}`)
     },
     {
+      hAlign: "left",
+      colSpan: 1,
+      content: chalk.cyan(`viaIR: ${solc.viaIR.toString()}`)
+    },
+    {
       hAlign: "center",
       colSpan: blockLimitColumnWidth,
-      content: chalk.cyan(`Block limit: ${utils.commify(hre.__hhgrec.blockGasLimit!)} gas`)
+      content: chalk.cyan(`Block: ${utils.commify(hre.__hhgrec.blockGasLimit!)} gas`)
     }
   ];
 
