@@ -116,8 +116,7 @@ export function getCommonTableVals(options: GasReporterOptions) {
   }
 
   const nonZeroMsg = "Cost was non-zero but below the precision setting for the currency display";
-  const intrinsicMsg = "Execution gas vals for methods with this symbol do not include intrinsic gas overhead " +
-               "(due to `eth_call` or option settings)";
+  const intrinsicMsg = "Execution gas for this method does not include intrinsic gas overhead ";
 
   return {
     l1gwei,
