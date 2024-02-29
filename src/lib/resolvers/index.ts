@@ -1,9 +1,9 @@
 
-import type {GasData} from "./gasData";
+import type {GasData} from "../gasData";
 import { EthereumProvider } from "hardhat/types";
-import { GasReporterOptions, JsonRpcTx } from "../types";
+import { GasReporterOptions, JsonRpcTx } from "../../types";
 
-export class ProxyResolver {
+export class Resolver {
   public unresolvedCalls: number;
   public data: GasData;
   public provider: EthereumProvider;

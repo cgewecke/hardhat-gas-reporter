@@ -12,6 +12,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import "@nomicfoundation/hardhat-ethers";
 import { HardhatUserConfig } from "hardhat/types";
+import { customResolver } from "../../../src/lib/resolvers/etherrouter";
 
 // We load the plugin here.
 import "../../../src/index";
@@ -41,7 +42,8 @@ const config: HardhatUserConfig = {
     excludeContracts: ["EtherRouter/EtherRouter.sol"],
     showMethodSig: true,
     enabled: true,
-    darkMode: true
+    darkMode: true,
+    proxyResolver: customResolver
   }
 };
 
