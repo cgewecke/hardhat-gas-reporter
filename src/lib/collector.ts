@@ -1,11 +1,11 @@
 import type { RpcReceiptOutput } from "hardhat/internal/hardhat-network/provider/output"
-import { EthereumProvider } from "hardhat/types";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { GasReporterOptions, JsonRpcTx } from "../types"
 import { getCalldataGasForNetwork, hexToDecimal } from "../utils/gas";
 import { getMethodID } from "../utils/sources";
 import { GasData } from "./gasData";
 
-import { ProxyResolver } from "./proxyResolver";
+import { Resolver } from "./resolvers/index";
 
 /**
  * Collects gas usage data, associating it with the relevant contracts, methods.
@@ -13,12 +13,12 @@ import { ProxyResolver } from "./proxyResolver";
 export class Collector {
   public data: GasData;
   public options: GasReporterOptions;
-  public resolver: ProxyResolver;
+  public resolver: Resolver;
 
-  constructor(options: GasReporterOptions, provider: EthereumProvider) {
+  constructor(hre: HardhatRuntimeEnvironment, options: GasReporterOptions) {
     this.data = new GasData();
     this.options = options;
-    this.resolver = new ProxyResolver(options, provider, this.data);
+    this.resolver = new Resolver(hre, options, this.data);
   }
 
   /**
@@ -66,8 +66,7 @@ export class Collector {
 
     // Case: proxied call
     if (this._isProxied(contractName, tx.input!)) {
-      contractName = this.resolver.resolveByProxy(tx);
-
+      contractName = await this.resolver.resolveByProxy(tx);
       // Case: hidden contract factory deployment
     } else if (contractName === null) {
       contractName = await this.resolver.resolveByDeployedBytecode(

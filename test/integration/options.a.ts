@@ -63,4 +63,12 @@ describe("Options A", function () {
     const deployment = findDeployment(deployments, "EtherRouter");
     assert.isNull(deployment);
   });
+
+  it("resolves shadowed method calls with the example proxy resolver", function(){
+    const methodA = findMethod(methods, "VersionA", "setValue");
+    const methodB = findMethod(methods, "VersionB", "setValue");
+
+    assert.equal(methodA?.numberOfCalls, 1);
+    assert.equal(methodB?.numberOfCalls, 1);
+  });
 });

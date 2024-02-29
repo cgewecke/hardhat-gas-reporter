@@ -9,7 +9,7 @@ import { Deployment, GasReporterOutput, MethodData } from "../types";
 
 import { useEnvironment, findMethod, findDeployment } from "../helpers";
 
-describe.skip("OZ Upgrades", function () {
+describe("OZ Upgrades", function () {
   let output: GasReporterOutput;
   let methods: MethodData;
   let deployments: Deployment[];
@@ -38,7 +38,7 @@ describe.skip("OZ Upgrades", function () {
 
   after(() => execSync(`rm ${outputPath}`));
 
-  it ("should record shadowed transactions made with proxied upgrade", function(){
+  it ("should record shadowed transactions made with proxied upgrade system", function(){
     const firstBoxMethod = findMethod(methods, "ProxyBox", "setBox");
     const secondBoxMethod = findMethod(methods, "ProxyBoxV2", "setBox");
 
@@ -46,7 +46,7 @@ describe.skip("OZ Upgrades", function () {
     assert.equal(secondBoxMethod?.numberOfCalls, 1);
   });
 
-  it ("should record deployments made with proxied upgrade", function(){
+  it ("should record deployments made with proxied upgrade system", function(){
     const firstBoxDeployment = findDeployment(deployments, "ProxyBox");
     const secondBoxDeployment = findDeployment(deployments, "ProxyBoxV2");
 
@@ -57,15 +57,17 @@ describe.skip("OZ Upgrades", function () {
     assert(secondBoxDeployment!.gasData.length > 0)
   });
 
-  it ("should record shadowed transactions made with beacon proxy", function(){
+  it ("should record shadowed transactions made with beacon system", function(){
     const firstBoxMethod = findMethod(methods, "BeaconBox", "setBox");
     const secondBoxMethod = findMethod(methods, "BeaconBoxV2", "setBox");
+    const thirdBoxMethod = findMethod(methods, "BeaconBoxV2", "setBeaconId");
 
     assert.equal(firstBoxMethod?.numberOfCalls, 1);
     assert.equal(secondBoxMethod?.numberOfCalls, 1);
+    assert.equal(thirdBoxMethod?.numberOfCalls, 1);
   });
 
-  it ("should record deployments made with proxied upgrade", function(){
+  it ("should record deployments made with beacon system", function(){
     const firstBoxDeployment = findDeployment(deployments, "BeaconBox");
     const secondBoxDeployment = findDeployment(deployments, "BeaconBoxV2");
 
