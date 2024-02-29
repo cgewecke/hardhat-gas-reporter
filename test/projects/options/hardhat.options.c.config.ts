@@ -21,7 +21,8 @@ const config: HardhatUserConfig = {
     token: "ETH",
     coinmarketcap: process.env.CMC_API_KEY,
     L2: "optimism",
-    gasPriceApi: "https://api-optimistic.etherscan.io/api?module=proxy&action=eth_gasPrice",
+    gasPrice: 0.098775564,
+    baseFee: 79,
     reportFormat: "markdown",
     enabled: true,
   }

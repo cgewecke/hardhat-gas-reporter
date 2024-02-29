@@ -1,4 +1,6 @@
 import chalk from "chalk";
+import { EOL } from "os";
+
 import {
   DEFAULT_GAS_PRICE_PRECISION,
   TABLE_NAME_LEGACY,
@@ -30,6 +32,46 @@ export function getSmallestPrecisionVal(precision: number): number {
   return parseFloat(start);
 }
 
+const startWarning = chalk.red (`>>>>> WARNING (hardhat-gas-reporter plugin) <<<<<<`)
+
+function remoteCallEndMessage(err: any) : string {
+  return `${
+  chalk.bold(`Error was: `)
+  }${chalk.red (err.message)                                                              }${EOL
+  }${chalk.bold(`Price data will not be reported`)                                        }${EOL
+  }${chalk.blue(`* Being rate limited? See the "Gas Price API" section in the docs.`)     }${EOL
+  }${chalk.blue(`* Set the "offline" option to "true" to suppress these warnings`)        }${EOL
+  }${chalk.red (`>>>>>>>>>>>>>>>>>>>>`)                                                   }${EOL}`;
+};
+
+export function warnCMCRemoteCallFailed(err: any, url: string): string {
+  return `${
+  startWarning                                                                          }${EOL
+  }${chalk.bold(`Failed to get token price from ${url}`)                                }${EOL
+  }${remoteCallEndMessage(err)}`;
+}
+
+export function warnGasPriceRemoteCallFailed(err: any, url: string): string {
+  return `${
+  startWarning                                                                          }${EOL
+  }${chalk.bold(`Failed to get gas price from ${url}`)                                  }${EOL
+  }${remoteCallEndMessage(err)}`;
+}
+
+export function warnBaseFeeRemoteCallFailed(err: any, url: string): string {
+  return `${
+  startWarning                                                                          }${EOL
+  }${chalk.bold(`Failed to get L1 base fee from ${url}`)                                }${EOL
+  }${remoteCallEndMessage(err)}`;
+}
+
+export function warnBlobBaseFeeRemoteCallFailed(err: any, url: string): string {
+  return `${
+  startWarning                                                                          }${EOL
+  }${chalk.bold(`Failed to get L1 blob base fee from ${url}`)                           }${EOL
+  }${remoteCallEndMessage(err)}`;
+}
+
 /**
  * Message for un-parseable ABI (ethers)
  * @param  {string} name contract name
@@ -37,15 +79,17 @@ export function getSmallestPrecisionVal(precision: number): number {
  * @return {void}
  */
 export function warnEthers(name: string, err: any) {
-  log();
-  log(chalk.red(`>>>>> WARNING <<<<<<`));
-  log(
-    `Failed to parse ABI for contract: "${name}". (Its method data will not be collected).`
-  );
-  log(`Please report the error below with the source that caused it to github.com/ethers-io/ethers.js`);
-  log(chalk.red(`>>>>>>>>>>>>>>>>>>>>`));
-  log(chalk.red(`${err}`));
-  log();
+  const msg = `${
+    startWarning                                                                                 }${EOL
+    }${chalk.bold(
+      `Failed to parse ABI for contract: "${name}". (Its method data will not be collected).`
+    )                                                                                            }${EOL
+    }Please report the error below with the source that caused it to ` +
+    `github.com/cgewecke/hardhat-gas-reporter${                                                   EOL
+    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)}${EOL}${
+    chalk.red(`${err}`)}`;
+
+    log(msg);
 }
 
 /**
@@ -54,16 +98,17 @@ export function warnEthers(name: string, err: any) {
  * @return {void}
  */
 export function warnReportFormat(name: string | undefined) {
-  log();
-  log(chalk.red(`>>>>> WARNING <<<<<<`));
-  log(
-    `Failed to generate gas report for format: "${name!}". The available formats are: `
-  );
-  log(`> "${TABLE_NAME_TERMINAL}"`);
-  log(`> "${TABLE_NAME_MARKDOWN}"`);
-  log(`> "${TABLE_NAME_LEGACY}"`);
-  log(chalk.red(`>>>>>>>>>>>>>>>>>>>>`));
-  log();
+  const msg = `${
+    startWarning                                                                                 }${EOL
+    }${chalk.bold(
+      `Failed to generate gas report for format: "${name!}". The available formats are: `
+    )                                                                                            }${EOL
+    }${chalk.green(`> "${TABLE_NAME_TERMINAL}"`)                                                    }${EOL
+    }${chalk.green(`> "${TABLE_NAME_MARKDOWN}"`)                                                    }${EOL
+    }${chalk.green(`> "${TABLE_NAME_LEGACY}"`)                                                      }${EOL
+    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)                                                            }${EOL}`;
+
+    log(msg);
 }
 
 /**
@@ -71,14 +116,15 @@ export function warnReportFormat(name: string | undefined) {
  * @return {void}
  */
 export function warnParallel() {
-  log();
-  log(chalk.red(`>>>>> WARNING <<<<<<`));
-  log(
-    "Gas reporting has been skipped because plugin `hardhat-gas-reporter` " +
-    "does not support the --parallel flag."
-  );
-  log(chalk.red(`>>>>>>>>>>>>>>>>>>>>`));
-  log();
+  const msg = `${
+    startWarning                                                                                 }${EOL
+    }${chalk.bold(
+      "Gas reporting has been skipped because plugin `hardhat-gas-reporter` " +
+     "does not support the --parallel flag."
+    )                                                                                            }${EOL
+    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)                                                            }${EOL}`;
+
+  log(msg);
 }
 
 /**
