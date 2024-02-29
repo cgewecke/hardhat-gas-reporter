@@ -52,9 +52,10 @@ subtask(TASK_GAS_REPORTER_STOP).setAction(
     const options = hre.config.gasReporter;
 
     if (options.enabled === true && args.parallel !== true) {
-      await setGasAndPriceRates(options);
+      const warnings = await setGasAndPriceRates(options);
+
       await hre.__hhgrec.collector?.data.runAnalysis(hre, options);
-      render(hre, hre.__hhgrec.collector!.data, options);
+      render(hre, options, warnings);
     }
   }
 );

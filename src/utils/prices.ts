@@ -1,6 +1,12 @@
 import axios from "axios";
 import { DEFAULT_COINMARKET_BASE_URL } from "../constants";
 import { GasReporterOptions } from "../types";
+import {
+  warnCMCRemoteCallFailed,
+  warnGasPriceRemoteCallFailed,
+  warnBaseFeeRemoteCallFailed,
+} from "./ui";
+
 
 /**
  * Fetches gas, base, & blob fee rates from etherscan as well as current market value of
@@ -13,17 +19,21 @@ import { GasReporterOptions } from "../types";
  * + options.blobBaseFee
  *
  * ... unless these are already set as constants in the reporter options
+ *
+ * Returns a list of warnings generated if remote calls fail
  * @param  {GasReporterOptions} options
  */
-export async function setGasAndPriceRates(options: GasReporterOptions): Promise<void> {
+export async function setGasAndPriceRates(options: GasReporterOptions): Promise<string[]> {
   if (
     (options.offline) ||
     !options.coinmarketcap ||
     (!options.L2 && options.tokenPrice && options.gasPrice) ||
     (options.L2 && options.tokenPrice && options.gasPrice && options.baseFee && options.blobBaseFee)
-  ) return;
+  ) return [];
 
   let block;
+  const warnings: string[] = [];
+
   const token = options.token!.toUpperCase();
   const getBlockApi = options.getBlockApi;
   const gasPriceApi = options.gasPriceApi;
@@ -47,7 +57,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
         currencyKey
       ].price.toFixed(2);
     } catch (error) {
-      /* ignore */
+      warnings.push(warnCMCRemoteCallFailed(error, DEFAULT_COINMARKET_BASE_URL + currencyPath));
     }
   }
 
@@ -59,6 +69,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
       options.gasPrice = (gasPrice >= 1 ) ? Math.round(gasPrice) : gasPrice;;
     } catch (error) {
       options.gasPrice = 0;
+      warnings.push(warnGasPriceRemoteCallFailed(error, gasPriceApi!));
     }
   }
 
@@ -71,6 +82,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
       );
     } catch (error) {
       options.baseFee = 0;
+      warnings.push(warnBaseFeeRemoteCallFailed(error, getBlockApi!));
     }
   }
 
@@ -84,6 +96,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
         block = await axiosInstance.get(getBlockApi!);
       } catch (error) {
         options.blobBaseFee = 0;
+        warnings.push(warnBlobBaseFeeRemoteCallFailed(error, getBlockApi));
         return;
       }
     }
@@ -91,4 +104,6 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
       parseInt(block.data.result.blobBaseFeePerGas, 16) / Math.pow(10, 9)
     );*/
   }
+
+  return warnings;
 }

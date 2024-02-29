@@ -31,7 +31,8 @@ export function getTableForFormat(hre: HardhatRuntimeEnvironment, data: GasData,
  * @param {GasData}                   data
  * @param {GasReporterOptions}        options
  */
-export function render(hre: HardhatRuntimeEnvironment, data: GasData, options: GasReporterOptions) {
+export function render(hre: HardhatRuntimeEnvironment, options: GasReporterOptions, warnings: string[]) {
+  const data = hre.__hhgrec.collector!.data;
 
   // Get table
   let table = getTableForFormat(hre, data, options);
@@ -82,4 +83,7 @@ export function render(hre: HardhatRuntimeEnvironment, data: GasData, options: G
   if (options.outputJSON || process.env.CI) {
     generateJSONData(data, options);
   }
+
+  // Write warnings
+  for (const warning of warnings) console.log(warning);
 }
