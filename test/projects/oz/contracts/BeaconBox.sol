@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract BeaconBox is Initializable {
+    uint public beaconId;
     string public contents;
 
     function initialize() external initializer { }

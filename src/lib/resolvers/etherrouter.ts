@@ -2,14 +2,14 @@ import { Interface } from "@ethersproject/abi";
 import { hexStripZeros } from "@ethersproject/bytes";
 import { JsonRpcTx } from "../../types";
 import { Resolver } from "./index";
-import { HardhatEthersProvider } from "@nomicfoundation/hardhat-ethers/internal/hardhat-ethers-provider";
+
 /**
  * Example of a method that resolves the contract names of method calls routed through
  * a simple proxy (EtherRouter-style) contract. At runtime, the function below will be bound to
  * the `this` property of plugin's Resolver class and inherit its resources which include:
  *
  * > helpers to match methods to contracts (e.g all public methods on the Resolver & GasData classes)
- * > an EIP1193 provider to make calls to the client.
+ * > the HardhatRuntimeEnvironment (so you can access all env extensions and the network provider.)
  *
  * The method receives a JSONRPC formatted transaction object representing a tx
  * the reporter could not deterministically associate with any contract. It relies on your
@@ -37,14 +37,14 @@ export async function customResolver(this: Resolver, transaction: JsonRpcTx) {
     // address of a contract which maps method signatures to their parent contracts.
     // Note: Provider type is a generic EIP1193 provider, so you may need to cast to
     // the type appropriate for your case.
-    const resolverAddress = await this.provider.send("eth_call", [{
+    const resolverAddress = await this.hre.network.provider.send("eth_call", [{
         to: transaction.to!,
         data: iface.encodeFunctionData("resolver()", [])
     }]);
 
     // Now we'll call the Resolver's `lookup(sig)` method to get the address of the contract
     // our tx was actually getting forwarded to.
-    contractAddress = await this.provider.send("eth_call",[
+    contractAddress = await this.hre.network.provider.send("eth_call",[
       {
         to: hexStripZeros(resolverAddress),
         data: iface.encodeFunctionData("lookup(bytes4)", [signature])

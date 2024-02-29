@@ -1,5 +1,6 @@
 import { ethers, upgrades } from "hardhat";
 
+// Tests adapted from OZ Hardhat plugin documentation examples
 describe("Box", function() {
   it('uses a method shadowed by an upgrade (Proxy)', async function() {
     const ProxyBox = await ethers.getContractFactory("ProxyBox");
@@ -17,7 +18,7 @@ describe("Box", function() {
     const BeaconBoxV2 = await ethers.getContractFactory("BeaconBoxV2");
 
     const beacon = await upgrades.deployBeacon(BeaconBox);
-    const instance = await upgrades.deployBeaconProxy(await beacon.getAddress(), BeaconBox);
+    const instance = await upgrades.deployBeaconProxy(beacon, BeaconBox);
 
     await instance.setBox('hello');
 
@@ -25,6 +26,7 @@ describe("Box", function() {
     const upgraded = BeaconBoxV2.attach(await instance.getAddress());
 
     await upgraded.setBox('hello again');
+    await upgraded.setBeaconId(5);
   });
 });
 

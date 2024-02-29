@@ -26,16 +26,18 @@ subtask(TASK_GAS_REPORTER_START).setAction(
         return result;
       }
 
-      // We need to compile so we have access to the artifact data.
+      // Need to compile so we have access to the artifact data.
       // This will rerun in TASK_TEST & TASK_RUN but should be a noop there.
       if (!args.noCompile) {
         await hre.run(TASK_COMPILE, { quiet: true });
       }
       const contracts = await getContracts(hre, options);
 
-      hre.__hhgrec.collector = new Collector(options, hre.network.provider);
-      hre.__hhgrec.collector.data.initialize(options, hre.network.provider, contracts);
       hre.__hhgrec.usingViem = (hre as any).viem !== undefined;
+      hre.__hhgrec.usingOZ  = ((hre as any).upgrades !== undefined) || ((hre as any).defender !== undefined)
+
+      hre.__hhgrec.collector = new Collector(hre, options);
+      hre.__hhgrec.collector.data.initialize(options, hre.network.provider, contracts);
 
       await initGasReporterProvider(hre.network.provider, hre.__hhgrec);
     }

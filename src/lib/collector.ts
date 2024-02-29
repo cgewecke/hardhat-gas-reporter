@@ -1,5 +1,5 @@
 import type { RpcReceiptOutput } from "hardhat/internal/hardhat-network/provider/output"
-import { EthereumProvider } from "hardhat/types";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { GasReporterOptions, JsonRpcTx } from "../types"
 import { getCalldataGasForNetwork, hexToDecimal } from "../utils/gas";
 import { getMethodID } from "../utils/sources";
@@ -15,10 +15,10 @@ export class Collector {
   public options: GasReporterOptions;
   public resolver: Resolver;
 
-  constructor(options: GasReporterOptions, provider: EthereumProvider) {
+  constructor(hre: HardhatRuntimeEnvironment, options: GasReporterOptions) {
     this.data = new GasData();
     this.options = options;
-    this.resolver = new Resolver(options, provider, this.data);
+    this.resolver = new Resolver(hre, options, this.data);
   }
 
   /**
