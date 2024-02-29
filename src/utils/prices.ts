@@ -7,6 +7,7 @@ import {
   warnBaseFeeRemoteCallFailed,
 } from "./ui";
 
+import { hexWeiToIntGwei } from "./gas";
 
 /**
  * Fetches gas, base, & blob fee rates from etherscan as well as current market value of
@@ -65,7 +66,8 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
   if (!options.gasPrice) {
     try {
       const response = await axiosInstance.get(gasPriceApi!);
-      const gasPrice = parseInt(response.data.result, 16) / Math.pow(10, 9);
+      checkForEtherscanRateLimitError(response.data.result);
+      const gasPrice = hexWeiToIntGwei(response.data.result);
       options.gasPrice = (gasPrice >= 1 ) ? Math.round(gasPrice) : gasPrice;;
     } catch (error) {
       options.gasPrice = 0;
@@ -77,9 +79,8 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
   if (options.L2 && !options.baseFee) {
     try {
       block = await axiosInstance.get(getBlockApi!);
-      options.baseFee = Math.round(
-        parseInt(block.data.result.baseFeePerGas, 16) / Math.pow(10, 9)
-      );
+      checkForEtherscanRateLimitError(block.data.result);
+      options.baseFee = Math.round(hexWeiToIntGwei(block.data.result.baseFeePerGas))
     } catch (error) {
       options.baseFee = 0;
       warnings.push(warnBaseFeeRemoteCallFailed(error, getBlockApi!));
@@ -94,6 +95,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     /* if (block === undefined) {
       try {
         block = await axiosInstance.get(getBlockApi!);
+        checkForEtherscanRateLimitError(block.data.result);
       } catch (error) {
         options.blobBaseFee = 0;
         warnings.push(warnBlobBaseFeeRemoteCallFailed(error, getBlockApi));
@@ -106,4 +108,10 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
   }
 
   return warnings;
+}
+
+function checkForEtherscanRateLimitError(res: string) {
+  if (typeof res === "string" && res.includes("rate limit reached")){
+    throw new Error(res);
+  }
 }

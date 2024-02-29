@@ -38,39 +38,37 @@ function remoteCallEndMessage(err: any) : string {
   return `${
   chalk.bold(`Error was: `)
   }${chalk.red (err.message)                                                              }${EOL
-  }${chalk.blue(`Set the "offline" option to "true" to suppress these warnings`)          }${EOL
+  }${chalk.bold(`Price data will not be reported`)                                        }${EOL
+  }${chalk.blue(`* Being rate limited? See the "Gas Price API" section in the docs.`)     }${EOL
+  }${chalk.blue(`* Set the "offline" option to "true" to suppress these warnings`)        }${EOL
   }${chalk.red (`>>>>>>>>>>>>>>>>>>>>`)                                                   }${EOL}`;
 };
 
 export function warnCMCRemoteCallFailed(err: any, url: string): string {
   return `${
   startWarning                                                                          }${EOL
-  }${chalk.bold(`Failed to get token price from ${url}`)                                   }${EOL
-  }${chalk.bold(`Price data will not be collected`)                                        }${EOL
+  }${chalk.bold(`Failed to get token price from ${url}`)                                }${EOL
   }${remoteCallEndMessage(err)}`;
 }
 
 export function warnGasPriceRemoteCallFailed(err: any, url: string): string {
   return `${
   startWarning                                                                          }${EOL
-  }${chalk.bold(`Failed to get gas price from ${url}`)                                     }${EOL
-  }${chalk.bold(`Price data will not be collected`)                                        }${EOL
+  }${chalk.bold(`Failed to get gas price from ${url}`)                                  }${EOL
   }${remoteCallEndMessage(err)}`;
 }
 
 export function warnBaseFeeRemoteCallFailed(err: any, url: string): string {
   return `${
   startWarning                                                                          }${EOL
-  }${chalk.bold(`Failed to get L1 base fee from ${url}`)                                   }${EOL
-  }${chalk.bold(`Price data will not be collected`)                                        }${EOL
+  }${chalk.bold(`Failed to get L1 base fee from ${url}`)                                }${EOL
   }${remoteCallEndMessage(err)}`;
 }
 
 export function warnBlobBaseFeeRemoteCallFailed(err: any, url: string): string {
   return `${
   startWarning                                                                          }${EOL
-  }${chalk.bold(`Failed to get L1 blob base fee from ${url}`)                              }${EOL
-  }${chalk.bold(`Price data will not be collected`)                                        }${EOL
+  }${chalk.bold(`Failed to get L1 blob base fee from ${url}`)                           }${EOL
   }${remoteCallEndMessage(err)}`;
 }
 
@@ -88,7 +86,7 @@ export function warnEthers(name: string, err: any) {
     )                                                                                            }${EOL
     }Please report the error below with the source that caused it to ` +
     `github.com/cgewecke/hardhat-gas-reporter${                                                   EOL
-    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)}${EOL}${ 
+    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)}${EOL}${
     chalk.red(`${err}`)}`;
 
     log(msg);

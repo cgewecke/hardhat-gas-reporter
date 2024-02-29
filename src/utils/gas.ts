@@ -305,7 +305,11 @@ export function hexToDecimal(val: string): number {
  * @return {BigInt}     bigint
  */
 export function hexToBigInt(val: string): bigint {
-  return BigInt(parseInt(val, 16));
+  return BigInt(val);
+}
+
+export function hexWeiToIntGwei(val: string): number {
+  return hexToDecimal(val) / Math.pow(10, 9);
 }
 
 export function normalizeTxType(_type: string) {
