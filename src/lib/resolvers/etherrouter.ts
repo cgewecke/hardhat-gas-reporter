@@ -28,22 +28,20 @@ export async function customResolver(this: Resolver, transaction: JsonRpcTx) {
     const iface = new Interface(ABI);
 
     // The tx passed to this method had input data which didn't map to any methods on
-    // the contract it was sent to. It's possible the tx's `to` address points to
-    // a router contract which is designed to forward calls so we grab the
-    // method signature and ask the router if it knows who the intended recipient is.
+    // the contract it was sent to. We know the tx's `to` address might point to
+    // a router contract which forward calls so we grab the method signature and ask
+    // the router if it knows who the intended recipient is.
     const signature = transaction.input.slice(0, 10);
 
-    // EtherRouter has a public state variable called `resolver()` which stores the
+    // The router has a public state variable called `resolver()` which stores the
     // address of a contract which maps method signatures to their parent contracts.
-    // Note: Provider type is a generic EIP1193 provider, so you may need to cast to
-    // the type appropriate for your case.
     const resolverAddress = await this.hre.network.provider.send("eth_call", [{
         to: transaction.to!,
         data: iface.encodeFunctionData("resolver()", [])
     }]);
 
-    // Now we'll call the Resolver's `lookup(sig)` method to get the address of the contract
-    // our tx was actually getting forwarded to.
+    // Now we'll call the EtherRouterResolver contract's `lookup(sig)` method to get
+    // the address of the contract our tx was actually getting forwarded to.
     contractAddress = await this.hre.network.provider.send("eth_call",[
       {
         to: hexStripZeros(resolverAddress),
@@ -53,14 +51,14 @@ export async function customResolver(this: Resolver, transaction: JsonRpcTx) {
 
     contractAddress = hexStripZeros(contractAddress);
 
-  // Don't forget this is all a bit speculative...
+  // Don't forget this is all speculative...
   } catch (err) {
     this.unresolvedCalls++;
     return;
   }
 
-  // With the correct address, we can use the ProxyResolver class's
-  // data.getNameByAddress and/or resolveByDeployedBytecode methods
+  // With the correct address, we can use the reporter's Resolver class methods
+  // `data.getNameByAddress` and/or `resolveByDeployedBytecode` methods
   // (both are available in this scope, bound to `this`) to derive
   // the target contract's name.
   if (contractAddress && contractAddress !== "0x") {
