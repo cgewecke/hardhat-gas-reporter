@@ -3,7 +3,6 @@ import { assert } from "chai";
 import { execSync } from "child_process";
 import { TASK_TEST } from "hardhat/builtin-tasks/task-names";
 import path from "path";
-import { inspect } from "util";
 
 import { readFileSync } from "fs";
 import {

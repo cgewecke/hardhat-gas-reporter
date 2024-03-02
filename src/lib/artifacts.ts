@@ -3,11 +3,10 @@ import _ from "lodash";
 import {parse, visit} from "@solidity-parser/parser";
 import { Interface } from "@ethersproject/abi";
 
+import { EthereumProvider, HardhatRuntimeEnvironment } from "hardhat/types";
 import { getHashedFunctionSignature } from "../utils/sources";
 
-import { EthereumProvider, HardhatRuntimeEnvironment } from "hardhat/types";
 import { RemoteContract, ContractInfo, GasReporterOptions } from "../types";
-import { FunctionFragment } from "ethers";
 
 /**
  * Filters out contracts to exclude from report
@@ -149,7 +148,7 @@ async function getExcludedMethodKeys(
         try {
           const ast = parse(source.content, {tolerant: true});
           visit(ast, {
-            StateVariableDeclaration: function (node) {
+            StateVariableDeclaration (node) {
               const publicVars = node.variables.filter(({ visibility }) => visibility === 'public');
 
               publicVars.forEach(_var => {

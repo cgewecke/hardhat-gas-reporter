@@ -1,7 +1,7 @@
 import type { RpcReceiptOutput } from "hardhat/internal/hardhat-network/provider/output"
 import { hexlify } from "@ethersproject/bytes";
 
-import { HardhatRuntimeEnvironment, RequestArguments } from "hardhat/types";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 import { getMethodID } from "../utils/sources";
 import {
