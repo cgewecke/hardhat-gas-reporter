@@ -89,7 +89,7 @@ export function generateMarkdownTable(
   ];
 
   const optionsTable = table(optionsRows);
-  const keyTable = table(keyRows);
+  const keyTable = table(keyRows, { align: ["c", "l"] });
 
   // ---------------------------------------------------------------------------------------------
   // Assemble section: methods
