@@ -9,6 +9,9 @@ const config: HardhatUserConfig = {
   solidity: "0.8.19",
   mocha: {
     reporter: "dot"
+  },
+  gasReporter: {
+    reportPureAndViewMethods: true
   }
 };
 

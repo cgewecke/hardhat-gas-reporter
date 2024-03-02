@@ -17,6 +17,24 @@ describe("VariableCosts", function() {
     walletB = await Wallet.deploy();
   });
 
+  it("can call an empty view fn", async() => {
+    await instance.callEmptyFn();
+  });
+
+  it("can call a pure fn", async() => {
+    await instance.callPureFnReturn(5);
+  });
+
+  it("can call a reverting pure fn", async() => {
+    try {
+      await instance.callRevertingPureFn();
+    } catch(e) { /* ignore */ }
+  });
+
+  it("can call a view fn", async() => {
+    await instance.callViewFn(10);
+  });
+
   it("should add one", async () => {
     await instance.addToMap(one);
   });

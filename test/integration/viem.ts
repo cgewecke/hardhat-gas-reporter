@@ -53,4 +53,15 @@ describe("Viem", function () {
     assert.isNotNull(deployment);
     assert(deployment!.gasData.length > 0);
   });
+
+  it ("should record methods executed with eth_call", function(){
+    const greet = findMethod(methods, "Greeter", "greet");
+    const greeting = findMethod(methods, "Greeter", "greeting");
+
+    assert.equal(greet?.numberOfCalls, 2);
+    assert.equal(greeting?.numberOfCalls, 2);
+
+    assert.equal(greet?.executionGasAverage, 3453);
+    assert.equal(greeting?.executionGasAverage, 3467)
+  });
 });

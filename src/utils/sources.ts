@@ -1,5 +1,12 @@
 import { SolcConfig } from "hardhat/types";
+import { keccak256 } from "ethereum-cryptography/keccak";
+import { utf8ToBytes, bytesToHex } from "ethereum-cryptography/utils";
 import { SolcInfo } from "../types";
+
+
+export function getHashedFunctionSignature(fnSig: string ): string {
+  return bytesToHex(keccak256(Buffer.from(utf8ToBytes(fnSig)))).slice(0, 8);
+}
 
 /**
  * Generates id for a GasData.methods entry from the input of a web3.eth.getTransaction

@@ -1,12 +1,10 @@
 import type { EthereumProvider, HardhatRuntimeEnvironment } from "hardhat/types";
 import type { Deployment, GasReporterOptions, MethodData, ContractInfo, JsonRpcBlock } from '../types';
 import { FunctionFragment, Interface } from "@ethersproject/abi";
-import { keccak256 } from "ethereum-cryptography/keccak";
-import { utf8ToBytes, bytesToHex } from "ethereum-cryptography/utils";
 import sha1 from "sha1";
 
 import { warnEthers } from "../utils/ui";
-import { matchBinaries } from "../utils/sources";
+import { matchBinaries, getHashedFunctionSignature } from "../utils/sources";
 import { gasToCost, gasToPercentOfLimit } from "../utils/gas";
 
 type MethodID = { fnSig: string } & FunctionFragment;
@@ -44,7 +42,6 @@ export class GasData {
     provider: EthereumProvider,
     contracts: ContractInfo[]
   ) {
-
     this.provider = provider;
 
     for (const item of contracts) {
@@ -79,7 +76,7 @@ export class GasData {
       // Generate sighashes and remap ethers to something similar
       // to abiDecoder.getMethodIDs
       Object.keys(methods).forEach(key => {
-        const sighash = bytesToHex(keccak256(Buffer.from(utf8ToBytes(key)))).slice(0, 8);
+        const sighash = getHashedFunctionSignature(key);
         // @ts-ignore
         methodIDs[sighash] = {fnSig: key, ...methods[key]};
       });
@@ -87,12 +84,13 @@ export class GasData {
       // Create Method Map;
       Object.keys(methodIDs).forEach(key => {
         const isInterface = item.artifact.bytecode === "0x";
-        const isCall = methodIDs[key].type === "call";
+        const isCall = methodIDs[key].constant;
         const methodHasName = methodIDs[key].name !== undefined;
 
-        if (methodHasName && !isCall && !isInterface) {
+        if (methodHasName && !isInterface) {
           this.methods[`${contract.name  }_${  key}`] = {
             key,
+            isCall,
             contract: contract.name,
             method: methodIDs[key].name,
             fnSig: methodIDs[key].fnSig,

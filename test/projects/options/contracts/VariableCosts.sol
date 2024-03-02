@@ -13,15 +13,17 @@ contract VariableCosts is Wallet {
     multi = new MultiContractFileA();
   }
 
-  function pureFn(uint x) public pure returns (uint){
+  function callEmptyFn() public pure {}
+
+  function callPureFnReturn(uint x) public pure returns (uint){
     return x;
   }
 
-  function viewFn(uint x) public view returns (address){
-    return map[x];
+  function callRevertingPureFn() public pure {
+    require(false, "no");
   }
 
-  function constantFn(uint x) public view returns (address){
+  function callViewFn(uint x) public view returns (address){
     return map[x];
   }
 

@@ -34,6 +34,7 @@ const config: HardhatUserConfig = {
     tokenPrice: "200.00",
     gasPrice: 40,
     showUncalledMethods: true,
+    includeIntrinsicGas: false,
     outputFile: "./testGasReport.txt",
     outputJSONFile: "./gas.json",
     forceTerminalOutput: true,
