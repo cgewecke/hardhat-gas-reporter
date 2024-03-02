@@ -14,9 +14,7 @@ import { warnEthers } from "../utils/ui";
 import { matchBinaries, getHashedFunctionSignature } from "../utils/sources";
 import { gasToCost, gasToPercentOfLimit } from "../utils/gas";
 
-
 type MethodID = { fnSig: string } & FunctionFragment;
-
 
 /**
  * Data store written to by Collector and consumed by output formatters.
@@ -94,9 +92,10 @@ export class GasData {
         const isInterface = item.artifact.bytecode === "0x";
         const isCall = methodIDs[key].constant;
         const methodHasName = methodIDs[key].name !== undefined;
+        const contractScopedKey = `${contract.name  }_${  key}`;
 
-        if (methodHasName && !isInterface) {
-          this.methods[`${contract.name  }_${  key}`] = {
+        if (methodHasName && !isInterface && !item.excludedMethods.includes(contractScopedKey)) {
+          this.methods[contractScopedKey] = {
             key,
             isCall,
             contract: contract.name,

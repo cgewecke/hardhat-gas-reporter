@@ -5,7 +5,7 @@ import {
 
 import { ProviderWrapper } from "hardhat/plugins";
 
-import { GasReporterExecutionContext, JsonRpcTx } from "../types";
+import { GasReporterExecutionContext, JsonRpcTx, ValidatedRequestArguments } from "../types";
 import { hexToDecimal } from "../utils/gas";
 
 
@@ -110,7 +110,10 @@ export class GasReporterProvider extends ProviderWrapper {
       }
 
       if (gas) {
-        await this._executionContext!.collector?.collectCall(args, gas);
+        await this._executionContext!.collector?.collectCall(
+          args as ValidatedRequestArguments,
+          gas
+        );
       }
     }
     return this._wrappedProvider.request(args);
@@ -146,7 +149,7 @@ export class GasReporterProvider extends ProviderWrapper {
    * @returns
    */
   private _canEstimate(args: RequestArguments) {
-    if (!this._executionContext?.trackEthCall) return false;
+    if (!this._executionContext?.usingCall) return false;
 
     if (
       Array.isArray(args.params) &&

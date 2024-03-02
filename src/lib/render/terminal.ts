@@ -98,9 +98,10 @@ export function generateTerminalTextTable(
       stats.executionGasAverage = commify(method.executionGasAverage!);
       stats.cost = (method.cost === undefined) ? chalk.grey("-") : method.cost;
 
-      stats.calldataGasAverage = (method.calldataGasAverage !== undefined)
+      // Also writes dash when average is zero
+      stats.calldataGasAverage = (method.calldataGasAverage)
         ?  commify(method.calldataGasAverage)
-        : "";
+        : chalk.grey("-");
 
     } else {
       stats.executionGasAverage = chalk.grey("-");

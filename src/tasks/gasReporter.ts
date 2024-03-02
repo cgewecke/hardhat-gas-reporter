@@ -33,7 +33,7 @@ subtask(TASK_GAS_REPORTER_START).setAction(
       }
       const contracts = await getContracts(hre, options);
 
-      hre.__hhgrec.trackEthCall = options.reportPureAndViewMethods;
+      hre.__hhgrec.usingCall = options.reportPureAndViewMethods;
       hre.__hhgrec.usingViem = (hre as any).viem !== undefined;
       hre.__hhgrec.usingOZ  = ((hre as any).upgrades !== undefined) || ((hre as any).defender !== undefined)
 

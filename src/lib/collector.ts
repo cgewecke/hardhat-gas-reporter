@@ -1,7 +1,7 @@
 import type { RpcReceiptOutput } from "hardhat/internal/hardhat-network/provider/output"
 import { hexlify } from "@ethersproject/bytes";
 
-import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { HardhatRuntimeEnvironment, RequestArguments } from "hardhat/types";
 
 import { getMethodID } from "../utils/sources";
 import {
@@ -11,10 +11,9 @@ import {
   getGasSubIntrinsic
 } from "../utils/gas";
 
-import { GasReporterOptions, JsonRpcTx, FakeTx } from "../types"
+import { GasReporterOptions, JsonRpcTx, FakeTx, ValidatedRequestArguments } from "../types"
 import { GasData } from "./gasData";
 import { Resolver } from "./resolvers";
-
 
 /**
  * Collects gas usage data, associating it with the relevant contracts, methods.
@@ -43,7 +42,7 @@ export class Collector {
       await this._collectMethodsData(tx, receipt, false);
   }
 
-  public async collectCall(args: any, gas: number): Promise<void> {
+  public async collectCall(args: ValidatedRequestArguments, gas: number): Promise<void> {
     const callGas = gas - getIntrinsicGas(args.params[0].data);
     const fakeTx = {
       input: args.params[0].data,
@@ -129,7 +128,7 @@ export class Collector {
       this.data.methods[id].gasData.push(executionGas);
       this.data.methods[id].callData.push(calldataGas);
       this.data.methods[id].numberOfCalls += 1;
-      this.data.methods[id].isCall = !this.options.includeIntrinsicGas;
+      this.data.methods[id].isCall = isCall || !this.options.includeIntrinsicGas;
     } else {
       this.resolver.unresolvedCalls++;
     }
