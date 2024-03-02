@@ -5,8 +5,9 @@ import { Resolver } from "./index";
 /**
  * Custom resolver for OpenZeppelin's upgrades and defender plugins. There are two
  * types of upgrade for both systems, `erc1967` and `beacon`. They are queried in a
- * series for the missing contract's implementation address. Resolver is attached
- * when `upgrades` or `defender` are list
+ * series for the missing contract's implementation address. This resolver gets attached
+ * by default when `upgrades` or `defender` are present on the `hre` (as long as user
+ * hasn't defined their own).
  *
  * Returns contract name matching the resolved address.
  * @param  {Resolver}                     `this`

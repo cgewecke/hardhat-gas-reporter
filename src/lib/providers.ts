@@ -69,7 +69,7 @@ export class GasReporterProvider extends ProviderWrapper {
    * @returns {Promise<any>}
    */
   private async _handleViemOrWaffle(args: RequestArguments): Promise<any> {
-  const txHash = await this._wrappedProvider.request(args);
+    const txHash = await this._wrappedProvider.request(args);
 
     if (typeof txHash === "string") {
       const tx = await this._wrappedProvider.request({
@@ -102,7 +102,7 @@ export class GasReporterProvider extends ProviderWrapper {
           params: args.params,
         });
 
-        // Handling here b/c not sure what edge case
+        // Converting inside try block b/c not sure what edge case
         // responses are for all providers
         gas = hexToDecimal(gas as string);
       } catch (err) {
@@ -139,9 +139,9 @@ export class GasReporterProvider extends ProviderWrapper {
   }
 
   /**
-   * Used by `eth_call` to check that the call being made is not disallowed by a Resolver.
-   * Resolvers need to make private calls to establish proxied contract identities - if we
-   * don't filter them here we get stuck in an infinite loop.
+   * Used by `eth_call` to check that we're tracking calls and that the call being made is
+   * not disallowed by a Resolver. Resolvers need to make private calls to establish proxied
+   * contract identities - if we don't filter them here we get stuck in an infinite loop.
    * @param args
    * @returns
    */

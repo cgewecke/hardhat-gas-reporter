@@ -24,7 +24,7 @@ function shouldSkipContract(
 
 /**
  * Fetches remote bytecode at address and hashes it so these addresses can be
- * added to the tracking at eth-gas-reporter synchronously on init.
+ * added to the tracking in the collector
  * @param  {EGRAsyncApiProvider}   provider
  * @param  {RemoteContract[] = []} remoteContracts
  * @return {Promise<RemoteContract[]>}
@@ -50,8 +50,7 @@ export async function getResolvedRemoteContracts(
 }
 
 /**
- * Method passed to eth-gas-reporter to resolve artifact resources. Loads
- * and processes JSON artifacts
+ * Loads and processes artifacts
  * @param  {HardhatRuntimeEnvironment} hre.artifacts
  * @param  {String[]}                  skippable        contract *not* to track
  * @param  {RemoteContract[]}          resolvedRemoteContracts
