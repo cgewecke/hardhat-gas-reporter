@@ -33,11 +33,18 @@ subtask(TASK_GAS_REPORTER_START).setAction(
       }
       const contracts = await getContracts(hre, options);
 
+      hre.__hhgrec.usingCall = options.reportPureAndViewMethods;
       hre.__hhgrec.usingViem = (hre as any).viem !== undefined;
       hre.__hhgrec.usingOZ  = ((hre as any).upgrades !== undefined) || ((hre as any).defender !== undefined)
 
       hre.__hhgrec.collector = new Collector(hre, options);
       hre.__hhgrec.collector.data.initialize(options, hre.network.provider, contracts);
+
+      // Custom proxy resolvers are instantiated in the config,
+      // OZ proxy resolver instantiated in Resolver constructor called by new Collector()
+      hre.__hhgrec.methodIgnoreList = (options.proxyResolver !== undefined)
+        ? options.proxyResolver.ignore()
+        : [];
 
       await initGasReporterProvider(hre.network.provider, hre.__hhgrec);
     }

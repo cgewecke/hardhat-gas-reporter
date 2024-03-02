@@ -9,7 +9,12 @@ import { getSolcInfo } from "../../utils/sources";
 
 import { GasReporterOptions, MethodDataItem } from "../../types";
 import { GasData } from "../gasData";
-import { getCommonTableVals, getSmallestPrecisionVal, indentText } from "../../utils/ui";
+import {
+  getCommonTableVals,
+  indentText,
+  indentTextWithSymbol,
+  costIsBelowPrecision
+} from "../../utils/ui";
 import {
   UNICODE_CIRCLE,
   UNICODE_TRIANGLE
@@ -93,18 +98,18 @@ export function generateTerminalTextTable(
       stats.executionGasAverage = commify(method.executionGasAverage!);
       stats.cost = (method.cost === undefined) ? chalk.grey("-") : method.cost;
 
-      stats.calldataGasAverage = (method.calldataGasAverage !== undefined)
+      // Also writes dash when average is zero
+      stats.calldataGasAverage = (method.calldataGasAverage)
         ?  commify(method.calldataGasAverage)
-        : "";
+        : chalk.grey("-");
 
     } else {
       stats.executionGasAverage = chalk.grey("-");
       stats.cost = chalk.grey("-");
     }
 
-    // Notify when value is below is precision
-    if (typeof stats.cost === "number" && stats.cost < getSmallestPrecisionVal(options.currencyDisplayPrecision!)) {
-      stats.cost = UNICODE_TRIANGLE;
+    if (costIsBelowPrecision(stats.cost, options)){
+      stats.cost = chalk.magenta.bold(UNICODE_TRIANGLE);
     }
 
     if (method.min && method.max) {
@@ -115,9 +120,13 @@ export function generateTerminalTextTable(
 
     const fnName = options.showMethodSig ? method.fnSig : method.method;
 
+    const indented = (method.isCall)
+      ? indentTextWithSymbol(fnName, chalk.magenta.bold(UNICODE_CIRCLE))
+      : indentText(fnName);
+
     if (options.showUncalledMethods || method.numberOfCalls > 0) {
       const row: HorizontalTableRow = [];
-      row.push({ hAlign: "left", colSpan: 2, content: indentText(fnName) });
+      row.push({ hAlign: "left", colSpan: 2, content: indented });
       row.push({ hAlign: "right", colSpan: 1, content: stats.min });
       row.push({ hAlign: "right", colSpan: 1, content: stats.max });
       row.push({ hAlign: "right", colSpan: 1, content: stats.executionGasAverage });
@@ -156,9 +165,8 @@ export function generateTerminalTextTable(
 
     stats.cost = (deployment.cost === undefined) ? chalk.grey("-") : deployment.cost;
 
-    // Notify when value is below precision
-    if (typeof stats.cost === "number" && stats.cost < getSmallestPrecisionVal(options.currencyDisplayPrecision!)) {
-      stats.cost = UNICODE_TRIANGLE;
+    if (costIsBelowPrecision(stats.cost, options)){
+      stats.cost = chalk.magenta.bold(UNICODE_TRIANGLE);
     }
 
     stats.calldataGasAverage = (deployment.calldataGasAverage === undefined )

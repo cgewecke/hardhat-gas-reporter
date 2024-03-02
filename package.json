@@ -71,6 +71,7 @@
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/units": "^5.7.0",
+    "@solidity-parser/parser": "^0.18.0",
     "array-uniq": "1.0.3",
     "axios": "^1.6.7",
     "chalk": "4.1.2",

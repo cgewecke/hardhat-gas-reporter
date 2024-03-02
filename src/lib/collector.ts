@@ -1,11 +1,19 @@
 import type { RpcReceiptOutput } from "hardhat/internal/hardhat-network/provider/output"
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { GasReporterOptions, JsonRpcTx } from "../types"
-import { getCalldataGasForNetwork, hexToDecimal } from "../utils/gas";
-import { getMethodID } from "../utils/sources";
-import { GasData } from "./gasData";
+import { hexlify } from "@ethersproject/bytes";
 
-import { Resolver } from "./resolvers/index";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+
+import { getMethodID } from "../utils/sources";
+import {
+  getCalldataGasForNetwork,
+  hexToDecimal,
+  getIntrinsicGas,
+  getGasSubIntrinsic
+} from "../utils/gas";
+
+import { GasReporterOptions, JsonRpcTx, FakeTx, ValidatedRequestArguments } from "../types"
+import { GasData } from "./gasData";
+import { Resolver } from "./resolvers";
 
 /**
  * Collects gas usage data, associating it with the relevant contracts, methods.
@@ -31,7 +39,26 @@ export class Collector {
     if (receipt.contractAddress !== null)
       await this._collectDeploymentsData(tx, receipt);
     else
-      await this._collectMethodsData(tx, receipt);
+      await this._collectMethodsData(tx, receipt, false);
+  }
+
+  public async collectCall(args: ValidatedRequestArguments, gas: number): Promise<void> {
+    const callGas = gas - getIntrinsicGas(args.params[0].data);
+    const fakeTx = {
+      input: args.params[0].data,
+      to: args.params[0].to,
+      isCall: true
+    }
+
+    const fakeReceipt = {
+      gasUsed: hexlify(callGas)
+    }
+
+    await this._collectMethodsData(
+      fakeTx as FakeTx,
+      fakeReceipt as unknown as RpcReceiptOutput,
+      true
+    );
   }
 
   /**
@@ -61,12 +88,17 @@ export class Collector {
    * @param  {JsonRpcTx} transaction return value of `getTransactionByHash`
    * @param  {TransactionReceipt} receipt
    */
-  private async _collectMethodsData(tx: JsonRpcTx, receipt: RpcReceiptOutput ): Promise<void> {
+  private async _collectMethodsData(
+    tx: JsonRpcTx | FakeTx,
+    receipt: RpcReceiptOutput,
+    isCall: boolean
+  ): Promise<void> {
     let contractName = await this.data.getNameByAddress(tx.to);
 
     // Case: proxied call
     if (this._isProxied(contractName, tx.input!)) {
       contractName = await this.resolver.resolveByProxy(tx);
+
       // Case: hidden contract factory deployment
     } else if (contractName === null) {
       contractName = await this.resolver.resolveByDeployedBytecode(
@@ -76,18 +108,27 @@ export class Collector {
 
     // Case: all else fails, use first match strategy
     if (contractName === null) {
-      contractName = this.resolver.resolveByMethodSignature(tx);
+      contractName = this.resolver.resolveByMethodSignature(tx as JsonRpcTx);
     }
 
     const id = getMethodID(contractName!, tx.input!);
 
     if (this.data.methods[id] !== undefined) {
-      const executionGas = hexToDecimal(receipt.gasUsed);
-      const calldataGas = getCalldataGasForNetwork(this.options, tx);
+
+      const executionGas = (this.options.includeIntrinsicGas)
+        ? hexToDecimal(receipt.gasUsed)
+        : getGasSubIntrinsic(tx.input, hexToDecimal(receipt.gasUsed));
+
+      // If L2 txs have intrinsic turned off, we assume caller
+      // is paying the L1 overhead
+      const calldataGas = (isCall || !this.options.includeIntrinsicGas)
+        ? 0
+        : getCalldataGasForNetwork(this.options, tx as JsonRpcTx);
 
       this.data.methods[id].gasData.push(executionGas);
       this.data.methods[id].callData.push(calldataGas);
       this.data.methods[id].numberOfCalls += 1;
+      this.data.methods[id].isCall = isCall || !this.options.includeIntrinsicGas;
     } else {
       this.resolver.unresolvedCalls++;
     }

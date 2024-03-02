@@ -1,7 +1,7 @@
 import type {GasData} from "../gasData";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { GasReporterOptions, JsonRpcTx } from "../../types";
-import { customResolver as OZResolver } from "./oz";
+import { CustomGasReporterResolver, GasReporterOptions, JsonRpcTx } from "../../types";
+import { OZResolver } from "./oz";
 
 export class Resolver {
   public unresolvedCalls: number;
@@ -14,10 +14,10 @@ export class Resolver {
     this.data = data;
     this.hre = hre;
 
-    if (typeof options.proxyResolver === "function") {
-      this.resolveByProxy = options.proxyResolver.bind(this);
+    if (options.proxyResolver !== undefined) {
+      this.resolveByProxy = (options.proxyResolver as CustomGasReporterResolver).resolve.bind(this);
     } else if (hre.__hhgrec.usingOZ) {
-      this.resolveByProxy = OZResolver.bind(this);
+      this.resolveByProxy = new OZResolver().resolve.bind(this);
     } else {
       this.resolveByProxy = this.resolveByMethodSignature;
     }
@@ -55,5 +55,22 @@ export class Resolver {
       return match.name;
     }
     return null;
+  }
+
+  /**
+   * Helper for CustomResolvers which checks the existing contract address cache before
+   * trying to resolve by deployed bytecode
+   * @param contractAddress
+   * @returns
+   */
+  public async resolveViaCache(contractAddress: string): Promise<string | null | undefined> {
+    if (contractAddress && contractAddress !== "0x") {
+      const contractName = await this.data.getNameByAddress(contractAddress);
+
+      if (contractName) return contractName;
+
+      // Try to resolve by deployedBytecode
+      return this.resolveByDeployedBytecode(contractAddress);
+    }
   }
 }

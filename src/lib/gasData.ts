@@ -1,16 +1,20 @@
 import type { EthereumProvider, HardhatRuntimeEnvironment } from "hardhat/types";
-import type { Deployment, GasReporterOptions, MethodData, ContractInfo, JsonRpcBlock } from '../types';
-import { FunctionFragment, Interface } from "@ethersproject/abi";
-import { keccak256 } from "ethereum-cryptography/keccak";
-import { utf8ToBytes, bytesToHex } from "ethereum-cryptography/utils";
+import type {
+  Deployment,
+  GasReporterOptions,
+  MethodData,
+  ContractInfo,
+  JsonRpcBlock,
+  MethodDataItem
+} from '../types';
 import sha1 from "sha1";
+import { FunctionFragment, Interface } from "@ethersproject/abi";
 
 import { warnEthers } from "../utils/ui";
-import { matchBinaries } from "../utils/sources";
+import { matchBinaries, getHashedFunctionSignature } from "../utils/sources";
 import { gasToCost, gasToPercentOfLimit } from "../utils/gas";
 
 type MethodID = { fnSig: string } & FunctionFragment;
-
 
 /**
  * Data store written to by Collector and consumed by output formatters.
@@ -44,7 +48,6 @@ export class GasData {
     provider: EthereumProvider,
     contracts: ContractInfo[]
   ) {
-
     this.provider = provider;
 
     for (const item of contracts) {
@@ -79,7 +82,7 @@ export class GasData {
       // Generate sighashes and remap ethers to something similar
       // to abiDecoder.getMethodIDs
       Object.keys(methods).forEach(key => {
-        const sighash = bytesToHex(keccak256(Buffer.from(utf8ToBytes(key)))).slice(0, 8);
+        const sighash = getHashedFunctionSignature(key);
         // @ts-ignore
         methodIDs[sighash] = {fnSig: key, ...methods[key]};
       });
@@ -87,12 +90,14 @@ export class GasData {
       // Create Method Map;
       Object.keys(methodIDs).forEach(key => {
         const isInterface = item.artifact.bytecode === "0x";
-        const isCall = methodIDs[key].type === "call";
+        const isCall = methodIDs[key].constant;
         const methodHasName = methodIDs[key].name !== undefined;
+        const contractScopedKey = `${contract.name  }_${  key}`;
 
-        if (methodHasName && !isCall && !isInterface) {
-          this.methods[`${contract.name  }_${  key}`] = {
+        if (methodHasName && !isInterface && !item.excludedMethods.includes(contractScopedKey)) {
+          this.methods[contractScopedKey] = {
             key,
+            isCall,
             contract: contract.name,
             method: methodIDs[key].name,
             fnSig: methodIDs[key].fnSig,
@@ -103,98 +108,6 @@ export class GasData {
         }
       });
     }
-  }
-
-  /**
-   * Calculates summary and price data for methods and deployments data after it's all
-   * been collected
-   */
-  public async runAnalysis(hre: HardhatRuntimeEnvironment, options: GasReporterOptions) {
-    const block = await hre.network.provider.send("eth_getBlockByNumber", ["latest", false]);
-    const blockGasLimit = parseInt((block as JsonRpcBlock).gasLimit);
-
-    let methodsExecutionTotal = 0;
-    let methodsCalldataTotal = 0;
-    let deploymentsExecutionTotal = 0;
-    let deploymentsCalldataTotal = 0
-
-    /* Methods */
-    for (const key of Object.keys(this.methods)){
-      const method = this.methods[key];
-
-      if (method.gasData.length > 0) {
-        const executionTotal = method.gasData.reduce((acc: number, datum: number) => acc + datum, 0);
-        method.executionGasAverage = Math.round(executionTotal / method.gasData.length);
-
-        const calldataTotal = method.callData.reduce((acc: number, datum: number) => acc + datum, 0);
-        method.calldataGasAverage = Math.round(calldataTotal / method.gasData.length);
-
-        method.cost =
-          options.tokenPrice && options.gasPrice
-            ? gasToCost(
-                method.executionGasAverage,
-                method.calldataGasAverage,
-                options
-              )
-            : undefined;
-
-        const sortedData = method.gasData.sort((a: number, b: number) => a - b);
-        method.min = sortedData[0];
-        method.max = sortedData[sortedData.length - 1];
-        methodsExecutionTotal += method.executionGasAverage;
-        methodsCalldataTotal += method.calldataGasAverage;
-      }
-    }
-
-    /* Deployments */
-    for (const deployment of this.deployments) {
-      if (deployment.gasData.length !== 0) {
-        const total = deployment.gasData.reduce((acc, datum) => acc + datum, 0);
-        deployment.executionGasAverage = Math.round(total / deployment.gasData.length);
-
-        const calldataTotal = deployment.callData.reduce((acc: number, datum: number) => acc + datum, 0);
-        deployment.calldataGasAverage = Math.round(calldataTotal / deployment.callData.length);
-
-        deployment.percent = gasToPercentOfLimit(deployment.executionGasAverage, blockGasLimit);
-
-        deployment.cost =
-          options.tokenPrice && options.gasPrice
-            ? gasToCost(
-                deployment.executionGasAverage,
-                deployment.calldataGasAverage,
-                options
-              )
-            : undefined;
-
-        const sortedData = deployment.gasData.sort((a, b) => a - b);
-        deployment.min = sortedData[0];
-        deployment.max = sortedData[sortedData.length - 1];
-        deploymentsExecutionTotal += deployment.executionGasAverage;
-        deploymentsCalldataTotal += deployment.calldataGasAverage;
-      }
-    }
-
-    hre.__hhgrec.blockGasLimit = blockGasLimit;
-
-    hre.__hhgrec.methodsTotalGas = methodsExecutionTotal;
-    hre.__hhgrec.methodsTotalCost =
-      options.tokenPrice && options.gasPrice
-        ? gasToCost(
-            methodsExecutionTotal,
-            methodsCalldataTotal,
-            options
-          )
-        : undefined;
-
-    hre.__hhgrec.deploymentsTotalGas = deploymentsExecutionTotal;
-    hre.__hhgrec.deploymentsTotalCost =
-      options.tokenPrice && options.gasPrice
-        ? gasToCost(
-            deploymentsExecutionTotal,
-            deploymentsCalldataTotal,
-            options
-          )
-        : undefined;
   }
 
   /**
@@ -304,5 +217,95 @@ export class GasData {
 
   public resetAddressCache() {
     this.addressCache = {};
+  }
+
+  /**
+   * Calculates summary and price data for methods and deployments data after it's all
+   * been collected
+   */
+  public async runAnalysis(hre: HardhatRuntimeEnvironment, options: GasReporterOptions) {
+    const block = await hre.network.provider.send("eth_getBlockByNumber", ["latest", false]);
+    const blockGasLimit = parseInt((block as JsonRpcBlock).gasLimit);
+
+    let methodsExecutionTotal = 0;
+    let methodsCalldataTotal = 0;
+    let deploymentsExecutionTotal = 0;
+    let deploymentsCalldataTotal = 0
+
+    /* Methods */
+    for (const key of Object.keys(this.methods)){
+      const method = this.methods[key];
+
+      if (method.gasData.length > 0) {
+        this._processItemData(method, options);
+        methodsExecutionTotal += method.executionGasAverage!;
+        methodsCalldataTotal += method.calldataGasAverage!;
+      }
+    }
+
+    /* Deployments */
+    for (const deployment of this.deployments) {
+      if (deployment.gasData.length !== 0) {
+        this._processItemData(deployment, options)
+        deployment.percent = gasToPercentOfLimit(deployment.executionGasAverage!, blockGasLimit);
+        deploymentsExecutionTotal += deployment.executionGasAverage!;
+        deploymentsCalldataTotal += deployment.calldataGasAverage!;
+      }
+    }
+
+    hre.__hhgrec.blockGasLimit = blockGasLimit;
+    hre.__hhgrec.methodsTotalGas = methodsExecutionTotal;
+    hre.__hhgrec.deploymentsTotalGas = deploymentsExecutionTotal;
+    hre.__hhgrec.methodsTotalCost = this._getCostTotals(methodsExecutionTotal, methodsCalldataTotal, options);
+    hre.__hhgrec.deploymentsTotalCost = this._getCostTotals(deploymentsExecutionTotal, deploymentsCalldataTotal, options);
+  }
+
+  /**
+   * Calculates execution and calldata gas averages, min/max and currency cost for method
+   * and deployment data
+   * @param {MethodDataItem | Deployment} item
+   * @param {GasReporterOptions}          options
+   */
+  private _processItemData(item: MethodDataItem | Deployment, options: GasReporterOptions) {
+    const executionTotal = item.gasData.reduce((acc: number, datum: number) => acc + datum, 0);
+    item.executionGasAverage = Math.round(executionTotal / item.gasData.length);
+
+    const calldataTotal = item.callData.reduce((acc: number, datum: number) => acc + datum, 0);
+    item.calldataGasAverage = Math.round(calldataTotal / item.gasData.length);
+
+    item.cost =
+      options.tokenPrice && options.gasPrice
+        ? gasToCost(
+            item.executionGasAverage,
+            item.calldataGasAverage,
+            options
+          )
+        : undefined;
+
+    const sortedData = item.gasData.sort((a: number, b: number) => a - b);
+    item.min = sortedData[0];
+    item.max = sortedData[sortedData.length - 1];
+  }
+
+  /**
+   * Optionally calculates the total currency cost of execution and calldata gas usage
+   * @param {number}             executionTotal
+   * @param {number}             calldataTotal
+   * @param {GasReporterOptions} options
+   * @returns
+   */
+  private _getCostTotals(
+    executionTotal: number,
+    calldataTotal: number,
+    options: GasReporterOptions
+  ): string | undefined {
+
+    return (options.tokenPrice && options.gasPrice)
+        ? gasToCost(
+            executionTotal,
+            calldataTotal,
+            options
+          )
+        : undefined;
   }
 }

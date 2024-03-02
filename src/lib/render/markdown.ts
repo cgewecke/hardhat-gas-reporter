@@ -1,3 +1,4 @@
+import { EOL } from "os";
 import  table from "markdown-table";
 
 import _ from "lodash";
@@ -6,7 +7,15 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { GasReporterOptions, MethodDataItem } from "../../types";
 import { GasData } from "../gasData";
 import { getSolcInfo } from "../../utils/sources";
-import { indentMarkdown, entitleMarkdown, getCommonTableVals } from "../../utils/ui";
+import {
+  indentMarkdown,
+  indentMarkdownWithSymbol,
+  entitleMarkdown,
+  getCommonTableVals,
+  costIsBelowPrecision,
+  markdownBold
+} from "../../utils/ui";
+import { UNICODE_CIRCLE, UNICODE_TRIANGLE } from "../../constants";
 
 interface Section {row: string[], contractName: string, methodName: string}
 
@@ -37,7 +46,7 @@ export function generateMarkdownTable(
   let gasPrices: string[][];
   let l1gwei: string | number | undefined;
   let l2gwei: string | number | undefined;
-  const { network, currency } = getCommonTableVals(options);
+  const { network, currency, nonZeroMsg, intrinsicMsg } = getCommonTableVals(options);
   let tokenPrice = "-";
   let rate: string;
   let token: string;
@@ -62,7 +71,7 @@ export function generateMarkdownTable(
   }
 
   const optionsRows: readonly string[][] = [
-    ["Option", "Settings"],
+    ["**Settings**", "**Value**"],
     ["Solidity: version", solc.version],
     ["Solidity: optimized", solc.optimizer],
     ["Solidity: runs", solc.runs.toString()],
@@ -73,7 +82,14 @@ export function generateMarkdownTable(
     ["Network", network]
   ];
 
+  const keyRows: readonly string[][] = [
+    ["**Symbol**", "**Meaning**"],
+    [markdownBold(UNICODE_CIRCLE), intrinsicMsg],
+    [markdownBold(UNICODE_TRIANGLE), nonZeroMsg]
+  ];
+
   const optionsTable = table(optionsRows);
+  const keyTable = table(keyRows, { align: ["c", "l"] });
 
   // ---------------------------------------------------------------------------------------------
   // Assemble section: methods
@@ -99,11 +115,17 @@ export function generateMarkdownTable(
       stats.cost = (method.cost === undefined) ? "-" : method.cost;
 
       if (method.calldataGasAverage !== undefined) {
-        stats.calldataGasAverage = commify(method.calldataGasAverage)
+        stats.calldataGasAverage = (method.calldataGasAverage === 0)
+          ? "-"
+          : commify(method.calldataGasAverage);
       };
     } else {
       stats.executionGasAverage = "-";
       stats.cost = "-";
+    }
+
+    if (costIsBelowPrecision(stats.cost, options)){
+      stats.cost = markdownBold(UNICODE_TRIANGLE);
     }
 
     if (method.min && method.max) {
@@ -115,6 +137,10 @@ export function generateMarkdownTable(
     stats.numberOfCalls = method.numberOfCalls.toString();
 
     const fnName = options.showMethodSig ? method.fnSig : method.method;
+
+    const indented = (method.isCall)
+      ? indentMarkdownWithSymbol(fnName, markdownBold(UNICODE_CIRCLE))
+      : indentMarkdown(fnName);
 
     if (method.numberOfCalls > 0) {
       // Contracts name row
@@ -144,7 +170,7 @@ export function generateMarkdownTable(
       // Method row
       const methodSection = {
         row: [
-          indentMarkdown(fnName),
+          indented,
           stats.min,
           stats.max,
           ...averages,
@@ -210,6 +236,10 @@ export function generateMarkdownTable(
       ? [stats.executionGasAverage, stats.calldataGasAverage]
       : [stats.executionGasAverage];
 
+    if (costIsBelowPrecision(stats.cost, options)){
+      stats.cost = markdownBold(UNICODE_TRIANGLE);
+    }
+
     const section = [
       entitleMarkdown(deployment.name),
       stats.min,
@@ -230,12 +260,13 @@ export function generateMarkdownTable(
   // Final assembly
   // ---------------------------------------------------------------------------------------------
 
-  const optionsTitle = "## Solidity and Network Config\n";
-  const methodTitle = "## Methods\n";
-  const deployTitle = "## Deployments\n";
+  const optionsTitle = `## Solidity and Network Config${  EOL}`;
+  const methodTitle = `## Methods${  EOL}`;
+  const deployTitle = `## Deployments${  EOL}`;
 
   const md =
     `${methodTitle +
+    keyTable + EOL + EOL +
     methodTable
     }\n\n${
     deployTitle

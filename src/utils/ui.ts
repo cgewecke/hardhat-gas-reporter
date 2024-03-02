@@ -19,8 +19,24 @@ export function indentMarkdown(val: string) {
   return `       *${val}*`;
 }
 
+export function indentTextWithSymbol(val: string, symbol: string) {
+  return ` ${symbol}  ${val}`;
+}
+
+export function indentMarkdownWithSymbol(val: string, symbol: string) {
+  return `    ${symbol}  *${val}*`;
+}
+
 export function entitleMarkdown(val: string) {
   return `**${val}**`;
+}
+
+export function markdownBold(val: string) {
+  return `**${val}**`;
+}
+
+export function markdownItalic(val: string) {
+  return `*${val}*`
 }
 
 export function getSmallestPrecisionVal(precision: number): number {
@@ -30,6 +46,14 @@ export function getSmallestPrecisionVal(precision: number): number {
   }
   start += "1";
   return parseFloat(start);
+}
+
+export function costIsBelowPrecision(_cost: string, options: GasReporterOptions): boolean {
+  const cost = parseFloat(_cost);
+
+  if (isNaN(cost)) return false;
+
+  return cost < getSmallestPrecisionVal(options.currencyDisplayPrecision!)
 }
 
 const startWarning = chalk.red (`>>>>> WARNING (hardhat-gas-reporter plugin) <<<<<<`)
@@ -161,7 +185,7 @@ export function getCommonTableVals(options: GasReporterOptions) {
     l2gwei = parseFloat(l2gwei.toString()).toFixed(DEFAULT_GAS_PRICE_PRECISION);
   }
 
-  const nonZeroMsg = "Cost was non-zero but below the precision setting for the currency display";
+  const nonZeroMsg = "Cost was non-zero but below the precision setting for the currency display (see options)";
   const intrinsicMsg = "Execution gas for this method does not include intrinsic gas overhead ";
 
   return {

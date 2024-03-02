@@ -37,7 +37,7 @@ export function getOptimismBedrockL1Gas(tx: JsonRpcTx): number {
   // TODO: Am getting a small underestimate here compared to Etherscan, plus
   // its weird to split up the overhead calc into different functions? (Just doing this
   // so the numbers look right compared to scan but seems wrong)
-  const txDataGas = getTxCalldataGas(tx);
+  const txDataGas = getSerializedTxDataGas(tx);
   return txDataGas + OPTIMISM_BEDROCK_FIXED_OVERHEAD;
 }
 
@@ -84,7 +84,7 @@ export function getOptimismBedrockL1Cost(txDataGas: number, baseFee: number): nu
  * @returns
  */
 export function getOptimismEcotoneL1Gas(tx: JsonRpcTx) {
-  return Math.floor(getTxCalldataGas(tx) / 16);
+  return Math.floor(getSerializedTxDataGas(tx) / 16);
 }
 
 /**
@@ -143,7 +143,7 @@ export function getArbitrum_OS20_L1Cost(gas: number) {
  * 16   gas for non zero byte
  *
  * Account for the transaction being unsigned. Padding is added to account for lack of signature
- * on transaction
+ * on transaction.  (Assume VRS components are non-zero)
  *
  *         1   byte for RLP V prefix
  *         1   byte for V
@@ -156,7 +156,7 @@ export function getArbitrum_OS20_L1Cost(gas: number) {
  *
  * SOURCE: optimism/packages/contracts/contracts/L2/predeploys/OVM_GasPriceOracle.sol
  */
-export function getTxCalldataGas(tx: JsonRpcTx): number {
+export function getSerializedTxDataGas(tx: JsonRpcTx): number {
   const type = normalizeTxType(tx.type);
 
   const serializedTx = serializeTransaction ({
@@ -171,18 +171,26 @@ export function getTxCalldataGas(tx: JsonRpcTx): number {
     nonce: parseInt(tx.nonce)
   })
 
-  let total = 0;
+  const total = getCalldataBytesGas(serializedTx);
+  return total + (68 * 16);
+}
 
+/**
+ * Computes the intrinsic gas overhead for the data component of a transaction
+ * @param data
+ * @returns
+ */
+export function getCalldataBytesGas(data: string): number {
+  let total = 0;
   // String hex-prefixed, 1 byte = 2 hex chars
-  for (let i = 2; i < serializedTx.length; i++) {
+  for (let i = 2; i < data.length; i++) {
     if (i % 2 === 0) {
-      total = (serializedTx[i] === "0" && serializedTx[i + 1] === "0")
+      total = (data[i] === "0" && data[i + 1] === "0")
         ? total + 4
         : total + 16;
     }
   }
-  // Assume VRS components are non-zero
-  return total + (68 * 16);
+  return total;
 }
 
 /**
@@ -190,9 +198,20 @@ export function getTxCalldataGas(tx: JsonRpcTx): number {
  * @param tx
  * @returns
  */
-export function getIntrinsicGas(tx: JsonRpcTx): number {
-  const calldataGas = getTxCalldataGas(tx);
-  return calldataGas + EVM_BASE_TX_COST;
+export function getIntrinsicGas(data: string): number {
+  const gas = getCalldataBytesGas(data);
+  return gas + EVM_BASE_TX_COST;
+}
+
+/**
+ * Returns gas cost minus the intrinsic gas call overhead for a transaction
+ * @param data
+ * @param gas
+ * @returns
+ */
+export function getGasSubIntrinsic(data: string, gas: number) {
+  const intrinsic = getIntrinsicGas(data);
+  return gas - intrinsic;
 }
 
 /**
@@ -261,7 +280,7 @@ export function getCalldataCostForNetwork(
  * Expresses gas usage as a nation-state currency price
  * @param  {Number} gas      gas used
  * @param  {Number} tokenPrice e.g chf/eth
- * @param  {Number} gasPrice in wei e.g 5000000000 (5 gwei)
+ * @param  {Number} gasPrice in gwei
  * @return {Number}          cost of gas used (0.00)
  */
 export function gasToCost(
