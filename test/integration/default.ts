@@ -74,6 +74,11 @@ describe("Default Options", function () {
     assert.equal(options.gasPrice, undefined);
   });
 
+  it("includes the package version in json output", () => {
+    const pkg = require("../../package.json");
+    assert.equal(output.version, pkg.version);
+  });
+
   it("should collect method data for contract names that shadow each other", function(){
     const dataItemA = findMethod(methods, "DuplicateA.sol:Duplicate", "a");
     const dataItemB = findMethod(methods, "DuplicateB.sol:Duplicate", "b");

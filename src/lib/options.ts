@@ -76,6 +76,7 @@ export function getDefaultOptions(userConfig: Readonly<HardhatUserConfig>): GasR
     reportPureAndViewMethods: false,
     rst: false,
     rstTitle: "",
+    suppressTerminalOutput: false,
     showMethodSig: false,
     token: "ETH"
   };

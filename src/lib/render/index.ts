@@ -76,7 +76,7 @@ export function render(hre: HardhatRuntimeEnvironment, options: GasReporterOptio
       options.noColors = originalNoColors;
       options.reportFormat = originalReportFormat;
     }
-  } else {
+  } else if (!options.suppressTerminalOutput) {
     console.log(table);
   }
 
