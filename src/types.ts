@@ -113,6 +113,9 @@ export interface GasReporterOptions {
   /** @property Lists all methods and deployments, even if no transactions were recorded for them */
   showUncalledMethods?: boolean;
 
+  /** @property Skips writing the table to std out */
+  suppressTerminalOutput?: boolean;
+
   /** @property Network token gas fees are paid in (eg:"ETH") */
   token?: string;
 
@@ -160,6 +163,7 @@ export interface Deployment {
  */
 export interface GasReporterOutput {
   namespace: string;
+  version: string;
   options: GasReporterOptions,
   data?: GasData
 }

@@ -8,13 +8,34 @@ import { GasReporterOptions, GasReporterOutput } from "../../types";
  * @param  {Object} data  GasData instance
  */
 export function generateJSONData(data: GasData, options: GasReporterOptions) {
-  delete data.provider;
+  const pkg = require("../../../package.json");
+  _sanitizeGasData(data, options);
+
 
   const output: GasReporterOutput = {
     namespace: "HardhatGasReporter",
+    version: pkg.version,
     options,
     data
   };
 
   writeFileSync(options.outputJSONFile!, JSON.stringify(output));
+}
+
+/**
+ * Removes extraneous data and attached methods
+ * @param {GasData} data
+ * @param {GasReporterOptions} options
+ */
+function _sanitizeGasData(data: GasData, options: GasReporterOptions) {
+  delete options.proxyResolver;
+
+  delete (data as any).addressCache;
+  delete (data as any).codeHashMap;
+  delete data.provider;
+
+  data.deployments.forEach(deployment => {
+    delete (deployment as any).bytecode;
+    delete (deployment as any).deployedBytecode;
+  })
 }
