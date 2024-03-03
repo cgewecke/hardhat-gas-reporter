@@ -86,5 +86,9 @@ test/projects/oz/artifacts
 test/projects/oz/cache
 test/projects/oz/gasReporterOutput.json
 
+test/projects/run/artifacts
+test/projects/run/cache
+test/projects/run/gasReporterOutput.json
+
 dist/
 
