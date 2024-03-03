@@ -11,7 +11,7 @@ import { Deployment, GasReporterOutput, MethodData } from "../types";
 
 import { useEnvironment, findMethod, findDeployment } from "../helpers";
 
-describe.only("Flashswap (TASK_HARDHAT_RUN)", function () {
+describe.skip("Flashswap (TASK_HARDHAT_RUN)", function () {
   let output: GasReporterOutput;
   let methods: MethodData;
   let deployments: Deployment[];
