@@ -1,4 +1,3 @@
-import { boolean } from "hardhat/internal/core/params/argumentTypes";
 import { Collector } from "./lib/collector";
 import { GasData } from "./lib/gasData";
 import { Resolver } from "./lib/resolvers";
