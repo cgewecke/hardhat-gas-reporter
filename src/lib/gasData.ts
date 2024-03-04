@@ -44,7 +44,6 @@ export class GasData {
    * @returns
    */
   public initialize(
-    options: GasReporterOptions,
     provider: EthereumProvider,
     contracts: ContractInfo[]
   ) {
@@ -140,8 +139,8 @@ export class GasData {
 
   /**
    * Get the name of the contract stored at contract address
-   * @param  {String | null} address contract address
-   * @return {String}         contract name
+   * @param  {string | null}                 contract address
+   * @return {Promse<string | null>}         contract name
    */
   public async getNameByAddress(address: string | null): Promise<string | null> {
     if (!address) return null;
@@ -159,8 +158,8 @@ export class GasData {
    * Compares existing contract binaries to the input code for a
    * new deployment transaction and returns the relevant contract.
    * Ignores interfaces.
-   * @param  {String} input tx.input
-   * @return {Object}       this.deployments entry
+   * @param  {String}                  input tx.input
+   * @return {Deployment | null}       this.deployments entry
    */
   public getContractByDeploymentInput(input: string): Deployment | null {
     if (!input) return null;
@@ -182,8 +181,8 @@ export class GasData {
    * Compares code at an address to the deployedBytecode for all
    * compiled contracts and returns the relevant item.
    * Ignores interfaces.
-   * @param  {String} code  result of web3.eth.getCode
-   * @return {Object}       this.deployments entry
+   * @param  {String} code         result of web3.eth.getCode
+   * @return {Deployment | null}   this.deployments entry
    */
   public getContractByDeployedBytecode(code: string): Deployment | null {
     if (!code) return null;
@@ -204,13 +203,13 @@ export class GasData {
   /**
    * Returns all contracts with a method matching the requested signature
    * @param  {String}   signature method signature hash
-   * @return {Object[]}           this.method entries array
+   * @return {MethodDataItem[]}           this.method entries array
    */
-  public getAllContractsWithMethod(signature: string) {
+  public getAllContractsWithMethod(signature: string): MethodDataItem[] {
     return Object.values(this.methods).filter((el: any) => el.key === signature);
   }
 
-  public addressIsCached(address: string | null) {
+  public addressIsCached(address: string | null): boolean {
     if (address === null) return false;
     return Object.keys(this.addressCache).includes(address);
   }
@@ -256,8 +255,8 @@ export class GasData {
     hre.__hhgrec.blockGasLimit = blockGasLimit;
     hre.__hhgrec.methodsTotalGas = methodsExecutionTotal;
     hre.__hhgrec.deploymentsTotalGas = deploymentsExecutionTotal;
-    hre.__hhgrec.methodsTotalCost = this._getCostTotals(methodsExecutionTotal, methodsCalldataTotal, options);
-    hre.__hhgrec.deploymentsTotalCost = this._getCostTotals(deploymentsExecutionTotal, deploymentsCalldataTotal, options);
+    hre.__hhgrec.methodsTotalCost = this._getCost(methodsExecutionTotal, methodsCalldataTotal, options);
+    hre.__hhgrec.deploymentsTotalCost = this._getCost(deploymentsExecutionTotal, deploymentsCalldataTotal, options);
   }
 
   /**
@@ -272,15 +271,7 @@ export class GasData {
 
     const calldataTotal = item.callData.reduce((acc: number, datum: number) => acc + datum, 0);
     item.calldataGasAverage = Math.round(calldataTotal / item.gasData.length);
-
-    item.cost =
-      options.tokenPrice && options.gasPrice
-        ? gasToCost(
-            item.executionGasAverage,
-            item.calldataGasAverage,
-            options
-          )
-        : undefined;
+    item.cost = this._getCost(item.executionGasAverage, item.calldataGasAverage, options);
 
     const sortedData = item.gasData.sort((a: number, b: number) => a - b);
     item.min = sortedData[0];
@@ -289,21 +280,21 @@ export class GasData {
 
   /**
    * Optionally calculates the total currency cost of execution and calldata gas usage
-   * @param {number}             executionTotal
-   * @param {number}             calldataTotal
+   * @param {number}             executionGas
+   * @param {number}             calldataGas
    * @param {GasReporterOptions} options
    * @returns
    */
-  private _getCostTotals(
-    executionTotal: number,
-    calldataTotal: number,
+  private _getCost(
+    executionGas: number,
+    calldataGas: number,
     options: GasReporterOptions
   ): string | undefined {
 
     return (options.tokenPrice && options.gasPrice)
         ? gasToCost(
-            executionTotal,
-            calldataTotal,
+            executionGas,
+            calldataGas,
             options
           )
         : undefined;

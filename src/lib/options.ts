@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/types";
 import {
-  DEFAULT_ARBITRUM_HARDFORK,
+  // TODO: enable when arbitrum support added
+  // DEFAULT_ARBITRUM_HARDFORK,
   DEFAULT_GET_BLOCK_API_URL,
   DEFAULT_CURRENCY,
   DEFAULT_CURRENCY_DISPLAY_PRECISION,
@@ -10,7 +11,7 @@ import {
   TABLE_NAME_TERMINAL
 } from "../constants";
 
-import { ArbitrumHardfork, GasReporterOptions, OptimismHardfork } from "../types";
+import { /* ArbitrumHardfork,*/ GasReporterOptions, OptimismHardfork } from "../types";
 
 /**
  * Validates Optimism hardfork option
@@ -23,22 +24,23 @@ function isOptimismHardfork(hardfork: string | undefined) {
   return ["bedrock, ecotone"].includes(hardfork);
 }
 
+// TODO: Enabled when arbitrum support added
 /**
  * Validates Arbitrum hardfork option
  * @param hardfork
  * @returns
  */
-function isArbitrumHardfork(hardfork: string | undefined) {
-  if (hardfork === undefined) return false;
+// function isArbitrumHardfork(hardfork: string | undefined) {
+//  if (hardfork === undefined) return false;
 
-  return ["arbOS11"].includes(hardfork);
-}
+//  return ["arbOS11"].includes(hardfork);
+// }
 
 /**
  * Sets default reporter options
  */
 export function getDefaultOptions(userConfig: Readonly<HardhatUserConfig>): GasReporterOptions {
-  let arbitrumHardfork: ArbitrumHardfork;
+  // let arbitrumHardfork: ArbitrumHardfork;
   let optimismHardfork: OptimismHardfork;
 
   const userOptions = userConfig.gasReporter;
@@ -49,13 +51,14 @@ export function getDefaultOptions(userConfig: Readonly<HardhatUserConfig>): GasR
       optimismHardfork = DEFAULT_OPTIMISM_HARDFORK;
     }
 
-    if (userOptions.L2 === "arbitrum" && !isArbitrumHardfork(userOptions.arbitrumHardfork)) {
-      arbitrumHardfork = DEFAULT_ARBITRUM_HARDFORK;
-    }
+    // TODO: enable when arbitrum support added
+    // if (userOptions.L2 === "arbitrum" && !isArbitrumHardfork(userOptions.arbitrumHardfork)) {
+    //  arbitrumHardfork = DEFAULT_ARBITRUM_HARDFORK;
+    // }
   }
 
   return {
-    arbitrumHardfork,
+    // arbitrumHardfork,
     getBlockApi: DEFAULT_GET_BLOCK_API_URL,
     currency: DEFAULT_CURRENCY,
     currencyDisplayPrecision: DEFAULT_CURRENCY_DISPLAY_PRECISION,

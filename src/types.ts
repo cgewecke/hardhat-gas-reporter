@@ -68,8 +68,9 @@ export interface GasReporterOptions {
   /** @property Include standard 21_000 + calldata bytes fees in method gas usage data */
   includeIntrinsicGas?: boolean;
 
+  // TODO: Enable arbitrum when support added
   /** @property L2 Network to calculate execution costs for */
-  L2?: "optimism" | "arbitrum"
+  L2?: "optimism" // | "arbitrum"
 
   /** @property Omit terminal color in output */
   noColors?: boolean;
