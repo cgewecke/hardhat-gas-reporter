@@ -1,18 +1,15 @@
-import {
-  EIP1193Provider,
-  RequestArguments,
-} from "hardhat/types";
-
 import { ProviderWrapper } from "hardhat/plugins";
 
-import { GasReporterExecutionContext, JsonRpcTx, ValidatedRequestArguments } from "../types";
+import { EIP1193Provider, RequestArguments } from "hardhat/types";
 import { hexToDecimal } from "../utils/gas";
 
+import { GasReporterExecutionContext, JsonRpcTx, ValidatedRequestArguments } from "../types";
 
 /**
  * Wrapped provider which collects tx data
  */
 export class GasReporterProvider extends ProviderWrapper {
+  public isInitialized = false;
   private _executionContext: GasReporterExecutionContext | undefined;
 
   constructor(provider: EIP1193Provider) {
@@ -24,7 +21,8 @@ export class GasReporterProvider extends ProviderWrapper {
    * and context stuff while bookending the start & finish of other tasks
    * @param {GasReporterExecutionContext} context
    */
-  public _setGasReporterExecutionContext(context: GasReporterExecutionContext) {
+  public initializeGasReporterProvider(context: GasReporterExecutionContext) {
+    this.isInitialized = true;
     this._executionContext = context;
   }
 
@@ -125,7 +123,7 @@ export class GasReporterProvider extends ProviderWrapper {
    * @returns {Promise<any>}
    */
   public async request(args: RequestArguments): Promise<unknown> {
-    if (this._executionContext === undefined) {
+    if (!this.isInitialized) {
       return this._wrappedProvider.request(args);
     }
 
@@ -134,7 +132,7 @@ export class GasReporterProvider extends ProviderWrapper {
       case "eth_getTransactionReceipt": return this._handleTruffleV5(args);
       case "eth_getTransactionByHash": return this._handleEthers(args);
       case "eth_sendRawTransaction": return this._handleViemOrWaffle(args);
-      case "eth_sendTransaction": return (this._executionContext.usingViem)
+      case "eth_sendTransaction": return (this._executionContext!.usingViem)
         ? this._handleViemOrWaffle(args)
         : this._wrappedProvider.request(args);
       default: return this._wrappedProvider.request(args);

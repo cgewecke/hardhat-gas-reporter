@@ -13,7 +13,7 @@ import {
   TABLE_NAME_TERMINAL
 } from "../../src/constants";
 
-import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from "../types";
+import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from "../../src/types";
 import { useEnvironment, findMethod, findDeployment } from "../helpers";
 
 describe("Default Options", function () {

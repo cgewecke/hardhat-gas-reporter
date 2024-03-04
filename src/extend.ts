@@ -5,16 +5,11 @@ import { EIP1193Provider, HardhatConfig, HardhatUserConfig } from "hardhat/types
 import "./type-extensions";
 
 import { getDefaultOptions } from './lib/options';
-import { GasReporterProvider } from "./lib/providers";
+import { GasReporterProvider } from "./lib/provider";
 import { GasReporterExecutionContext } from "./types";
 
 let _globalGasReporterProviderReference: GasReporterProvider;
 
-/* Initialize the provider with the execution context */
-export async function initGasReporterProvider(provider: EIP1193Provider, context: GasReporterExecutionContext)  {
-  await (provider as any).init()
-  _globalGasReporterProviderReference._setGasReporterExecutionContext(context);
-}
 
 /* Config */
 extendConfig(
@@ -43,3 +38,15 @@ extendProvider(async (provider) => {
   _globalGasReporterProviderReference = newProvider;
   return newProvider;
 });
+
+/*
+   Initialize the provider with the execution context. This is called in `TASK_GAS_REPORTER_START`
+   at the very end of setup. Provider extension above should not be used on unrelated tasks.
+*/
+export async function initializeGasReporterProvider(
+  provider: EIP1193Provider,
+  context: GasReporterExecutionContext
+)  {
+  await (provider as any).init()
+  _globalGasReporterProviderReference.initializeGasReporterProvider(context);
+}

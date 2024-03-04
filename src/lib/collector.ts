@@ -42,6 +42,11 @@ export class Collector {
       await this._collectMethodsData(tx, receipt, false);
   }
 
+  /**
+   * Method called by the request monitor on the provider to gas data for `eth_call`
+   * @param {ValidatedRequestArguments}    params.args  of the call
+   * @param {number}                       estimate_gas result
+   */
   public async collectCall(args: ValidatedRequestArguments, gas: number): Promise<void> {
     const callGas = gas - getIntrinsicGas(args.params[0].data);
     const fakeTx = {
@@ -63,7 +68,7 @@ export class Collector {
 
   /**
    * Extracts and stores deployments gas usage data for a tx
-   * @param  {JsonRpcTx} transaction return value of `getTransactionByHash`
+   * @param  {JsonRpcTx}          tx       return value of `getTransactionByHash`
    * @param  {TransactionReceipt} receipt
    */
   private async _collectDeploymentsData(tx: JsonRpcTx, receipt: RpcReceiptOutput): Promise<void> {
@@ -85,7 +90,7 @@ export class Collector {
 
   /**
    * Extracts and stores methods gas usage data for a tx
-   * @param  {JsonRpcTx} transaction return value of `getTransactionByHash`
+   * @param  {JsonRpcTx}          transaction return value of `getTransactionByHash`
    * @param  {TransactionReceipt} receipt
    */
   private async _collectMethodsData(
