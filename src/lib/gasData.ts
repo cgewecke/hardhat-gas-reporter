@@ -26,10 +26,10 @@ export class GasData {
   public codeHashMap: {[hash: string]: string };
   public provider: EthereumProvider | undefined;
 
-  constructor() {
+  constructor(methods?: MethodData, deployments?: Deployment[] ) {
     this.addressCache = {};
-    this.methods = {};
-    this.deployments = [];
+    this.methods = (methods) ? methods : {};
+    this.deployments = (deployments) ? deployments : [];
     this.codeHashMap = {};
   }
 

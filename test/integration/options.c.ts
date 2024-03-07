@@ -39,7 +39,7 @@ describe("Options C", function () {
     deployments = output.data!.deployments;
   })
 
-  after(() => execSync(`rm ${outputPath}`));
+  //after(() => execSync(`rm ${outputPath}`));
 
   it("prints", function () {
   });

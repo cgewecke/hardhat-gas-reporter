@@ -151,6 +151,20 @@ export function warnParallel() {
   log(msg);
 }
 
+export function reportMerge(files: string[], output: string) {
+  let filesList = "";
+  files.forEach(
+    (f: string) => filesList += `${chalk.green.bold("  - ")}${f}${  EOL}`
+  );
+
+  const msg = `${ 
+    chalk.bold(`Merging ${files.length} input files:`)  }${EOL 
+    }${filesList  }${EOL 
+    }${chalk.bold("Output: ")  }${output  }${EOL}`;
+
+  log(msg);
+}
+
 /**
  * Gets L1 / L2 variables shared between tables
  * @param options

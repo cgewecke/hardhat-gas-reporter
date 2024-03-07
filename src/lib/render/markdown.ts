@@ -29,7 +29,8 @@ interface Section {row: string[], contractName: string, methodName: string}
 export function generateMarkdownTable(
   hre: HardhatRuntimeEnvironment,
   data: GasData,
-  options: GasReporterOptions
+  options: GasReporterOptions,
+  toolchain: string
 ): string {
   let gasAverageTitle = ["Avg"]
   let alignment;

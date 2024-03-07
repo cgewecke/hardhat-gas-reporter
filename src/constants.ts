@@ -19,6 +19,9 @@ export const DEFAULT_COINMARKET_BASE_URL = "https://pro-api.coinmarketcap.com/v1
 export const DEFAULT_OPTIMISM_HARDFORK = "bedrock";
 export const DEFAULT_ARBITRUM_HARDFORK = "arbOS11";
 
+export const TOOLCHAIN_HARDHAT = "hardhat";
+export const TOOLCHAIN_FOUNDRY = "foundry";
+
 // EVM
 export const EVM_BASE_TX_COST = 21000;
 

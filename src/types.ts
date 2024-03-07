@@ -164,6 +164,7 @@ export interface Deployment {
  */
 export interface GasReporterOutput {
   namespace: string;
+  toolchain: string;
   version: string;
   options: GasReporterOptions,
   data?: GasData

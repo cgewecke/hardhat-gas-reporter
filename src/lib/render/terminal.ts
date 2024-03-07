@@ -32,7 +32,8 @@ interface Section {row: HorizontalTableRow, contractName: string, methodName: st
 export function generateTerminalTextTable(
   hre: HardhatRuntimeEnvironment,
   data: GasData,
-  options: GasReporterOptions
+  options: GasReporterOptions,
+  toolchain: string
 ): string {
   // Default cols (without L2)
   let numberOfCols = 7;
