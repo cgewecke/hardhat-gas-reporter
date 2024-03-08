@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assert } from "chai";
+import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 
@@ -16,7 +17,14 @@ describe("Merge gasRerpoterOutput.json files task", function () {
     "../projects/merge"
   );
 
+  const outputPath = path.resolve(
+    __dirname,
+    "../projects/merge/gasReporterOutput.json"
+  );
+
   useEnvironment(projectPath);
+
+  after(() => execSync(`rm ${outputPath}`));
 
   it("should merge gas reporter output files", async function () {
     const expected = loadJsonFile(
@@ -27,12 +35,11 @@ describe("Merge gasRerpoterOutput.json files task", function () {
       input: ["mergeOutput-*.json"],
     });
 
-    const result = loadJsonFile(
-      path.resolve(projectPath, "gasReporterOutput.json")
-    );
+    const result = loadJsonFile(outputPath);
 
     // Sanitize gas/price rates and other variable quantities
     delete result.options.coinmarketcap;
+    delete expected.options.coinmarketcap;
 
     delete result.version;
     delete expected.version;

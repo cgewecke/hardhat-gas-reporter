@@ -147,6 +147,7 @@ task(TASK_GAS_REPORTER_MERGE)
     for (const warning of warnings) console.log(warning);
 
     // Write json
+    result.options.outputJSONFile = output;
     generateJSONData(data, result.options);
   });
 
