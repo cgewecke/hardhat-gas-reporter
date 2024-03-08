@@ -1,8 +1,3 @@
-export const TASK_GAS_REPORTER_MERGE_REPORTS = "gas-reporter:merge-reports";
-export const TASK_GAS_REPORTER_MERGE = "gas-reporter:merge";
-export const TASK_GAS_REPORTER_START = "gas-reporter:start";
-export const TASK_GAS_REPORTER_STOP = "gas-reporter:stop";
-
 export const TABLE_NAME_LEGACY = "legacy";
 export const TABLE_NAME_TERMINAL = "terminal";
 export const TABLE_NAME_MARKDOWN = "markdown";

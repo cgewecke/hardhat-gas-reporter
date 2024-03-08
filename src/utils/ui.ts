@@ -146,7 +146,22 @@ export function warnParallel() {
       "Gas reporting has been skipped because plugin `hardhat-gas-reporter` " +
      "does not support the --parallel flag."
     )                                                                                            }${EOL
-    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)                                                            }${EOL}`;
+    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)                                                         }${EOL}`;
+
+  log(msg);
+}
+
+/**
+ * Message for deprecated task names
+ * @return {void}
+ */
+export function warnDeprecatedTask(newName: string) {
+  const msg = `${
+    startWarning                                                                                 }${EOL
+    }${chalk.bold(
+      `This gas reporter task has been renamed to "${chalk.green(newName)}"`
+    )                                                                                            }${EOL
+    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)                                                         }${EOL}`;
 
   log(msg);
 }
@@ -154,13 +169,14 @@ export function warnParallel() {
 export function reportMerge(files: string[], output: string) {
   let filesList = "";
   files.forEach(
-    (f: string) => filesList += `${chalk.green.bold("  - ")}${f}${  EOL}`
+    (f: string) => filesList += chalk.yellow(`  - ${f}`) + EOL
   );
 
-  const msg = `${ 
-    chalk.bold(`Merging ${files.length} input files:`)  }${EOL 
-    }${filesList  }${EOL 
-    }${chalk.bold("Output: ")  }${output  }${EOL}`;
+  const msg = `${
+    chalk.bold(`Merging ${files.length} input files:`)  }${EOL
+    }${filesList  }${EOL
+    }${chalk.bold("Output: ")  }${  EOL 
+    }  - ${chalk.green(output)  }${EOL}`;
 
   log(msg);
 }

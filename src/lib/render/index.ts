@@ -10,6 +10,7 @@ import {
 } from "../../constants";
 
 import { GasReporterOptions } from "../../types";
+import { getSolcInfo } from "../../utils/sources";
 import { generateTerminalTextTable } from "./terminal";
 import { generateLegacyTextTable } from "./legacy";
 import { generateMarkdownTable} from "./markdown";
@@ -50,6 +51,9 @@ export function render(
   toolchain="hardhat"
 ) {
   const data = hre.__hhgrec.collector!.data;
+  options.blockGasLimit = hre.__hhgrec.blockGasLimit;
+  options.solcInfo = getSolcInfo(hre.config.solidity.compilers[0]);
+
 
   // Get table
   let table = getTableForFormat(hre, data, options, toolchain);
@@ -98,7 +102,6 @@ export function render(
   }
 
   if (options.outputJSON || process.env.CI) {
-    options.blockLimit = hre.__hhgrec.blockGasLimit;
     generateJSONData(data, options, toolchain);
   }
 

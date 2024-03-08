@@ -7,7 +7,7 @@ import { task } from "hardhat/config";
 import {
   TASK_GAS_REPORTER_START,
   TASK_GAS_REPORTER_STOP
-} from "../constants"
+} from "../task-names"
 
 
 /**

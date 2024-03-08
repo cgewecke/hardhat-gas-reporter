@@ -1,5 +1,6 @@
 import { Validator, ValidatorResult } from 'jsonschema';
 import { HardhatPluginError } from 'hardhat/plugins';
+import { EOL } from 'os';
 import { Deployment, GasReporterOutput, MethodDataItem } from '../../types';
 
 const ReporterOutputSchema = {
@@ -10,28 +11,25 @@ const ReporterOutputSchema = {
     toolchain: { type: "string" },
     version: { type: "string"},
     options: { type: "object"},
-    "data": {
+    data: {
       type: "object",
       properties: {
         "methods": { type: "object"},
         "deployments": { type: "array", "items": { "type": "object"} }
-      }
+      },
+      required: ["methods", "deployments"]
     }
-  }
+  },
+  required: ["toolchain", "data", "options"]
 };
 
 const MethodDataSchema = {
   id: "hardhat.hhgr.methods.json",
   type: "object",
   properties: {
-    callData: { type: "array", "items": { "type": "number"} },
-    gasData: { type: "array", "items": { "type": "number"} },
-    numberOfCalls: { type: "number"},
-    executionGasAverage: { type: "number"},
-    calldataGasAverage: { type: "number"},
-    min: { type: "number" },
-    max: { type: "number" },
-    cost: { type: "string" }
+    callData: { type: "array", "items": { "type": "number"}, "required": true },
+    gasData: { type: "array", "items": { "type": "number"}, "required": true },
+    numberOfCalls: { type: "number", "required": true},
   }
 };
 
@@ -39,15 +37,9 @@ const DeploymentDataSchema = {
   id: "hardhat.hhgr.deployments.json",
   type: "object",
   properties: {
-    name: {type: "string"},
-    callData: { type: "array", "items": { "type": "number"} },
-    gasData: { type: "array", "items": { "type": "number"} },
-    executionGasAverage: { type: "number"},
-    calldataGasAverage: { type: "number"},
-    min: { type: "number" },
-    max: { type: "number" },
-    cost: { type: "string" },
-    percent: { type: "number"},
+    name: {type: "string", "required": true},
+    callData: { type: "array", "items": { "type": "number"}, "required": true },
+    gasData: { type: "array", "items": { "type": "number"}, "required": true },
   }
 }
 
@@ -81,12 +73,16 @@ export class HardhatGasReporterOutputValidator {
 
   private _checkResult(result: ValidatorResult, sourceFilePath: string) {
     if (result.errors.length){
-      const msg = `"${result.errors[0].property.replace('instance.', '')}"`;
+      let errors = "";
+      for (const err of result.errors) {
+        errors += err.stack.replace("instance.", "") + EOL;
+      };
 
       throw new HardhatPluginError(
         "hardhat-gas-reporter",
         `Unexpected JSON report format in ${sourceFilePath}. ` +
-        `Reported JSON validation error was: ${msg}`
+        `Reported JSON validation error was: ${  EOL 
+        }${errors}`
       );
     }
   }

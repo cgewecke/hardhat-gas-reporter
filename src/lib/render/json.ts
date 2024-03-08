@@ -15,7 +15,6 @@ export function generateJSONData(
   const pkg = require("../../../package.json");
   _sanitizeGasData(data, options);
 
-
   const output: GasReporterOutput = {
     namespace: "HardhatGasReporter",
     toolchain,

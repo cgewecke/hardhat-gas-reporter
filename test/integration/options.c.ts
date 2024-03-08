@@ -32,14 +32,14 @@ describe("Options C", function () {
   useEnvironment(projectPath, network, configPath);
 
   before(async function(){
-    await this.env.run(TASK_TEST, { testFiles: [] });
+    await this.env.run(TASK_TEST, { testFiles: ["test/variablecosts.ts", "test/etherrouter.ts"] });
     output = JSON.parse(readFileSync(outputPath, 'utf-8'));
     options = output.options;
     methods = output.data!.methods;
     deployments = output.data!.deployments;
   })
 
-  //after(() => execSync(`rm ${outputPath}`));
+  after(() => execSync(`rm ${outputPath}`));
 
   it("prints", function () {
   });

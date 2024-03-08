@@ -24,7 +24,7 @@ const config: HardhatUserConfig = {
     gasPrice: 0.098775564,
     baseFee: 79,
     reportFormat: "markdown",
-    enabled: true,
+    enabled: true
   }
 };
 
