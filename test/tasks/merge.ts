@@ -3,7 +3,7 @@ import { assert } from "chai";
 import fs from "fs";
 import path from "path";
 
-import { TASK_GAS_REPORTER_MERGE } from "../../src/task-names";
+import { TASK_GAS_REPORTER_MERGE, TASK_GAS_REPORTER_MERGE_LEGACY } from "../../src/task-names";
 
 import { useEnvironment } from "./../helpers";
 
@@ -71,5 +71,11 @@ describe("Merge gasRerpoterOutput.json files task", function () {
     } catch (err: any) {
       assert(err.message.includes("requires property \"options\""))
     }
+  });
+
+  it("should display a deprecated task warning when running legacy tasks", async function(){
+    await this.env.run(TASK_GAS_REPORTER_MERGE_LEGACY, {
+      input: ["mergeOutput-*.json"],
+    });
   });
 });

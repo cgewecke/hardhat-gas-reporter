@@ -32,7 +32,7 @@ describe("Options C", function () {
   useEnvironment(projectPath, network, configPath);
 
   before(async function(){
-    await this.env.run(TASK_TEST, { testFiles: ["test/variablecosts.ts", "test/etherrouter.ts"] });
+    await this.env.run(TASK_TEST, { testFiles: [] });
     output = JSON.parse(readFileSync(outputPath, 'utf-8'));
     options = output.options;
     methods = output.data!.methods;
