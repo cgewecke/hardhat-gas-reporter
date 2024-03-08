@@ -1,13 +1,10 @@
 import chalk, {Chalk} from "chalk";
-
 import _ from "lodash";
 import Table, { HorizontalTableRow } from "cli-table3";
 import { commify } from "@ethersproject/units";
 
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { getSolcInfo } from "../../utils/sources";
-
-import { GasReporterOptions, MethodDataItem } from "../../types";
+import { UNICODE_CIRCLE, UNICODE_TRIANGLE } from "../../constants";
 import { GasData } from "../gasData";
 import {
   getCommonTableVals,
@@ -15,10 +12,8 @@ import {
   indentTextWithSymbol,
   costIsBelowPrecision
 } from "../../utils/ui";
-import {
-  UNICODE_CIRCLE,
-  UNICODE_TRIANGLE
-} from "../../constants";
+
+import { GasReporterOptions, MethodDataItem } from "../../types";
 
 interface Section {row: HorizontalTableRow, contractName: string, methodName: string}
 
@@ -32,7 +27,8 @@ interface Section {row: HorizontalTableRow, contractName: string, methodName: st
 export function generateTerminalTextTable(
   hre: HardhatRuntimeEnvironment,
   data: GasData,
-  options: GasReporterOptions
+  options: GasReporterOptions,
+  toolchain: string
 ): string {
   // Default cols (without L2)
   let numberOfCols = 7;
@@ -243,34 +239,33 @@ export function generateTerminalTextTable(
   // ============
   // SOLC CONFIG
   // ============
-  const solc = getSolcInfo(hre.config.solidity.compilers[0]);
 
   // Format and load methods metrics
   const solcConfig: HorizontalTableRow = [
     {
       hAlign: "left",
       colSpan: 2,
-      content: chalk.cyan(`Solidity: ${solc.version}`)
+      content: chalk.cyan(`Solidity: ${options.solcInfo.version}`)
     },
     {
       hAlign: "left",
       colSpan: 1,
-      content: chalk.cyan(`Optim: ${solc.optimizer}`)
+      content: chalk.cyan(`Optim: ${options.solcInfo.optimizer}`)
     },
     {
       hAlign: "left",
       colSpan: 1,
-      content: chalk.cyan(`Runs: ${solc.runs}`)
+      content: chalk.cyan(`Runs: ${options.solcInfo.runs}`)
     },
     {
       hAlign: "left",
       colSpan: 1,
-      content: chalk.cyan(`viaIR: ${solc.viaIR.toString()}`)
+      content: chalk.cyan(`viaIR: ${options.solcInfo.viaIR.toString()}`)
     },
     {
       hAlign: "center",
       colSpan: blockLimitColumnWidth,
-      content: chalk.cyan(`Block: ${commify(hre.__hhgrec.blockGasLimit!)} gas`)
+      content: chalk.cyan(`Block: ${commify(options.blockGasLimit!)} gas`)
     }
   ];
 
@@ -358,6 +353,9 @@ export function generateTerminalTextTable(
   const keyAir: HorizontalTableRow = [{
     hAlign: "left", colSpan: numberOfCols, content: `${chalk.magenta.bold(UNICODE_TRIANGLE)}  ${nonZeroMsg}`
   }];
+  const keyToolchain: HorizontalTableRow = [{
+    hAlign: "left", colSpan: numberOfCols, content: `${chalk.magenta("Toolchain:")}  ${toolchain}`
+  }];
 
   // ---------------------------------------------------------------------------------------------
   // Final table assembly
@@ -395,6 +393,7 @@ export function generateTerminalTextTable(
   table.push(keyTitle);
   table.push(keyCall);
   table.push(keyAir);
+  table.push(keyToolchain);
 
   return table.toString();
 }

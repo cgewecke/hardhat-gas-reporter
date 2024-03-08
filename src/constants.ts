@@ -1,8 +1,3 @@
-export const TASK_GAS_REPORTER_MERGE_REPORTS = "gas-reporter:merge-reports";
-export const TASK_GAS_REPORTER_MERGE = "gas-reporter:merge";
-export const TASK_GAS_REPORTER_START = "gas-reporter:start";
-export const TASK_GAS_REPORTER_STOP = "gas-reporter:stop";
-
 export const TABLE_NAME_LEGACY = "legacy";
 export const TABLE_NAME_TERMINAL = "terminal";
 export const TABLE_NAME_MARKDOWN = "markdown";
@@ -18,6 +13,9 @@ export const DEFAULT_COINMARKET_BASE_URL = "https://pro-api.coinmarketcap.com/v1
 
 export const DEFAULT_OPTIMISM_HARDFORK = "bedrock";
 export const DEFAULT_ARBITRUM_HARDFORK = "arbOS11";
+
+export const TOOLCHAIN_HARDHAT = "hardhat";
+export const TOOLCHAIN_FOUNDRY = "foundry";
 
 // EVM
 export const EVM_BASE_TX_COST = 21000;

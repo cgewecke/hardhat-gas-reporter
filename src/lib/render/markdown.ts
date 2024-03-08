@@ -1,12 +1,11 @@
 import { EOL } from "os";
 import  table from "markdown-table";
-
 import _ from "lodash";
 import { commify } from "@ethersproject/units";
+
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { GasReporterOptions, MethodDataItem } from "../../types";
+import { UNICODE_CIRCLE, UNICODE_TRIANGLE } from "../../constants";
 import { GasData } from "../gasData";
-import { getSolcInfo } from "../../utils/sources";
 import {
   indentMarkdown,
   indentMarkdownWithSymbol,
@@ -15,7 +14,8 @@ import {
   costIsBelowPrecision,
   markdownBold
 } from "../../utils/ui";
-import { UNICODE_CIRCLE, UNICODE_TRIANGLE } from "../../constants";
+
+import { GasReporterOptions, MethodDataItem } from "../../types";
 
 interface Section {row: string[], contractName: string, methodName: string}
 
@@ -29,7 +29,8 @@ interface Section {row: string[], contractName: string, methodName: string}
 export function generateMarkdownTable(
   hre: HardhatRuntimeEnvironment,
   data: GasData,
-  options: GasReporterOptions
+  options: GasReporterOptions,
+  toolchain: string
 ): string {
   let gasAverageTitle = ["Avg"]
   let alignment;
@@ -51,8 +52,6 @@ export function generateMarkdownTable(
   let rate: string;
   let token: string;
 
-  const solc = getSolcInfo(hre.config.solidity.compilers[0]);
-
   if (options.tokenPrice && options.gasPrice) {
     ({
       l1gwei,
@@ -72,14 +71,15 @@ export function generateMarkdownTable(
 
   const optionsRows: readonly string[][] = [
     ["**Settings**", "**Value**"],
-    ["Solidity: version", solc.version],
-    ["Solidity: optimized", solc.optimizer],
-    ["Solidity: runs", solc.runs.toString()],
-    ["Solidity: viaIR", solc.viaIR.toString()],
-    ["Block Limit", commify(hre.__hhgrec.blockGasLimit!)],
+    ["Solidity: version", options.solcInfo.version],
+    ["Solidity: optimized", options.solcInfo.optimizer],
+    ["Solidity: runs", options.solcInfo.runs.toString()],
+    ["Solidity: viaIR", options.solcInfo.viaIR.toString()],
+    ["Block Limit", commify(options.blockGasLimit!)],
     ...gasPrices,
     ["Token Price", tokenPrice],
-    ["Network", network]
+    ["Network", network],
+    ["Toolchain", toolchain]
   ];
 
   const keyRows: readonly string[][] = [

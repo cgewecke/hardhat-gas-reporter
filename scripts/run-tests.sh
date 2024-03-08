@@ -25,10 +25,7 @@ npx mocha test/unit/*.ts --timeout 10000
 ########
 # Tasks
 ########
-# Temporarily Skipping
-# Need to go through this and regenerate files when options and
-# data format are finalized
-# npx mocha test/tasks/merge.ts
+npx mocha test/tasks/merge.ts --timeout 10000
 
 ################################
 # Hardhat EVM (Default Network)

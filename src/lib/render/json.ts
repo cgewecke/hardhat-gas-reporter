@@ -7,19 +7,23 @@ import { GasReporterOptions, GasReporterOutput } from "../../types";
  * can be consumed by other tools (CI etc...)
  * @param  {Object} data  GasData instance
  */
-export function generateJSONData(data: GasData, options: GasReporterOptions) {
+export function generateJSONData(
+  data: GasData,
+  options: GasReporterOptions,
+  toolchain="hardhat"
+) {
   const pkg = require("../../../package.json");
   _sanitizeGasData(data, options);
 
-
   const output: GasReporterOutput = {
     namespace: "HardhatGasReporter",
+    toolchain,
     version: pkg.version,
     options,
     data
   };
 
-  writeFileSync(options.outputJSONFile!, JSON.stringify(output));
+  writeFileSync(options.outputJSONFile!, JSON.stringify(output, null, ' '));
 }
 
 /**

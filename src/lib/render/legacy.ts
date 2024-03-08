@@ -1,13 +1,11 @@
 import chalk, {Chalk} from "chalk";
-
 import _ from "lodash";
 import Table, { HorizontalTableRow } from "cli-table3";
 import { commify } from "@ethersproject/units";
 
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { getSolcInfo } from "../../utils/sources";
-
 import { GasReporterOptions, MethodDataItem } from "../../types";
+
 import { GasData } from "../gasData";
 
 /**
@@ -151,29 +149,27 @@ export function generateLegacyTextTable(
     }
   });
 
-  const solc = getSolcInfo(hre.config.solidity.compilers[0]);
-
   // Format and load methods metrics
   const title = [
     {
       hAlign: "center",
       colSpan: 2,
-      content: optionalColor.bold(`Solc version: ${solc.version}`)
+      content: optionalColor.bold(`Solc version: ${options.solcInfo.version}`)
     },
     {
       hAlign: "center",
       colSpan: 2,
-      content: optionalColor.bold(`Optimizer enabled: ${solc.optimizer}`)
+      content: optionalColor.bold(`Optimizer enabled: ${options.solcInfo.optimizer}`)
     },
     {
       hAlign: "center",
       colSpan: 1,
-      content: optionalColor.bold(`Runs: ${solc.runs}`)
+      content: optionalColor.bold(`Runs: ${options.solcInfo.runs}`)
     },
     {
       hAlign: "center",
       colSpan: 2,
-      content: optionalColor.bold(`Block limit: ${commify(hre.__hhgrec.blockGasLimit!)} gas`)
+      content: optionalColor.bold(`Block limit: ${commify(options.blockGasLimit!)} gas`)
     }
   ];
 

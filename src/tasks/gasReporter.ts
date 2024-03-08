@@ -1,6 +1,6 @@
 import { subtask } from "hardhat/config";
 import { TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
-import { TASK_GAS_REPORTER_START, TASK_GAS_REPORTER_STOP } from "../constants";
+import { TASK_GAS_REPORTER_START, TASK_GAS_REPORTER_STOP } from "../task-names";
 
 // This has to be a top level import
 import { initializeGasReporterProvider} from "../extend";

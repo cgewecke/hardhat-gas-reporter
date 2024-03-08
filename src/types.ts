@@ -12,8 +12,6 @@ export type ArbitrumHardfork = "arbOS11" | "arbOS20" | undefined;
 export type OptimismHardfork = "bedrock" | "ecotone" | undefined;
 
 export interface GasReporterOptions {
-  /** @property Arbitrum client version to emulate gas costs for. Only applied when L2 is "arbitrum" */
-  arbitrumHardfork?: ArbitrumHardfork,
 
   /** @property Gwei base fee per gas unit. */
   /*
@@ -123,9 +121,17 @@ export interface GasReporterOptions {
   /** @property Network token price per nation state currency unit, to two decimal places (eg: "2145.00") */
   tokenPrice?: string;
 
-  // INTERNAL: AUTOSET BY PLUGIN (ignore)
+  // ====================================
+  // INTERNAL: AUTOSET BY PLUGIN or STUBS
+  // =====================================
+  /** @ignore */
   solcInfo?: any;
-  blockLimit?: number;
+
+  /** @ignore */
+  blockGasLimit?: number;
+
+  /** @ignore Arbitrum client version to emulate gas costs for. Only applied when L2 is "arbitrum" */
+  arbitrumHardfork?: ArbitrumHardfork,
 }
 
 export interface GasReporterExecutionContext {
@@ -164,6 +170,7 @@ export interface Deployment {
  */
 export interface GasReporterOutput {
   namespace: string;
+  toolchain: string;
   version: string;
   options: GasReporterOptions,
   data?: GasData
