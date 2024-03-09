@@ -45,9 +45,11 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     gasPriceUrl = getGasPriceUrlForChain(options);
     blockUrl = getBlockUrlForChain(options);
   } catch (err: any){
-    (options.L2)
-      ? warnings.push(warnUnsupportedChainConfig(options.L2!))
-      : warnings.push(warnUnsupportedChainConfig(options.L1!))
+    if (options.L2)
+      warnings.push(warnUnsupportedChainConfig(options.L2!));
+    else
+      warnings.push(warnUnsupportedChainConfig(options.L1!));
+
     return warnings;
   }
 
