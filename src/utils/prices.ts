@@ -1,13 +1,16 @@
 import axios from "axios";
+
 import { DEFAULT_COINMARKET_BASE_URL } from "../constants";
 import { GasReporterOptions } from "../types";
 import {
   warnCMCRemoteCallFailed,
   warnGasPriceRemoteCallFailed,
   warnBaseFeeRemoteCallFailed,
+  warnUnsupportedChainConfig,
 } from "./ui";
-
 import { hexWeiToIntGwei } from "./gas";
+import { getTokenForChain, getGasPriceUrlForChain, getBlockUrlForChain } from "./chains";
+
 
 /**
  * Fetches gas, base, & blob fee rates from etherscan as well as current market value of
@@ -33,17 +36,28 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
   ) return [];
 
   let block;
+  let blockUrl;
+  let gasPriceUrl;
   const warnings: string[] = [];
 
-  const token = options.token!.toUpperCase();
-  const getBlockApi = options.getBlockApi;
-  const gasPriceApi = options.gasPriceApi;
+  try {
+    options.token = getTokenForChain(options);
+    gasPriceUrl = getGasPriceUrlForChain(options);
+    blockUrl = getBlockUrlForChain(options);
+  } catch (err: any){
+    if (options.L2)
+      warnings.push(warnUnsupportedChainConfig(options.L2!));
+    else
+      warnings.push(warnUnsupportedChainConfig(options.L1!));
+
+    return warnings;
+  }
 
   const axiosInstance = axios.create({
     baseURL: DEFAULT_COINMARKET_BASE_URL
   });
 
-  const requestArgs = `latest?symbol=${token}&CMC_PRO_API_KEY=${
+  const requestArgs = `latest?symbol=${options.token}&CMC_PRO_API_KEY=${
     options.coinmarketcap
   }&convert=`;
 
@@ -54,7 +68,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
   if (!options.tokenPrice) {
     try {
       const response = await axiosInstance.get(currencyPath);
-      options.tokenPrice = response.data.data[token].quote[
+      options.tokenPrice = response.data.data[options.token].quote[
         currencyKey
       ].price.toFixed(2);
     } catch (error) {
@@ -62,28 +76,28 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     }
   }
 
-  // Gas price data: etherscan (or `gasPriceAPI`)
+  // Gas price data (Etherscan)
   if (!options.gasPrice) {
     try {
-      const response = await axiosInstance.get(gasPriceApi!);
-      checkForEtherscanRateLimitError(response.data.result);
+      const response = await axiosInstance.get(gasPriceUrl!);
+      checkForEtherscanError(response.data.result);
       const gasPrice = hexWeiToIntGwei(response.data.result);
       options.gasPrice = (gasPrice >= 1 ) ? Math.round(gasPrice) : gasPrice;;
     } catch (error) {
       options.gasPrice = 0;
-      warnings.push(warnGasPriceRemoteCallFailed(error, gasPriceApi!));
+      warnings.push(warnGasPriceRemoteCallFailed(error, gasPriceUrl!));
     }
   }
 
-  // baseFee data: etherscan (or `getBlockAPI`)
+  // baseFee data (Etherscan)
   if (options.L2 && !options.baseFee) {
     try {
-      block = await axiosInstance.get(getBlockApi!);
-      checkForEtherscanRateLimitError(block.data.result);
+      block = await axiosInstance.get(blockUrl);
+      checkForEtherscanError(block.data.result);
       options.baseFee = Math.round(hexWeiToIntGwei(block.data.result.baseFeePerGas))
     } catch (error) {
       options.baseFee = 0;
-      warnings.push(warnBaseFeeRemoteCallFailed(error, getBlockApi!));
+      warnings.push(warnBaseFeeRemoteCallFailed(error, blockUrl));
     }
   }
 
@@ -94,11 +108,11 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     // TODO: DENCUN
     /* if (block === undefined) {
       try {
-        block = await axiosInstance.get(getBlockApi!);
-        checkForEtherscanRateLimitError(block.data.result);
+        block = await axiosInstance.get(blockUrl);
+        checkForEtherscanError(block.data.result);
       } catch (error) {
         options.blobBaseFee = 0;
-        warnings.push(warnBlobBaseFeeRemoteCallFailed(error, getBlockApi));
+        warnings.push(warnBlobBaseFeeRemoteCallFailed(error, blockUrl));
         return;
       }
     }
@@ -110,8 +124,8 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
   return warnings;
 }
 
-function checkForEtherscanRateLimitError(res: string) {
-  if (typeof res === "string" && res.includes("rate limit reached")){
+function checkForEtherscanError(res: string) {
+  if (typeof res === "string" && !res.includes("0x")){
     throw new Error(res);
   }
 }

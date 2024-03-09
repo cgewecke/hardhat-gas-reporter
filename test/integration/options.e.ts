@@ -41,6 +41,11 @@ describe("Options E", function () {
 
   after(() => execSync(`rm ${outputPath}`));
 
-  it("prints", function () {
+  it("auto-configures options correctly", function () {
+    assert.isDefined(options.gasPrice)
+    assert.isBelow(options.gasPrice!, 1);
+
+    assert.isDefined(options.tokenPrice);
+    assert.isAbove(parseFloat(options.tokenPrice!), 1000); // Eth-ish
   });
 });
