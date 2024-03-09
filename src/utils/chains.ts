@@ -95,7 +95,7 @@ export const L1 = {
   },
   avalanche: {
     baseUrl: "https://api.snowtrace.io/api?module=proxy&",
-    token: "AVA"
+    token: "AVAX"
   }
 }
 
