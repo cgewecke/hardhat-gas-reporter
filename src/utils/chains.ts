@@ -74,7 +74,7 @@ export const L1 = {
     token: "POL"
   },
   binance: {
-    baseUrl: "https://api.bscscan.io/api?module=proxy&",
+    baseUrl: "https://api.bscscan.com/api?module=proxy&",
     token: "BNB"
   },
   fantom: {
