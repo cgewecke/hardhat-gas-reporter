@@ -34,9 +34,9 @@ const config: HardhatUserConfig = {
   },
   gasReporter: {
     currency: "CHF",
-    token: "MATIC",
-    gasPriceApi: "https://api.polygonscan.com/api?module=proxy&action=eth_gasPrice",
+    L1: "polygon",
     coinmarketcap: process.env.CMC_API_KEY,
+    etherscan: process.env.POLYGONSCAN_API_KEY,
     rst: true,
     rstTitle: "Polygon Report",
     excludeContracts: ["EtherRouter/EtherRouter.sol"],

@@ -42,4 +42,12 @@ function _sanitizeGasData(data: GasData, options: GasReporterOptions) {
     delete (deployment as any).bytecode;
     delete (deployment as any).deployedBytecode;
   })
+
+  if (options.coinmarketcap){
+    options.coinmarketcap = "[REDACTED]";
+  }
+
+  if (options.etherscan){
+    options.etherscan = "[REDACTED]";
+  }
 }
