@@ -6,9 +6,9 @@ on:
   pull_request: {}
 
 env:
-  CMC_API_KEY: ${{ CI.CMC_API_KEY }}
-  POLYGONSCAN_API_KEY: ${{ CI.POLYGONSCAN_API_KEY }}
-  ALCHEMY_TOKEN: ${{ CI.ALCHEMY_TOKEN }}
+  CMC_API_KEY: ${{ vars.CMC_API_KEY }}
+  POLYGONSCAN_API_KEY: ${{ vars.POLYGONSCAN_API_KEY }}
+  ALCHEMY_TOKEN: ${{ vars.ALCHEMY_TOKEN }}
 
 jobs:
   lint:
@@ -35,6 +35,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    environment: CI
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
