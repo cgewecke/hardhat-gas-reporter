@@ -5,6 +5,11 @@ on:
     branches: [ master ]
   pull_request: {}
 
+env:
+  CMC_API_KEY: ${{ vars.CMC_API_KEY }}
+  POLYGONSCAN_API_KEY: ${{ vars.POLYGONSCAN_API_KEY }}
+  ALCHEMY_TOKEN: ${{ vars.ALCHEMY_TOKEN }}
+
 jobs:
   lint:
     runs-on: ubuntu-latest
