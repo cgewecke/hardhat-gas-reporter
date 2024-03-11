@@ -65,6 +65,7 @@ export async function getContracts(
   hre: HardhatRuntimeEnvironment,
   options: GasReporterOptions,
 ): Promise<ContractInfo[]> {
+  const visited = {};
   const contracts: ContractInfo[] = [];
 
   const resolvedRemoteContracts = await getResolvedRemoteContracts(
@@ -90,9 +91,18 @@ export async function getContracts(
       name = path.relative(hre.config.paths.sources, qualifiedName);;
     }
 
+    const excludedMethods = await getExcludedMethodKeys(
+      hre,
+      options,
+      artifact.abi,
+      name,
+      qualifiedName,
+      visited
+    );
+
     contracts.push({
       name,
-      excludedMethods: await getExcludedMethodKeys(hre, options, artifact.abi, name, qualifiedName),
+      excludedMethods,
       artifact: {
         abi: artifact.abi,
         bytecode: artifact.bytecode,
@@ -135,7 +145,8 @@ async function getExcludedMethodKeys(
   options: GasReporterOptions,
   abi: any[],
   contractName: string,
-  contractQualifiedName: string
+  contractQualifiedName: string,
+  visited: {[key: string]: boolean}
 ): Promise<string[]> {
   const excludedMethods: string[] = [];
 
@@ -144,7 +155,14 @@ async function getExcludedMethodKeys(
     const functions = new Interface(abi).functions
 
     if (info && info.input && info.input.sources) {
-      _.forEach(info?.input.sources, (source) => {
+      _.forEach(info?.input.sources, (source, sourceKey) => {
+        // Cache sources
+        if (!visited[sourceKey]){
+          visited[sourceKey] = true;
+        } else {
+          return
+        };
+
         try {
           const ast = parse(source.content, {tolerant: true});
           visit(ast, {

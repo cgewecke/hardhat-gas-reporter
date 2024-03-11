@@ -21,19 +21,22 @@ export function getTokenForChain(options: GasReporterOptions): string {
 }
 
 /**
- * Gets Etherscan gasPrice api call url for chain. Attaches apikey if configured
+ * Gets Etherscan gasPrice api call url for chain. Attaches L1 or L2 apikey if configured
  * @param {GasReporterOptions} options
  * @returns
  */
 export function getGasPriceUrlForChain(options: GasReporterOptions): string {
-  if (options.gasPriceApi) return options.gasPriceApi;
+  let apiKey = "";
 
-  const apiKey = (options.etherscan)
-    ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}`
-    : "";
+  if (options.gasPriceApi) return options.gasPriceApi;
 
   if (options.L2) {
     if (!L2[options.L2]) throw new Error;
+
+    apiKey = (options.L2Etherscan)
+      ? `${DEFAULT_API_KEY_ARGS}${options.L2Etherscan}`
+      : "";
+
     return `${L2[options.L2!].baseUrl}${DEFAULT_GAS_PRICE_API_ARGS}${apiKey}`;
   }
 
@@ -43,7 +46,8 @@ export function getGasPriceUrlForChain(options: GasReporterOptions): string {
 }
 
 /**
- * Gets Etherscan getBlock api call url for chain. Attaches apikey if configured
+ * Gets Etherscan getBlock api call url for chain. Attaches L1 apikey if configured
+ * (THIS IS ALWAYS for L1 data-related fees in the context of L2 execution)
  * @param {GasReporterOptions} options
  * @returns
  */
@@ -51,8 +55,8 @@ export function getBlockUrlForChain(options: GasReporterOptions): string {
   if (!options.L2) return "";
   if (options.getBlockApi) return options.getBlockApi;
 
-  const apiKey = (options.etherscan)
-    ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}`
+  const apiKey = (options.L1Etherscan)
+    ? `${DEFAULT_API_KEY_ARGS}${options.L1Etherscan}`
     : "";
 
   if (!L1[options.L1!]) throw new Error();
