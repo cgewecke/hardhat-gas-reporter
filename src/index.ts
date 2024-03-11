@@ -65,7 +65,10 @@ export async function initializeGasReporterProvider(
   provider: EIP1193Provider,
   context: GasReporterExecutionContext
 )  {
-  await (provider as any).init()
+  // Other plugins (ex: hardhat-tracer) may wrap the provider in a way
+  // that doesn't expose `init()`, so we init the underlying provider
+  // here by making a cheap call.
+  await provider.request({ method: "eth_blockNumber", params: []});
   _globalGasReporterProviderReference.initializeGasReporterProvider(context);
 }
 
