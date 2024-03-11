@@ -25,7 +25,7 @@ import "hardhat-gas-reporter"
 ## Configuration
 Configuration is optional.
 ```js
-// hardhat.config.ts
+// Example: hardhat.config.ts
 const config: HardhatUserConfig = {
   gasReporter: {
     currency: 'EUR',
@@ -46,8 +46,8 @@ npx hardhat test
 **:bulb:  Turning the plugin on/off**
 
 The options include an `enabled` key that lets you toggle gas reporting on and off using shell
-environment variables. When `enabled` is false, test execution can be a bit faster because fewer
-calls are made to the client to read gas data.
+environment variables. Tests run faster when the gas reporter is turned off because fewer
+calls are made to the client to read data.
 Example:
 
 ```ts
@@ -59,11 +59,11 @@ const config: HardhatUserConfig = {
 }
 ```
 
-*NB*: If you're using a hardhat template project and not seeing a gas report, look at your `hardhat.config.ts` and see how the authors' have configured the reporter - many of them use an ENV variable toggle by default.
+*NB*: If you're using a hardhat template project and not getting a gas report, look at your `hardhat.config.ts` and see how the authors' have configured the reporter - many of them use an ENV variable toggle by default.
 
 **:bulb: Caveats about Accuracy**:
 + The hardhat client implements the Ethereum Foundation EVM. To get accurate measurements for other EVM-based chains you may need to run your tests against development clients developed specifically for those networks.
-+ Gas usage readings for `pure` and `view` method calls are **only a lower bound** of their real world cost (which will be 100's to 1000's of gas higher). Actual gas usage depends on the way the methods are called and the storage/memory state of the EVM at the moment of invocation. For more information on this see the great summary at [wolfio/evm/gas][1]
++ Gas usage readings for `pure` and `view` method calls are **only a lower bound** of their real world cost (which will be 100's to 1000's of gas higher). Actual gas usage depends on the way the methods are called and the storage/memory state of the EVM at the moment of invocation. For more information on this see the excellent summary at [wolfio/evm/gas][1]
 + L2 calldata gas usage readings for Optimism (e.g. `L1GasUsed`) are approximations - typically within 1% of observed usage on optimistic-scan. A small amount of variance is expected.
 
 ### Options
@@ -87,7 +87,7 @@ const config: HardhatUserConfig = {
 | optimismHardfork                |  _string_  |  `bedrock` | Optimism hardfork to emulate L1 & L2 gas costs for.                                                                                                                                                             |
 | proxyResolver                   |   _Class_  |      -     | User-defined class which helps reporter identify contract targets of proxied calls. (See [Advanced Usage][7])                                                                                                   |
 | remoteContracts                 |   _Array_  |      -     | List of forked-network deployed contracts to track execution costs for.(See [Advanced Usage][8])                                                                                                                |
-| reportPureAndViewMethods        |   _bool_   |   `false`  | Track gas usage for methods invoked via `eth_call`. (Incurs a performance penalty that can be significant for large test suites)                                                                                      |
+| reportPureAndViewMethods        |   _bool_   |   `false`  | Track gas usage for methods invoked via `eth_call`. (Incurs a performance penalty that can be significant for large test suites)                                                                                |
 | :high_brightness:   **DISPLAY** |            |            |                                                                                                                                                                                                                 |
 | currencyDisplayPrecision        |  _number_  |     `2`    | Decimal precision to show nation state currency costs in                                                                                                                                                        |
 | darkMode                        |   _bool_   |   `false`  | Use colors better for dark backgrounds when printing to stdout                                                                                                                                                  |
@@ -100,8 +100,8 @@ const config: HardhatUserConfig = {
 | suppressTerminalOutput          |   _bool_   |   `false`  | Skip writing the table to std out. (Useful if you only want to write JSON to file)                                                                                                                              |
 | :floppy_disk:   **OUTPUT**      |            |            |                                                                                                                                                                                                                 |
 | outputFile                      |  _string_  |      -     | Relative path to a file to output terminal table to (instead of stdout)                                                                                                                                         |
-| outputJSONFile                  |  _string_  |      -     | Relative path to a file to output gas data in JSON format to                                                                                                                                                    |
-| outputJSON                      |   _bool_   |   `false`  | Write options, methods, deployment data in JSON format to file                                                                                                                                                  |
+| outputJSONFile                  |  _string_  |      -     | Relative path to a file to output gas data in JSON format to. (See [Advanced Usage][9])                                                                                                                         |
+| outputJSON                      |   _bool_   |   `false`  | Write options, methods, deployment data in JSON format to file. (See [Advanced Usage][9])                                                                                                                       |
 | rst                             |   _bool_   |   `false`  | Output with a reStructured text code-block directive. (Useful if you want to include report in ReadTheDocs or Sphinx docs)                                                                                      |
 | rstTitle                        |  _string_  |      -     | Title for reStructured text header                                                                                                                                                                              |
 | :mag:    **LOW-LEVEL CONFIG**   |            |            |                                                                                                                                                                                                                 |
@@ -122,6 +122,7 @@ const config: HardhatUserConfig = {
 [6]: [TODO: supported networks]
 [7]: [TODO: Advanced Usage: proxy resolver]
 [8]: [TODO: Advanced Usage: remote contracts]
+(9): [TODO: Advanced Usage: JSON output]
 
 
 These APIs have [rate limits](https://docs.etherscan.io/support/rate-limits). Depending on the usage, it might require an [API Key](https://docs.etherscan.io/getting-started/viewing-api-usage-statistics).

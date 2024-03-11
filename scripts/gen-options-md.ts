@@ -209,14 +209,14 @@ outputSubtitle,
   "outputJSONFile",
   "_string_",
   "-",
-  "Relative path to a file to output gas data in JSON format to"
+  "Relative path to a file to output gas data in JSON format to. (See [Advanced Usage][9])"
 ],
 // outputJSON
 [
   "outputJSON",
   "_bool_",
   "`false`",
-  "Write options, methods, deployment data in JSON format to file"
+  "Write options, methods, deployment data in JSON format to file. (See [Advanced Usage][9])"
 ],
 // rst
 [
