@@ -99,7 +99,7 @@ title,
   "L2Etherscan",
   "_string_",
   "-",
-  "[API key][4] to use when fetching live gasPrice data from an L2 network" +
+  "[API key][4] to use when fetching live gasPrice data from an L2 network " +
   "(Optional, see [Supported Networks][6])"
 ],
 // offline

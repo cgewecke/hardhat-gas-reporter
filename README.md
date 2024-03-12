@@ -31,7 +31,7 @@ import "hardhat-gas-reporter"
 ## Configuration
 Configuration is optional.
 ```js
-// Example: hardhat.config.ts
+// Example
 const config: HardhatUserConfig = {
   gasReporter: {
     currency: 'EUR',
@@ -51,10 +51,9 @@ npx hardhat test
 **:bulb:  Turning the plugin on/off**
 
 The `enabled` option lets you toggle gas reporting on and off using shell environment variables.
-Tests run faster when the gas reporter is turned off because fewer calls are made to the client to read data.
+Tests run faster when the gas reporter is off because fewer calls are made to the client to read data.
 
 ```ts
-// hardhat.config.ts
 const config: HardhatUserConfig = {
   gasReporter: {
     enabled: (process.env.REPORT_GAS) ? true : false
@@ -71,7 +70,7 @@ const config: HardhatUserConfig = {
 ## Options
 
 + Option setups for common and advanced use cases can be seen in the [Config Examples][2] docs].
-+ Get a [free tier Coinmarketcap API key][3]
++ Get a [free tier Coinmarketcap API key][3] if you want price data
 
 | Options                         |    Type    |   Default  | Description                                                                                                                                                                                                     |
 | :------------------------------ | :--------: | :--------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -84,7 +83,7 @@ const config: HardhatUserConfig = {
 | L1                              |  _string_  | `ethereum` | Auto-configure reporter to emulate an L1 network.  See [supported networks][6]                                                                                                                                  |
 | L2                              |  _string_  |      -     | Auto-configure reporter to emulate an L2 network (See [supported networks][6]                                                                                                                                   |
 | L1Etherscan                     |  _string_  |      -     | [API key][4] to use when fetching live gasPrice, baseFee, and blobBaseFee data from an L1 network. (Optional, see [Supported Networks][6])                                                                      |
-| L2Etherscan                     |  _string_  |      -     | [API key][4] to use when fetching live gasPrice data from an L2 network(Optional, see [Supported Networks][6])                                                                                                  |
+| L2Etherscan                     |  _string_  |      -     | [API key][4] to use when fetching live gasPrice data from an L2 network (Optional, see [Supported Networks][6])                                                                                                  |
 | offline                         |   _bool_   |   `false`  | Turn off remote calls to fetch data                                                                                                                                                                             |
 | optimismHardfork                |  _string_  |  `bedrock` | Optimism hardfork to emulate L1 & L2 gas costs for.                                                                                                                                                             |
 | proxyResolver                   |   _Class_  |      -     | User-defined class which helps reporter identify contract targets of proxied calls. (See [Advanced Usage][7])                                                                                                   |
@@ -122,7 +121,7 @@ const config: HardhatUserConfig = {
 
 The plugin also provides additional utility commands for managing gas reporter output
 
-### hhgr:merge
+### hhgas:merge
 
 Merges several JSON formatted gas reports into a single object. This is useful if you're post-processing the data and running your tests in a parallelized CI environment.
 

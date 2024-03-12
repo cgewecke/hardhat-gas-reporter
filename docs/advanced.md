@@ -26,7 +26,7 @@ const config: HardhatUserConfig = {
 
 ### L2 Network
 
-*...with live market pricing in Euros*
+*...with live market pricing in €*
 ```ts
 const config: HardhatUserConfig = {
   gasReporter: {
@@ -46,7 +46,7 @@ const config: HardhatUserConfig = {
     // Useful if you have overloaded methods
     showMethodSig: true,
 
-    // Debits intrinsic gas for state-changing method calls to model contracts
+    // Debits intrinsic gas for state-changing method calls in order to model contracts
     // that will never be called by an EOA
     includeIntrinsicGas: false,
 
@@ -100,7 +100,7 @@ const config: HardhatUserConfig = {
 const config: HardhatUserConfig = {
   gasReporter: {
     offline: true,
-    L2: "optimism"
+    L2: "optimism",
     gasPrice: .00325,     // gwei on L2
     baseFee: 35,           // gwei on L1
     tokenPrice: "4000.00", // USD per ETH
@@ -203,7 +203,7 @@ Gas Calculation:
 - `gas_cost += 4 * bytes_zero`: gas added to base cost for every zero byte of memory data
 - `gas_cost += 16 * bytes_nonzero`: gas added to base cost for every nonzero byte of memory data
 
-:warning: The execution costs minus intrinsic gas overhead reported by the plugin are **only lower bounds** of what the actual cost will be. (Read [wolfio/evm-opcodes/gas][8] for coverage of the complex accounting applied to any given method invocation in reality)
+:warning: The execution costs minus intrinsic gas overhead reported by the plugin are **only lower bounds** of what the actual cost will be. (Read [wolfio/evm-opcodes/gas][8] for more info about the complex accounting applied to any given method invocation in reality)
 
 ## JSON Output
 
