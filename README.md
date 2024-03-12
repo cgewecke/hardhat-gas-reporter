@@ -8,14 +8,19 @@
 **Gas Usage Analysis for Hardhat**
 
 - Profile gas costs with your test suite.
-- Get metrics for method calls and deployments on L1 and L2.
-- Get national currency costs of deploying and using your contract system
+- Get gas metrics for method calls and deployments on L1 and L2.
+- Get national currency costs of deploying and using your contract system.
+- Output data in multiple formats including text, markdown, reStructuredText and JSON.
 
 ### Example report
 
-![Screen Shot 2019-06-23 at 2 10 19 PM](https://user-images.githubusercontent.com/7332026/59982003-c30a4380-95c0-11e9-9d93-e3af979df227.png)
+![Screen Shot 2024-03-11 at 4 49 54 PM](https://github.com/cgewecke/hardhat-gas-reporter/assets/7332026/a2c11310-c7a9-4112-a3c6-a7d38aab1c83)
 
 ## Installation
+
+```
+npm install --save-dev hardhat-gas-reporter
+```
 
 Add the following to your hardhat.config.ts:
 ```ts
@@ -31,7 +36,6 @@ const config: HardhatUserConfig = {
     currency: 'EUR',
     L1: "polygon",
     coinmarketcap: "abc123...",
-    etherscan: "ABC123...",
   }
 }
 ```
@@ -48,6 +52,7 @@ npx hardhat test
 The options include an `enabled` key that lets you toggle gas reporting on and off using shell
 environment variables. Tests run faster when the gas reporter is turned off because fewer
 calls are made to the client to read data.
+
 Example:
 
 ```ts
@@ -59,30 +64,31 @@ const config: HardhatUserConfig = {
 }
 ```
 
-*NB*: If you're using a hardhat template project and not getting a gas report, look at your `hardhat.config.ts` and see how the authors' have configured the reporter - many of them use an ENV variable toggle by default.
+*NB*: If you're using a hardhat template project and not getting a gas report, look at your `hardhat.config.ts` or `package.json` to see how the authors' have configured the reporter - many of them use an ENV variable toggle by default.
 
-**:bulb: Caveats about Accuracy**:
-+ The hardhat client implements the Ethereum Foundation EVM. To get accurate measurements for other EVM-based chains you may need to run your tests against development clients developed specifically for those networks.
+**:mag: Caveats about Accuracy**:
++ The Hardhat client implements the Ethereum Foundation EVM. To get accurate measurements for other EVM-based chains you may need to run your tests against development clients developed specifically for those networks.
 + Gas usage readings for `pure` and `view` method calls are **only a lower bound** of their real world cost (which will be 100's to 1000's of gas higher). Actual gas usage depends on the way the methods are called and the storage/memory state of the EVM at the moment of invocation. For more information on this see the excellent summary at [wolfio/evm/gas][1]
-+ L2 calldata gas usage readings for Optimism (e.g. `L1GasUsed`) are approximations - typically within 1% of observed usage on optimistic-scan. A small amount of variance is expected.
++ L2 calldata gas usage readings for Optimism (e.g. `L1GasUsed`) are approximations - typically within 1% of observed usage on [optimistic-etherscan][100]. A small amount of variance is expected.
 
-### Options
+## Options
 
-+ Common config setups for various use cases can be seen in the [Example Configs docs][2].
++ Config setups for common and advanced use cases can be seen in the [Example Configs docs][2].
 + Get a [free tier Coinmarketcap API key][3]
-+ Get a [free tier Etherscan API key][4] (NB: these are network specific)
++ Get a [free tier Etherscan API key][4] (NB: these are network specific - see [Supported Networks][6])
 
 | Options                         |    Type    |   Default  | Description                                                                                                                                                                                                     |
 | :------------------------------ | :--------: | :--------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | currency                        |  _string_  |    `USD`   | National currency to represent gas costs in. Exchange rates are loaded at runtime from the `coinmarketcap` api. Available currency codes can be found [here][5]                                                 |
 | coinmarketcap                   |  _string_  |      -     | [API key][55] to use when fetching live token price data                                                                                                                                                        |
 | enabled                         |   _bool_   |   `true`   | Generate gas reports for the hardhat `test` command                                                                                                                                                             |
-| etherscan                       |  _string_  |      -     | [API key][4] to use when fetching live gasPrice, baseFee, and blobBaseFee data                                                                                                                                  |
 | excludeAutoGeneratedGetters     |   _bool_   |   `false`  | Exclude solc generated public state vars when reporting gas for pure and view methods. (Incurs a small performance penalty on test startup when `true`)                                                         |
 | excludeContracts                | _string[]_ |    `[]`    | Contracts or folders to exclude from report. Ex: `['MyContract.sol', 'MyFolder/']`(Paths are relative to hardhat's `paths.sources` setting - usually `contracts`).                                              |
 | includeIntrinsicGas             |   _bool_   |   `true`   | Include standard 21_000 + calldata bytes fees in method gas usage data. (Setting to false can be useful for modelling contract infra that will never be called by an EOA)                                       |
 | L1                              |  _string_  | `ethereum` | Auto-configure reporter to emulate specified L1 network.  See [supported networks][6]                                                                                                                           |
 | L2                              |  _string_  |      -     | Auto-configure reporter to emulate specified L2 network (See [supported networks][6]                                                                                                                            |
+| L1Etherscan                     |  _string_  |      -     | [API key][4] to use when fetching live gasPrice, baseFee, and blobBaseFee data from an L1 network. (Optional, see [Supported Networks][6])                                                                      |
+| L2Etherscan                     |  _string_  |      -     | [API key][4] to use when fetching live gasPrice data from an L2 network(Optional, see [Supported Networks][6])                                                                                                  |
 | offline                         |   _bool_   |   `false`  | Never make a remote call to fetch data                                                                                                                                                                          |
 | optimismHardfork                |  _string_  |  `bedrock` | Optimism hardfork to emulate L1 & L2 gas costs for.                                                                                                                                                             |
 | proxyResolver                   |   _Class_  |      -     | User-defined class which helps reporter identify contract targets of proxied calls. (See [Advanced Usage][7])                                                                                                   |
@@ -99,6 +105,7 @@ const config: HardhatUserConfig = {
 | showUncalledMethods             |   _bool_   |   `false`  | List all methods and deployments, even if no transactions were recorded for them                                                                                                                                |
 | suppressTerminalOutput          |   _bool_   |   `false`  | Skip writing the table to std out. (Useful if you only want to write JSON to file)                                                                                                                              |
 | :floppy_disk:   **OUTPUT**      |            |            |                                                                                                                                                                                                                 |
+| includeBytecodeInJSON           |   _bool_   |    false   | Include bytecode and deployedBytecode blobs in JSON output                                                                                                                                                      |
 | outputFile                      |  _string_  |      -     | Relative path to a file to output terminal table to (instead of stdout)                                                                                                                                         |
 | outputJSONFile                  |  _string_  |      -     | Relative path to a file to output gas data in JSON format to. (See [Advanced Usage][9])                                                                                                                         |
 | outputJSON                      |   _bool_   |   `false`  | Write options, methods, deployment data in JSON format to file. (See [Advanced Usage][9])                                                                                                                       |
@@ -114,27 +121,62 @@ const config: HardhatUserConfig = {
 | tokenPrice                      |  _string_  |      -     | Network token price per nation state currency unit. (To denominate costs *in network token* set this to `"1"`)                                                                                                  |
 
 
+## Utility Tasks
+
+The plugin also provides additional utility commands for managing gas reporter output
+
+### hhgr:merge
+
+Merges several JSON formatted gas reports into a single object. This is useful if you're post-processing the data and running your tests in a parallelized CI environment.
+
+**Usage**
+```bash
+npx hardhat hhgr:merge "gasReporterOutput-*.json"
+```
+
+## Supported Networks
+
+Click on the relevant link below to get an API key for networks the plugin auto-configures via the `L1` and `L2` options.
+
+**NB**: Etherscan-like explorers don't strictly require an API key and the reporter makes at most two requests per test run. You only need to set these up if you start seeing rate-limit warnings.
+
+**L2**
+
++ [optimism][100]
+
+**L1**
+
++ [ethereum][101]
++ [polygon][102]
++ [binance][103]
++ [fantom][104]
++ [moonbeam][105]
++ [moonriver][106]
++ [gnosis][107]
++ [avalanche][108]
+
+## Funding
+
+You can support [hardhat-gas-reporter via DRIPS][11], a protocol that helps you direct money to packages in your dependency tree.
+
+
 [1]: https://github.com/wolflo/evm-opcodes/blob/main/gas.md#appendix---dynamic-gas-costs
-[2]: [TODO: example configs]
+[2]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#example-configs
 [3]: https://coinmarketcap.com/api/pricing/
 [4]: https://docs.etherscan.io/getting-started/viewing-api-usage-statistics
 [5]: https://coinmarketcap.com/api/documentation/v1/#section/Standards-and-Conventions
-[6]: [TODO: supported networks]
-[7]: [TODO: Advanced Usage: proxy resolver]
-[8]: [TODO: Advanced Usage: remote contracts]
-(9): [TODO: Advanced Usage: JSON output]
-
-
-These APIs have [rate limits](https://docs.etherscan.io/support/rate-limits). Depending on the usage, it might require an [API Key](https://docs.etherscan.io/getting-started/viewing-api-usage-statistics).
-
-> NB: Any gas price API call which returns a JSON-RPC response formatted like this is supported: `{"jsonrpc":"2.0","id":73,"result":"0x6fc23ac00"}`.
-
-
-## Parallelization
-
-This plugin also adds a Hardhat Task for merging several `gasReporterOutput.json` files, which are generated by [eth-gas-reporter](https://github.com/cgewecke/eth-gas-reporter) when [running your tests with in parallelized jobs in CI](https://github.com/cgewecke/eth-gas-reporter/blob/master/docs/gasReporterOutput.md).
-
-To use the task you just have to give it the filepaths or a glob pattern pointing to all of the reports:
-```bash
-npx hardhat gas-reporter:merge 'gasReporterOutput-*.json'
-```
+[6]: https://github.com/cgewecke/hardhat-gas-reporter/blob/README.md#supported-networks
+[7]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#proxy-resolvers
+[8]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#remote-contracts
+[9]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#json-output
+[10]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#low-level-config
+[11]: https://www.drips.network/app/projects/github/cgewecke/hardhat-gas-reporter
+[100]: https://optimistic.etherscan.io/getting-started/viewing-api-usage-statistics
+[101]: https://etherscan.io/getting-started/viewing-api-usage-statistics
+[102]: https://polygonscan.com/getting-started/viewing-api-usage-statistics
+[103]: https://bscscan.com/getting-started/viewing-api-usage-statistics
+[104]: https://ftmscan.com/getting-started/viewing-api-usage-statistics
+[105]: https://moonbeam.moonscan.io/getting-started/viewing-api-usage-statistics
+[106]: https://moonriver.moonscan.io/getting-started/viewing-api-usage-statistics
+[107]: https://gnosisscan.io/getting-started/viewing-api-usage-statistics
+[108]: https://snowtrace.io/
