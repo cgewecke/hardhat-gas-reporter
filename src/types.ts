@@ -63,6 +63,9 @@ export interface GasReporterOptions {
   /** @property Etherscan-like url to fetch L1 block header from */
   getBlockApi?: string
 
+  /** @property Include bytecode and deployedBytecode blobs in JSON deployment data */
+  includeBytecodeInJSON?: boolean;
+
   /** @property Include standard 21_000 + calldata bytes fees in method gas usage data */
   includeIntrinsicGas?: boolean;
 
