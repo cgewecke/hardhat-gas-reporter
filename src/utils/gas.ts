@@ -159,10 +159,18 @@ export function getArbitrum_OS20_L1Cost(gas: number) {
 export function getSerializedTxDataGas(tx: JsonRpcTx): number {
   const type = normalizeTxType(tx.type);
 
+  const maxFeePerGas = (tx.maxFeePerGas)
+        ? hexToBigInt(tx.maxFeePerGas)
+        : BigInt(0);
+
+  const maxPriorityFeePerGas = (tx.maxPriorityFeePerGas)
+      ? hexToBigInt(tx.maxPriorityFeePerGas)
+      : BigInt(0);
+
   const serializedTx = serializeTransaction ({
     to: tx.to as Hex,
-    maxFeePerGas: hexToBigInt(tx.maxFeePerGas!),
-    maxPriorityFeePerGas: hexToBigInt(tx.maxPriorityFeePerGas!),
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     data: tx.data as Hex ? tx.data! as Hex : tx.input! as Hex,
     value: hexToBigInt(tx.value),
     chainId: parseInt(tx.chainId!),

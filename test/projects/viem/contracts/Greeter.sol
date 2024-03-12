@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: MIT */
 pragma solidity >=0.8.0 <0.9.0;
 
-contract Greeter {
+import "./UrGreeter.sol";
+
+contract Greeter is UrGreeter {
     string public greeting;
 
     constructor(string memory _greeting) {
