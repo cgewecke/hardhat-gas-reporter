@@ -1,7 +1,7 @@
 # Advanced Use
 
 - [Table of Contents](#contents)
-  * [Example Configs](#config-examples)
+  * [Configuration Examples](#config-examples)
   * [Proxy Resolvers](#proxy-resolvers)
   * [Remote Contracts](#remote-contracts)
   * [Intrinsic Gas](#intrinsic-gas)
