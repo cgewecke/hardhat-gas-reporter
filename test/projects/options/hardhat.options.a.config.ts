@@ -43,7 +43,8 @@ const config: HardhatUserConfig = {
     showMethodSig: true,
     enabled: true,
     darkMode: true,
-    proxyResolver: new EtherRouterResolver()
+    proxyResolver: new EtherRouterResolver(),
+    includeBytecodeInJSON: true
   }
 };
 

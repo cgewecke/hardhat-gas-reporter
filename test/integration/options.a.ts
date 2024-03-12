@@ -59,6 +59,12 @@ describe("Options A", function () {
     assert.isNumber(parseFloat(deployment!.cost!));
   });
 
+  it("includes bytecode and deployedBytecode in deployment data", function(){
+    const deployment = findDeployment(deployments, "VariableConstructor");
+    assert.isString(deployment?.bytecode);
+    assert.isString(deployment?.deployedBytecode);
+  });
+
   it("excludes `excludedContracts` from report", function(){
     const deployment = findDeployment(deployments, "EtherRouter");
     assert.isNull(deployment);

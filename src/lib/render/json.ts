@@ -38,10 +38,12 @@ function _sanitizeGasData(data: GasData, options: GasReporterOptions) {
   delete (data as any).codeHashMap;
   delete data.provider;
 
-  data.deployments.forEach(deployment => {
-    delete (deployment as any).bytecode;
-    delete (deployment as any).deployedBytecode;
-  })
+  if (!options.includeBytecodeInJSON) {
+    data.deployments.forEach(deployment => {
+      delete (deployment as any).bytecode;
+      delete (deployment as any).deployedBytecode;
+    })
+  }
 
   if (options.coinmarketcap){
     options.coinmarketcap = "[REDACTED]";
