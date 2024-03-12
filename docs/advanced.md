@@ -1,30 +1,19 @@
 # Advanced Use
 
 - [Table of Contents](#contents)
-  * [Example Configs](#example-configs)
+  * [Example Configs](#config-examples)
   * [Proxy Resolvers](#proxy-resolvers)
   * [Remote Contracts](#remote-contracts)
   * [Intrinsic Gas](#intrinsic-gas)
   * [JSON output](#json-output)
 
-## Example Configs
+## Config Examples
 
-Example gasReporter option settings for different use-cases
+Some example gas reporter option settings for different use-cases
 
-**L2 Network**:
-With live market pricing in Euros**
-```ts
-const config: HardhatUserConfig = {
-  gasReporter: {
-    L2: "optimism",
-    currency: "EUR",
-    coinmarketcap: "abc...",
-  }
-}
-```
+### L1 Network
 
-**L1 Network**:
-A non-ethereum network with very low costs**
+*...on a non-ethereum network with very low costs*
 ```ts
 const config: HardhatUserConfig = {
   gasReporter: {
@@ -35,8 +24,22 @@ const config: HardhatUserConfig = {
 }
 ```
 
-**Libraries and Infrastructure**:
-Measure gas usage for constant methods & omit [intrinsic gas overhead](#intrinsic-gas) for both constant and state-changing methods
+### L2 Network
+
+*...with live market pricing in Euros*
+```ts
+const config: HardhatUserConfig = {
+  gasReporter: {
+    L2: "optimism",
+    currency: "EUR",
+    coinmarketcap: "abc...",
+  }
+}
+```
+
+### Libraries and Infrastructure
+
+*...measuring gas usage for constant methods & omitting [intrinsic gas overhead](#intrinsic-gas) for both constant and state-changing methods*
 ```ts
 const config: HardhatUserConfig = {
   gasReporter: {
@@ -60,8 +63,9 @@ const config: HardhatUserConfig = {
 }
 ```
 
-**Documentation**:
-Write report in markdown format to file and display regular report on stdout
+### Documentation
+
+*...writing report in markdown format to file while displaying regular report on stdout*
 ```ts
 const config: HardhatUserConfig = {
   gasReporter: {
@@ -73,10 +77,11 @@ const config: HardhatUserConfig = {
 }
 ```
 
-**Data Post-Processing**
-Save collected data as JSON, including deployment bytecode.
+### Data for post-processing
 
-+ NB: The plugin writes data as JSON to `gasReporterOutput.json` automatically when the environment variable `CI` is set to `true` (This makes it available for CI checks that want to compare gas readings across PRs)
+*...saving collected data as JSON, including deployment bytecode*
+
++ The plugin writes data as JSON to `gasReporterOutput.json` automatically when the environment variable `CI` is set to `true` (This makes it available for CI checks that want to compare gas readings across PRs)
 + See also: [JSON output](#json-output) below
 
 ```ts
@@ -90,7 +95,7 @@ const config: HardhatUserConfig = {
 }
 ```
 
-**Offline and L2**
+### Offline and L2
 ```ts
 const config: HardhatUserConfig = {
   gasReporter: {
@@ -104,7 +109,7 @@ const config: HardhatUserConfig = {
 }
 ```
 
-**Custom `gasPrice` and `block` header data sources**
+### Custom `gasPrice` and `block` header data source
 
 The plugin gets its live gas pricing data from Etherscan-like APIs and expects responses in the following format:
 
@@ -129,25 +134,25 @@ const config: HardhatUserConfig = {
 
 ## Proxy Resolvers
 
-Many contract systems route calls through proxies (for upgradeability or other reasons) which means the reporter can't know which contract is the target of a transaction without additional help. The `proxyResolver` option lets you define a custom class to help resolve these unindentified method calls.
+Some contract systems route calls through proxies (for upgradeability or other reasons) which means the reporter can't know which contract is the target of a transaction without additional help. The `proxyResolver` option lets you define a custom class to help resolve these unindentified method calls.
 
 There are two examples in the code base here to use as templates if you're writing your own:
 
 + [Etherrouter][1]: an ELI-5 annotated implementation for the [routing system created by Peter Borah][3]
 + [OZ Upgrades][2]: an implementation the plugin uses whenever it detect OZ's upgrades plugin in the Hardhat environment
 
-All proxy resolvers need to implement the [CustomGasReporterResolver][4] class interface
+All proxy resolvers should implement the [CustomGasReporterResolver][4] class interface
 ```ts
 export interface CustomGasReporterResolver {
   /**
    * @property Sync method that returns function signatures to ignore when making `eth_call` queries
-   * to resolve contract identities. This necessary to prevent the reporter getting stuck in an
-   * infinite loop when user has set the `reportPureAndViewMethods` to true
+   * to resolve contract identities. This is necessary to prevent the reporter getting stuck in an
+   * infinite loop when the `reportPureAndViewMethods` option is set
    */
   ignore: () => string[];
 
   /**
-   * @property Async method that receives a JSON RPC transaction object and uses its info to resolve
+   * @property Async method that receives a JSON RPC transaction and uses its info to resolve
    * a destination contract identity. This method gets bound to the plugin's Resolver class which
    * includes helpers to match addresses to contracts as well as a reference to the HRE
    */
@@ -155,7 +160,7 @@ export interface CustomGasReporterResolver {
 }
 ```
 
-To set a custom proxy resolver in the gas reporter's options, instatiate it in `hardhat.config.ts`. Whenever the reporter detects that a transaction has been sent to a contract which does not implement the interface implied by the tx's function signature it will query your resolver to see if the true destination is discoverable.
+To set a custom proxy resolver in the gas reporter's options, instantiate it in `hardhat.config.ts`. Whenever the plugin sees a transaction that's been sent to a contract which doesn't implement its function selector it will query your resolver to see if the true destination is discoverable.
 ```ts
 // hardhat.config.ts
 import { MyCustomProxyResolver } from "./mySpecialUtils.ts"
@@ -169,7 +174,7 @@ const config: HardhatUserConfig = {
 
 ## Remote Contracts
 
-The `remoteContracts` option lets you measure gas for contracts pre-deployed to a forked network. (At the moment you must supply the plugin with remote contract ABIs - an Etherscan integration to automatically fetch these is in the works [see issue #195][5]) The option can be set as below:
+The `remoteContracts` option lets you measure gas for contracts pre-deployed to a forked network. (For now you must supply the plugin with remote contract ABIs. An Etherscan integration to automatically fetch these is in the works [see issue #195][5]) The option can be set as below:
 ```ts
 // hardhat.config.ts
 import { wethABI } from "./myRemoteContractABIs";
@@ -207,7 +212,7 @@ The JSON output includes the full gas reporter option state (API keys are redact
 ```ts
 // Top Level
 interface GasReporterOutput {
-  namespace: string;  // Idenfies the json object for post-processing tools
+  namespace: string;  // Identifies the json object for post-processing tools
   toolchain: string;  // Gas data source: hardhat or foundry
   version: string;    // Plugin version
   options: GasReporterOptions,
@@ -240,8 +245,8 @@ interface MethodDataItem {
 // Deployment Data
 interface Deployment {
   name: string,                 // Contract name
-  bytecode?: string,
-  deployedBytecode?: string,
+  bytecode?: string,            // Set `includeBytecodeInJSON` to `true` to include this
+  deployedBytecode?: string,    // Set `includeBytecodeInJSON` to `true` to include this
   callData: number[],
   gasData: number[],
   min?: number,
