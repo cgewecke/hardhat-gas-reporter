@@ -5,7 +5,7 @@
 
 # hardhat-gas-reporter
 
-**Gas Usage Analysis for Hardhat**
+**Gas Usage Analytics for Hardhat**
 
 - Profile gas costs with your test suite.
 - Get gas metrics for method calls and deployments on L1 and L2.
@@ -51,11 +51,8 @@ npx hardhat test
 
 **:bulb:  Turning the plugin on/off**
 
-The options include an `enabled` key that lets you toggle gas reporting on and off using shell
-environment variables. Tests run faster when the gas reporter is turned off because fewer
-calls are made to the client to read data.
-
-Example:
+The `enabled` option lets you toggle gas reporting on and off using shell environment variables.
+Tests run faster when the gas reporter is turned off because fewer calls are made to the client to read data.
 
 ```ts
 // hardhat.config.ts
@@ -66,18 +63,15 @@ const config: HardhatUserConfig = {
 }
 ```
 
-*NB*: If you're using a hardhat template project and not getting a gas report, look at your `hardhat.config.ts` or `package.json` to see how the authors' have configured the reporter - many of them use an ENV variable toggle by default.
-
 **:mag: Caveats about Accuracy**:
 + The Hardhat client implements the Ethereum Foundation EVM. To get accurate measurements for other EVM-based chains you may need to run your tests against development clients developed specifically for those networks.
-+ Gas usage readings for `pure` and `view` method calls are **only a lower bound** of their real world cost (which will be 100's to 1000's of gas higher). Actual gas usage depends on the way the methods are called and the storage/memory state of the EVM at the moment of invocation. For more information on this see the excellent summary at [wolfio/evm/gas][1]
-+ L2 calldata gas usage readings for Optimism (e.g. `L1GasUsed`) are approximations - typically within 1% of observed usage on [optimistic-etherscan][100]. A small amount of variance is expected.
++ Gas readings for `pure` and `view` method calls are **only a lower bound** of their real world cost. Actual gas usage depends on the way the methods are called and the storage/memory state of the EVM at the moment of invocation. For more information on this see the excellent summary at [wolfio/evm/gas][1]
++ L1 gas readings for Optimism are approximations, typically within 1% of observed usage on [optimistic-etherscan][100]. A small amount of variance is expected.
 
 ## Options
 
 + Config setups for common and advanced use cases can be seen in the [Example Configs docs][2].
 + Get a [free tier Coinmarketcap API key][3]
-+ Get a [free tier Etherscan API key][4] (NB: these are network specific - see [Supported Networks][6])
 
 | Options                         |    Type    |   Default  | Description                                                                                                                                                                                                     |
 | :------------------------------ | :--------: | :--------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -133,14 +127,12 @@ Merges several JSON formatted gas reports into a single object. This is useful i
 
 **Usage**
 ```bash
-npx hardhat hhgr:merge "gasReporterOutput-*.json"
+npx hardhat hhgas:merge "gasReporterOutput-*.json"
 ```
 
 ## Supported Networks
 
-Click on the relevant link below to get an API key for networks the plugin auto-configures via the `L1` and `L2` options.
-
-**NB**: Etherscan-like explorers don't strictly require an API key and the reporter makes at most two requests per test run. You only need to set these up if you start seeing rate-limit warnings.
+API keys for the networks this plugin auto-configures via the `L1` and `L2` options are available from the links below. These aren't strictly required - you only need to set them if you start seeing rate-limit warnings.
 
 **L2**
 
@@ -159,7 +151,7 @@ Click on the relevant link below to get an API key for networks the plugin auto-
 
 ## Funding
 
-You can support [hardhat-gas-reporter via DRIPS][11], a protocol that helps you direct money to packages in your dependency tree.
+You can support [hardhat-gas-reporter via DRIPS][11], a public goods protocol that helps you direct funding to packages in your dependency tree.
 
 
 [1]: https://github.com/wolflo/evm-opcodes/blob/main/gas.md#appendix---dynamic-gas-costs
