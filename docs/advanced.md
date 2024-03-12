@@ -264,6 +264,44 @@ interface GasReporterOptions {
 }
 ```
 
+## Markdown Format Example
+
+Example of a report produced with `reportFormat: "markdown"`:
+
+### Methods
+| **Symbol** | **Meaning**                                                                              |
+| :--------: | :--------------------------------------------------------------------------------------- |
+|    **◯**   | Execution gas for this method does not include intrinsic gas overhead                    |
+|    **△**   | Cost was non-zero but below the precision setting for the currency display (see options) |
+
+|                            |    Min |    Max |    Avg | Calls | usd avg |
+| :------------------------- | -----: | -----: | -----: | ----: | ------: |
+| **MockERC1155**            |        |        |        |       |         |
+|     **◯**  *balanceOf*     |      - |      - |  2,470 |    16 | 0.00004 |
+|        *mintSpecificId*    | 30,227 | 47,315 | 35,353 |    10 | 0.00064 |
+|        *safeTransferFrom*  |      - |      - | 56,868 |     1 | 0.00103 |
+|        *setApprovalForAll* | 26,287 | 46,187 | 36,237 |     4 | 0.00065 |
+|        *setRoyaltyFee*     |      - |      - | 26,465 |     5 | 0.00048 |
+
+### Deployments
+|                 | Min | Max  |       Avg | Block % | usd avg |
+| :-------------- | --: | ---: | --------: | ------: | ------: |
+| **MockERC1155** |   - |    - | 1,605,613 |   5.4 % | 0.02897 |
+
+### Solidity and Network Config
+| **Settings**        | **Value**    |
+| ------------------- | ------------ |
+| Solidity: version   | 0.8.24       |
+| Solidity: optimized | true         |
+| Solidity: runs      | 9999999      |
+| Solidity: viaIR     | true         |
+| Block Limit         | 30,000,000   |
+| L1 Gas Price        | 22 gwei      |
+| Token Price         | 0.82 usd/ftm |
+| Network             | FANTOM       |
+| Toolchain           | hardhat      |
+
+
 [1]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/src/lib/resolvers/etherrouter.ts
 [2]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/src/lib/resolvers/oz.ts
 [3]: https://github.com/PeterBorah/ether-router

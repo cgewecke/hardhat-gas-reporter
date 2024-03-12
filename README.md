@@ -16,6 +16,8 @@
 
 ![Screen Shot 2024-03-11 at 4 49 54 PM](https://github.com/cgewecke/hardhat-gas-reporter/assets/7332026/a2c11310-c7a9-4112-a3c6-a7d38aab1c83)
 
++ See [markdown format example][10]
+
 ## Installation
 
 ```
@@ -169,7 +171,7 @@ You can support [hardhat-gas-reporter via DRIPS][11], a protocol that helps you 
 [7]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#proxy-resolvers
 [8]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#remote-contracts
 [9]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#json-output
-[10]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#low-level-config
+[10]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#markdown-format-example
 [11]: https://www.drips.network/app/projects/github/cgewecke/hardhat-gas-reporter
 [100]: https://optimistic.etherscan.io/getting-started/viewing-api-usage-statistics
 [101]: https://etherscan.io/getting-started/viewing-api-usage-statistics
