@@ -4,6 +4,12 @@ set -o errexit
 trap cleanup EXIT
 
 cleanup() {
+  # Github actions kills the process
+  if [ -n "$CI" ]; then
+   echo "Exiting without killing Hardhat Node in CI"
+   return
+  fi
+
   if [ -n "$hardhat_node_pid" ] && ps -p $hardhat_node_pid > /dev/null; then
     echo "Killing Hardhat Node."
     kill -9 $hardhat_node_pid
