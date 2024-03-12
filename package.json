@@ -19,6 +19,7 @@
     "lint": "npm run eslint",
     "lint:fix": "npm run eslint -- --fix",
     "eslint": "eslint 'src/**/*.ts' 'test/**/*.ts' -c ./eslintrc.js",
+    "gen:options": "ts-node scripts/gen-options-md.ts",
     "test": "scripts/run-tests.sh",
     "test:integration": "mocha test/integration/*.ts --timeout 100000 --exit",
     "test:unit": "mocha test/unit/*.ts --timeout 10000",
