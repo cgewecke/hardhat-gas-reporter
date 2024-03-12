@@ -14,6 +14,7 @@ describe("Greeter contract", function() {
     const deployGreeter = (args: [_greeting: string]) => viem.deployContract("Greeter", args);
 
     const greeter = await deployGreeter(["Hi"]);
+    const emphaticGreeter = await viem.deployContract("EmphaticGreeter");
 
     const greeterAsOther = await viem.getContractAt(
       "Greeter",
@@ -27,6 +28,7 @@ describe("Greeter contract", function() {
       other,
       deployGreeter,
       greeter,
+      emphaticGreeter,
       greeterAsOther,
     }
   }
@@ -73,4 +75,14 @@ describe("Greeter contract", function() {
       greeterAsOther.write.throwAnError(['throwing...'])
     ).to.eventually.be.rejectedWith('throwing...');
   })
+
+  it("should call an inherited public state variable", async function() {
+    const {
+      greeter,
+      emphaticGreeter,
+    } = await loadFixture(deployGreeterFixture);
+
+    await greeter.read.urGreeting();
+    await emphaticGreeter.read.urGreeting()
+  });
 });

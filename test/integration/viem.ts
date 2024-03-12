@@ -58,12 +58,16 @@ describe("Viem", function () {
     const greet = findMethod(methods, "Greeter", "greet");
 
     assert.equal(greet?.numberOfCalls, 2);
-    assert.equal(greet?.executionGasAverage, 3453);
+    assert.equal(greet?.executionGasAverage, 3475);
   });
 
   it ("should filter auto generated getters", () => {
     const greeting = findMethod(methods, "Greeter", "greeting");
+    const urGreeting1 = findMethod(methods, "Greeter", "urGreeting");
+    const urGreeting2 = findMethod(methods, "EmphaticGreeter", "urGreeting");
 
     assert.isNull(greeting);
+    assert.isNull(urGreeting1);
+    assert.isNull(urGreeting2);
   })
 });
