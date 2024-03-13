@@ -3,6 +3,7 @@ import  table from "markdown-table";
 import _ from "lodash";
 import { commify } from "@ethersproject/units";
 
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { UNICODE_CIRCLE, UNICODE_TRIANGLE } from "../../constants";
 import { GasData } from "../gasData";
 import {
@@ -14,7 +15,6 @@ import {
   markdownBold
 } from "../../utils/ui";
 
-import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { GasReporterOptions, MethodDataItem } from "../../types";
 interface Section {row: string[], contractName: string, methodName: string}
 

@@ -3,6 +3,7 @@ import _ from "lodash";
 import Table, { HorizontalTableRow } from "cli-table3";
 import { commify } from "@ethersproject/units";
 
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { UNICODE_CIRCLE, UNICODE_TRIANGLE } from "../../constants";
 import { GasData } from "../gasData";
 import {
@@ -13,7 +14,6 @@ import {
 } from "../../utils/ui";
 
 import { GasReporterOptions, MethodDataItem } from "../../types";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
 interface Section {row: HorizontalTableRow, contractName: string, methodName: string}
 
 /**
@@ -22,6 +22,7 @@ interface Section {row: HorizontalTableRow, contractName: string, methodName: st
  * @param  {HardhatRuntimeEnvironment} hre
  * @param  {GasData}                   data
  * @param  {GasReporterOptions}        options
+ * @param  {string}                    string
  */
 export function generateTerminalTextTable(
   hre: HardhatRuntimeEnvironment,
@@ -291,7 +292,6 @@ export function generateTerminalTextTable(
       content: chalk.cyan(`Network: ${network}`)
     });
 
-    // TODO: Clarify that this is baseFee not gasPrice when L2
     networkConfig.push({
       hAlign: "left",
       colSpan: 2,
