@@ -4,6 +4,11 @@ import { utf8ToBytes, bytesToHex } from "ethereum-cryptography/utils";
 import { SolcInfo } from "../types";
 
 
+/**
+ * Generates hashed function selector from the human readable function signature
+ * @param {string} fnSig
+ * @returns
+ */
 export function getHashedFunctionSignature(fnSig: string ): string {
   return bytesToHex(keccak256(Buffer.from(utf8ToBytes(fnSig)))).slice(0, 8);
 }
