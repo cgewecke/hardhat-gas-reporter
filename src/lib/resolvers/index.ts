@@ -1,6 +1,7 @@
 import type {GasData} from "../gasData";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { CustomGasReporterResolver, GasReporterOptions, JsonRpcTx } from "../../types";
+
 import { OZResolver } from "./oz";
 
 export class Resolver {

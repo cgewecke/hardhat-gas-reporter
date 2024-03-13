@@ -78,8 +78,7 @@ export class EtherRouterResolver implements CustomGasReporterResolver {
     }
 
     // With the correct address, we can use the reporter's Resolver class methods
-    // `data.getNameByAddress` and/or `resolveByDeployedBytecode` methods
-    // (both are available in this scope, bound to `this`) to derive
+    // `data.getNameByAddress` and/or `resolveByDeployedBytecode` to derive
     // the target contract's name.
     if (contractAddress && contractAddress !== "0x") {
       contractName = await this.data.getNameByAddress(contractAddress);
