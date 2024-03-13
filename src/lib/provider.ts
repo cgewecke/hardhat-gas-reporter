@@ -1,8 +1,8 @@
 import { ProviderWrapper } from "hardhat/plugins";
 
+import { EIP1193Provider, RequestArguments } from "hardhat/types";
 import { hexToDecimal } from "../utils/gas";
 
-import { EIP1193Provider, RequestArguments } from "hardhat/types";
 import { GasReporterExecutionContext, JsonRpcTx, ValidatedRequestArguments } from "../types";
 
 /**

@@ -2,15 +2,14 @@ import type { GasData } from "../gasData";
 import { writeFileSync } from "fs";
 
 import { HardhatRuntimeEnvironment as HRE } from "hardhat/types";
-import { warnReportFormat } from "../../utils/ui";
 import {
   TABLE_NAME_LEGACY,
   TABLE_NAME_MARKDOWN,
   TABLE_NAME_TERMINAL
 } from "../../constants";
-
-import { GasReporterOptions } from "../../types";
 import { getSolcInfo } from "../../utils/sources";
+import { warnReportFormat } from "../../utils/ui";
+import { GasReporterOptions } from "../../types";
 import { generateTerminalTextTable } from "./terminal";
 import { generateLegacyTextTable } from "./legacy";
 import { generateMarkdownTable} from "./markdown";
@@ -22,6 +21,7 @@ import { generateJSONData } from "./json";
  * @param {HardhatRuntimeEnvironment} hre
  * @param {GasData}                   data
  * @param {GasReporterOptions}        options
+ * @param {string}                    toolchain
  * @returns {string}                  table
  */
 export function getTableForFormat(
@@ -41,8 +41,9 @@ export function getTableForFormat(
 /**
  * Manages table rendering and file saving
  * @param {HardhatRuntimeEnvironment} hre
- * @param {GasData}                   data
  * @param {GasReporterOptions}        options
+ * @param {string[]}                  warnings
+ * @param {string}                    toolchain
  */
 export function render(
   hre: HRE,
