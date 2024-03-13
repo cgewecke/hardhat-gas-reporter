@@ -5,7 +5,9 @@ import { GasReporterOptions, GasReporterOutput } from "../../types";
 /**
  * Writes acccumulated data and the current options to gasReporterOutput.json so it
  * can be consumed by other tools (CI etc...)
- * @param  {Object} data  GasData instance
+ * @param {GasData}               data
+ * @param {GasReporterOptions}    options
+ * @param {string}                toolchain
  */
 export function generateJSONData(
   data: GasData,
