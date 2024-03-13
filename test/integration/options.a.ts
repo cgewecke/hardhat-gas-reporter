@@ -8,6 +8,16 @@ import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from ".
 
 import { useEnvironment, findMethod, findDeployment } from "../helpers";
 
+/**
+ * OPTIONS ARE SET UP TO TEST:
+ * + Complex compiler details
+ * + Non-ethereum L1 (polygon) with live market price
+ * + Custom gasPrice API call
+ * + Exclude contracts from reporting
+ * + Display full method signature
+ * + Dark mode
+ * + RST titles
+ */
 describe("Options A", function () {
   let output: GasReporterOutput;
   let options: GasReporterOptions;
