@@ -113,6 +113,12 @@ subtask(TASK_GAS_REPORTER_START).setAction(
         return result;
       }
 
+      // solidity-coverage disables gas reporter via mocha but that
+      // no longer works for this version. (No warning necessary)
+      if ((hre as any).__SOLIDITY_COVERAGE_RUNNING === true) {
+        return runSuper();
+      }
+
       // Need to compile so we have access to the artifact data.
       // This will rerun in TASK_TEST & TASK_RUN but should be a noop there.
       if (!args.noCompile) {
@@ -146,7 +152,11 @@ subtask(TASK_GAS_REPORTER_STOP).setAction(
   async (args: any, hre) => {
     const options = hre.config.gasReporter;
 
-    if (options.enabled === true && args.parallel !== true) {
+    if (
+      options.enabled === true &&
+      args.parallel !== true &&
+      (hre as any).__SOLIDITY_COVERAGE_RUNNING !== true
+    ) {
       const { setGasAndPriceRates } = await import("./utils/prices");
       const { render } = await import("./lib/render");
 

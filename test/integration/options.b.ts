@@ -8,6 +8,13 @@ import { GasReporterOptions, GasReporterOutput } from "../types";
 
 import { useEnvironment } from "../helpers";
 
+/**
+ * OPTIONS ARE SET UP TO TEST:
+ * + user-configured token and gasPrice
+ * + write-to-custom-file-name (JSON & txt)
+ * + force terminal output w/ custom output
+ * + show uncalled methods
+ */
 describe("Options B", function () {
   let output: GasReporterOutput;
   let options: GasReporterOptions;

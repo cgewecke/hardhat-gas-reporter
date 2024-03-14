@@ -72,7 +72,7 @@
     "typescript": "~5.0.4"
   },
   "peerDependencies": {
-    "hardhat": "^2.0.2"
+    "hardhat": "^2.16.0"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",

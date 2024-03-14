@@ -141,4 +141,11 @@ describe("Default Options", function () {
     assert(deployment!.executionGasAverage! < deployment!.max!)
     assert(deployment!.percent! > 0);
   });
+
+  it ("should delete the bytecode & deployedBytecode", function() {
+    const deployment = findDeployment(deployments, "VariableConstructor");
+
+    assert.isUndefined(deployment?.bytecode);
+    assert.isUndefined(deployment?.deployedBytecode);
+  })
 });

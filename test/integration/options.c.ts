@@ -10,6 +10,13 @@ import { Deployment, GasReporterOptions, GasReporterOutput, MethodData } from ".
 
 import { useEnvironment, findMethod, findDeployment } from "../helpers";
 
+/**
+ * OPTIONS ARE SET UP TO TEST:
+ * + Markdown format
+ * + L2: Optimism
+ * + Live market prices in CHF
+ * + User configured gasPrice and baseGas
+ */
 describe("Options C", function () {
   let output: GasReporterOutput;
   let options: GasReporterOptions;

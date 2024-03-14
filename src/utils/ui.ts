@@ -121,7 +121,7 @@ export function warnEthers(name: string, err: any) {
     )                                                                                            }${EOL
     }Please report the error below with the source that caused it to ` +
     `github.com/cgewecke/hardhat-gas-reporter${                                                   EOL
-    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)}${EOL}${
+    }${chalk.yellow(`>>>>>>>>>>>>>>>>>>>>`)}${EOL}${
     chalk.red(`${err}`)}`;
 
     log(msg);
@@ -141,7 +141,7 @@ export function warnReportFormat(name: string | undefined) {
     }${chalk.green(`> "${TABLE_NAME_TERMINAL}"`)                                                    }${EOL
     }${chalk.green(`> "${TABLE_NAME_MARKDOWN}"`)                                                    }${EOL
     }${chalk.green(`> "${TABLE_NAME_LEGACY}"`)                                                      }${EOL
-    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)                                                            }${EOL}`;
+    }${chalk.yellow(`>>>>>>>>>>>>>>>>>>>>`)                                                            }${EOL}`;
 
     log(msg);
 }
@@ -157,7 +157,7 @@ export function warnParallel() {
       "Gas reporting has been skipped because plugin `hardhat-gas-reporter` " +
      "does not support the --parallel flag."
     )                                                                                            }${EOL
-    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)                                                         }${EOL}`;
+    }${chalk.yellow(`>>>>>>>>>>>>>>>>>>>>`)                                                         }${EOL}`;
 
   log(msg);
 }
@@ -172,7 +172,7 @@ export function warnDeprecatedTask(newName: string) {
     }${chalk.bold(
       `This gas reporter task has been renamed to "${chalk.green(newName)}"`
     )                                                                                            }${EOL
-    }${chalk.red(`>>>>>>>>>>>>>>>>>>>>`)                                                         }${EOL}`;
+    }${chalk.yellow(`>>>>>>>>>>>>>>>>>>>>`)                                                         }${EOL}`;
 
   log(msg);
 }

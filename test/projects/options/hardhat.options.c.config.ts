@@ -3,6 +3,7 @@
  * + Markdown format
  * + L2: Optimism
  * + Live market prices in CHF
+ * + User configured gasPrice and baseFee
  */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import "@nomicfoundation/hardhat-ethers";

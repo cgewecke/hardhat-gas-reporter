@@ -16,7 +16,6 @@ import {
 } from "../../utils/ui";
 
 import { GasReporterOptions, MethodDataItem } from "../../types";
-
 interface Section {row: string[], contractName: string, methodName: string}
 
 /**
@@ -25,6 +24,7 @@ interface Section {row: string[], contractName: string, methodName: string}
  * @param  {HardhatRuntimeEnvironment} hre
  * @param  {GasData}                   data
  * @param  {GasReporterOptions}        options
+ * @param  {string}                    toolchain
  */
 export function generateMarkdownTable(
   hre: HardhatRuntimeEnvironment,

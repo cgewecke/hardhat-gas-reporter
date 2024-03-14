@@ -45,7 +45,7 @@ export async function getResolvedRemoteContracts(
       contract.bytecodeHash = sha1(contract.bytecode!);
     } catch (error: any) {
       console.log(
-        `Warning: failed to fetch bytecode for remote contract: ${contract.name}`
+        `hardhat-gas-reporter:warning: failed to fetch bytecode for remote contract: ${contract.name}`
       );
       console.log(`Error was: ${error}\n`);
     }
@@ -55,11 +55,9 @@ export async function getResolvedRemoteContracts(
 
 /**
  * Loads and processes artifacts
- * @param  {HardhatRuntimeEnvironment} hre.artifacts
- * @param  {String[]}                  skippable        contract *not* to track
- * @param  {RemoteContract[]}          resolvedRemoteContracts
- * @param  {String}                    resolvedQualifiedNames
- * @return {object[]}                                   objects w/ abi and bytecode
+ * @param  {HardhatRuntimeEnvironment} hre
+ * @param  {GasReporterOptions[]}      options
+ * @return {ContractInfo[]}
  */
 export async function getContracts(
   hre: HardhatRuntimeEnvironment,
@@ -136,9 +134,11 @@ export async function getContracts(
  *
  * @param {HardhatRuntimeEnvironment} hre
  * @param {GasReporterOptions}        options
+ * @param {any[]}                     abi
  * @param {string}                    name
  * @param {string}                    qualifiedName
- * @returns
+ * @param {[key: string]: string[]}   visited (cache)
+ * @returns {Promise<string[]>}
  */
 async function getExcludedMethodKeys(
   hre: HardhatRuntimeEnvironment,

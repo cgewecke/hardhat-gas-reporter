@@ -1,10 +1,6 @@
 import { HardhatPluginError } from "hardhat/plugins";
 import { HardhatRuntimeEnvironment, TaskArguments } from "hardhat/types";
-import { generateJSONData } from "../lib/render/json";
-import {
-  TASK_GAS_REPORTER_MERGE_REPORTS,
-} from "../task-names";
-
+import { TASK_GAS_REPORTER_MERGE_REPORTS } from "../task-names";
 import { GasReporterOutput } from "../types";
 
 /**
@@ -104,6 +100,8 @@ export async function taskMergeImplementation(
   const { reportMerge } = await import("../utils/ui");
   const { GasData } = await import("../lib/gasData");
   const { setGasAndPriceRates } = await import("../utils/prices");
+  const { generateJSONData } = await import("../lib/render/json");
+
 
   const output = path.resolve(process.cwd(), taskArguments.output);
 

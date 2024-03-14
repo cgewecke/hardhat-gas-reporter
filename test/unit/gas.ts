@@ -67,8 +67,8 @@ describe("Optimism: getCalldataCostForNetwork", function () {
     const cost = gasToCost(fn.l2GasUsed, gas, options);
     const diff = getPercentDiff(parseFloat(cost), fn.txFeeETH);
 
-    // Actual ~ 3.5%
-    assert(diff < .05);
+    // Actual ~ 0.72%
+    assert(diff < .01);
   });
 
   it("calculates gas cost for larger function call tx (bedrock)", function(){
@@ -80,8 +80,8 @@ describe("Optimism: getCalldataCostForNetwork", function () {
     const cost = gasToCost(fn.l2GasUsed, gas, options);
     const diff = getPercentDiff(parseFloat(cost), fn.txFeeETH);
 
-    // Actual < 1%
-    assert(diff < .05);
+    // Actual < 0.15%
+    assert(diff < .01);
   });
 
   it("calculates gas cost for deployment tx (bedrock)", function(){
@@ -93,7 +93,7 @@ describe("Optimism: getCalldataCostForNetwork", function () {
     const cost = gasToCost(fn.l2GasUsed, gas, options);
     const diff = getPercentDiff(parseFloat(cost), fn.txFeeETH);
 
-    // Actual < 1%
-    assert(diff < .05);
+    // Actual < 0.06%
+    assert(diff < .01);
   });
 });

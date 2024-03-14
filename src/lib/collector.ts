@@ -2,7 +2,6 @@ import type { RpcReceiptOutput } from "hardhat/internal/hardhat-network/provider
 import { hexlify } from "@ethersproject/bytes";
 
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-
 import { getMethodID } from "../utils/sources";
 import {
   getCalldataGasForNetwork,
@@ -10,10 +9,10 @@ import {
   getIntrinsicGas,
   getGasSubIntrinsic
 } from "../utils/gas";
-
 import { GasReporterOptions, JsonRpcTx, FakeTx, ValidatedRequestArguments } from "../types"
 import { GasData } from "./gasData";
 import { Resolver } from "./resolvers";
+
 
 /**
  * Collects gas usage data, associating it with the relevant contracts, methods.
@@ -43,7 +42,7 @@ export class Collector {
   }
 
   /**
-   * Method called by the request monitor on the provider to gas data for `eth_call`
+   * Method called by the request monitor on the provider to get gas data for `eth_call`
    * @param {ValidatedRequestArguments}    params.args  of the call
    * @param {number}                       estimate_gas result
    */
@@ -92,6 +91,7 @@ export class Collector {
    * Extracts and stores methods gas usage data for a tx
    * @param  {JsonRpcTx}          transaction return value of `getTransactionByHash`
    * @param  {TransactionReceipt} receipt
+   * @param  {boolean}            isCall
    */
   private async _collectMethodsData(
     tx: JsonRpcTx | FakeTx,
@@ -119,7 +119,6 @@ export class Collector {
     const id = getMethodID(contractName!, tx.input!);
 
     if (this.data.methods[id] !== undefined) {
-
       const executionGas = (this.options.includeIntrinsicGas)
         ? hexToDecimal(receipt.gasUsed)
         : getGasSubIntrinsic(tx.input, hexToDecimal(receipt.gasUsed));

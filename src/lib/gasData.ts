@@ -35,12 +35,8 @@ export class GasData {
 
   /**
    * Sets up data structures to store deployments and methods gas usage
-   * @param config {Config}
-   * @param provider {EthereumProvider}
-   * @param artifacts {Artifacts}
-   * @param skippable {string[]}
-   * @param remoteContracts {RemoteContracts[]}
-   * @param qualifiedNames {string[]}
+   * @param {EthereumProvider}       provider
+   * @param {ContractInfo[]}         contracts
    * @returns
    */
   public initialize(

@@ -286,10 +286,10 @@ export function getCalldataCostForNetwork(
 
 /**
  * Expresses gas usage as a nation-state currency price
- * @param  {Number} gas      gas used
- * @param  {Number} tokenPrice e.g chf/eth
- * @param  {Number} gasPrice in gwei
- * @return {Number}          cost of gas used (0.00)
+ * @param  {Number} executionGas      execution gas used
+ * @param  {Number} calldataGas       data gas used
+ * @param  {GasReporterOptions}       options
+ * @return {string}                   cost of gas used "0.00"
  */
 export function gasToCost(
   executionGas: number,
