@@ -5,7 +5,7 @@ export const TABLE_NAME_MARKDOWN = "markdown";
 export const DEFAULT_CURRENCY = "USD";
 export const DEFAULT_CURRENCY_DISPLAY_PRECISION = 2;
 export const DEFAULT_JSON_OUTPUT_FILE = "./gasReporterOutput.json";
-export const DEFAULT_GAS_PRICE_PRECISION = 7;
+export const DEFAULT_GAS_PRICE_PRECISION = 5;
 
 export const DEFAULT_GET_BLOCK_API_ARGS = "action=eth_getBlockByNumber&tag=latest&boolean=false"
 export const DEFAULT_GAS_PRICE_API_ARGS  = "action=eth_gasPrice"
