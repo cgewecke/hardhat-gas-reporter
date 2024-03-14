@@ -13,7 +13,7 @@
 
 ### Example report
 
-![Screen Shot 2024-03-11 at 4 49 54 PM](https://github.com/cgewecke/hardhat-gas-reporter/assets/7332026/a2c11310-c7a9-4112-a3c6-a7d38aab1c83)
+![Screen Shot 2024-03-14 at 12 48 35 PM](https://github.com/cgewecke/hardhat-gas-reporter/assets/7332026/4948dd7f-b0ac-4cd7-b3d1-d8f458b0c670)
 
 + See [markdown format example][10]
 
@@ -85,7 +85,7 @@ const config: HardhatUserConfig = {
 | L1Etherscan                     |  _string_  |      -     | [API key][4] to use when fetching live gasPrice, baseFee, and blobBaseFee data from an L1 network. (Optional, see [Supported Networks][6])                                                                      |
 | L2Etherscan                     |  _string_  |      -     | [API key][4] to use when fetching live gasPrice data from an L2 network (Optional, see [Supported Networks][6])                                                                                                  |
 | offline                         |   _bool_   |   `false`  | Turn off remote calls to fetch data                                                                                                                                                                             |
-| optimismHardfork                |  _string_  |  `bedrock` | Optimism hardfork to emulate L1 & L2 gas costs for.                                                                                                                                                             |
+| optimismHardfork                |  _string_  |  `ecotone` | Optimism hardfork to emulate L1 & L2 gas costs for.                                                                                                                                                             |
 | proxyResolver                   |   _Class_  |      -     | User-defined class which helps reporter identify contract targets of proxied calls. (See [Advanced Usage][7])                                                                                                   |
 | remoteContracts                 |   _Array_  |      -     | List of forked-network deployed contracts to track execution costs for.(See [Advanced Usage][8])                                                                                                                |
 | reportPureAndViewMethods        |   _bool_   |   `false`  | Track gas usage for methods invoked via `eth_call`. (Incurs a performance penalty that can be significant for large test suites)                                                                                |
