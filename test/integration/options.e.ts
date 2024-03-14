@@ -50,6 +50,7 @@ describe("Options E", function () {
   after(() => execSync(`rm ${outputPath}`));
 
   it("auto-configures options correctly", function () {
+    assert.equal(options.optimismHardfork, "ecotone");
     assert.isDefined(options.gasPrice)
     assert.isBelow(options.gasPrice!, 1);
 

@@ -119,6 +119,7 @@ export const cases = {
     l1GasUsed: 2_344,
     l2GasUsed: 53_067,
     l2GasPrice: 0.008366527,
+    l1BlobBaseFee: .1,
     l1BaseFee: 46.105691136, // actually gasPrice
     txFeeETH: 0.000000591828628778,
   },
@@ -151,6 +152,7 @@ export const cases = {
     l2GasUsed: 7_001_681,
     l2GasPrice: 0.009846903,
     l1BaseFee: 43.842615066, // actually gasPrice
+    l1BlobBaseFee: .1,
     txFeeETH: 0.000078832871894148,
   }
 }

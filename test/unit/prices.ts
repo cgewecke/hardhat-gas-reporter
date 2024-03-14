@@ -6,7 +6,6 @@ import {
 import { getDefaultOptions } from "../../src/lib/options";
 import { GasReporterOptions } from "../types";
 
-
 describe("setGasAndPriceRates", function(){
   let options: GasReporterOptions;
 
@@ -94,11 +93,12 @@ describe("setGasAndPriceRates", function(){
     assert.typeOf(options.baseFee, "number");
   });
 
-  it ("when tokenPrice, gasPrice and baseFee are set but blobBaseFee is not set", async function(){
+  it("when tokenPrice, gasPrice and baseFee are set but blobBaseFee is not set", async function(){
     options.tokenPrice = "1";
     options.gasPrice = 1;
     options.baseFee = 1;
     options.L2 = 'optimism';
+    options.optimismHardfork = "ecotone";
     options.coinmarketcap = process.env.CMC_API_KEY;
     options.L2Etherscan = process.env.OPTIMISTIC_API_KEY;
 

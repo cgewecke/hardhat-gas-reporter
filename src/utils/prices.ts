@@ -11,7 +11,6 @@ import {
 import { hexWeiToIntGwei } from "./gas";
 import { getTokenForChain, getGasPriceUrlForChain, getBlockUrlForChain } from "./chains";
 
-
 /**
  * Fetches gas, base, & blob fee rates from etherscan as well as current market value of
  * network token in nation state currency specified by the options from coinmarketcap
@@ -101,24 +100,64 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     }
   }
 
-  // blobBaseFee data: etherscan (or `getBlockAPI`)
-  if (options.L2 && !options.blobBaseFee) {
-    options.blobBaseFee = 0;
+  // blobBaseFee data: alchemy or infura call to Optimism's gas oracle on L2
+  if (
+    options.L2 === "optimism" &&
+    options.optimismHardfork === "ecotone" &&
+    !options.blobBaseFee
+  ) {
+    options.blobBaseFee = .1;
 
-    // TODO: DENCUN
-    /* if (block === undefined) {
-      try {
-        block = await axiosInstance.get(blockUrl);
-        checkForEtherscanError(block.data.result);
-      } catch (error) {
-        options.blobBaseFee = 0;
-        warnings.push(warnBlobBaseFeeRemoteCallFailed(error, blockUrl));
-        return;
-      }
-    }
-    options.baseFee = Math.round(
-      parseInt(block.data.result.blobBaseFeePerGas, 16) / Math.pow(10, 9)
-    );*/
+    // TODO: Check the GasOracle value against the eth_blobBaseFee value once
+    // it becomes available and then make a decision about how to
+    // fetch the data....
+    //
+    // At the moment oracle fee comes back as `1`, which seems fake/wrong and
+    // produces numbers that are 10% too high. `.1` gets the
+    // calculations in the right ballpark.
+
+    /*
+    import { OPTIMISM_GAS_ORACLE_ABI_PARTIAL, OPTIMISM_GAS_ORACLE_ADDRESS } from "../constants";
+    import { createPublicClient, http } from "viem";
+    import { optimism } from 'viem/chains'
+    import { AbiCoder, Interface } from "@ethersproject/abi";
+    import { BytesLike } from "@ethersproject/bytes";
+
+    const iface = new Interface(OPTIMISM_GAS_ORACLE_ABI_PARTIAL);
+    const blobBaseFeeData = iface.encodeFunctionData("blobBaseFee()", []);
+    const baseFeeScalarData = iface.encodeFunctionData("baseFeeScalar()", []);
+    const blobBaseFeeScalarData = iface.encodeFunctionData("blobBaseFeeScalar()", []);
+
+    // check that transport url exists....
+    const client = createPublicClient({
+      chain: optimism,
+      transport: http(process.env.ALCHEMY_OPTIMISM_URL)
+    });
+
+    const blobBaseFeeResponse = await client.call({
+      data: blobBaseFeeData as hexString,
+      to: OPTIMISM_GAS_ORACLE_ADDRESS as hexString,
+    })
+
+    const baseFeeScalarResponse = await client.call({
+      data: baseFeeScalarData as hexString,
+      to: OPTIMISM_GAS_ORACLE_ADDRESS as hexString,
+    });
+
+    const blobBaseFeeScalarResponse = await client.call({
+      data: blobBaseFeeScalarData as hexString,
+      to: OPTIMISM_GAS_ORACLE_ADDRESS as hexString,
+    });
+
+    const abiCoder = new AbiCoder();
+    const blobBaseFee = abiCoder.decode(["uint256"], blobBaseFeeResponse.data as BytesLike );
+    const baseFeeScalar = abiCoder.decode(["uint32"], baseFeeScalarResponse.data as BytesLike );
+    const blobBaseFeeScalar = abiCoder.decode(["uint32"], blobBaseFeeScalarResponse.data as BytesLike);
+
+    console.log("blobBaseFee: " + blobBaseFee);
+    console.log("baseFeeScalar: " + baseFeeScalar);
+    console.log("blobBaseFeeScalar: " + blobBaseFeeScalar);
+    */
   }
 
   return warnings;

@@ -79,12 +79,12 @@ export function getOptimismBedrockL1Cost(txDataGas: number, baseFee: number): nu
 */
 
 /**
- * Gets compressed transaction calldata gas usage (an input into the cost function below)
+ * Gets transaction calldata gas usage (an input into the cost function below)
  * @param tx    JSONRPC formatted getTransaction response
  * @returns
  */
 export function getOptimismEcotoneL1Gas(tx: JsonRpcTx) {
-  return Math.floor(getSerializedTxDataGas(tx) / 16);
+  return getSerializedTxDataGas(tx);
 }
 
 /**
@@ -93,15 +93,28 @@ export function getOptimismEcotoneL1Gas(tx: JsonRpcTx) {
  * @param baseFee
  * @param blobBaseFee
  * @returns
+ *
+ * Source: https://github.com/ethereum-optimism/optimism/blob/e57787ea7d0b9782cea5f32bcb92d0fdeb7bd870/ +
+ *         packages/contracts-bedrock/src/L2/GasPriceOracle.sol#L88-L92
+ *
+ * DECIMALS = 6
+ *
+ * function _getL1FeeEcotone(bytes memory _data) internal view returns (uint256) {
+ *       uint256 l1GasUsed = _getCalldataGas(_data);
+ *       uint256 scaledBaseFee = baseFeeScalar() * 16 * l1BaseFee();
+ *       uint256 scaledBlobBaseFee = blobBaseFeeScalar() * blobBaseFee();
+ *       uint256 fee = l1GasUsed * (scaledBaseFee + scaledBlobBaseFee);
+ *       return fee / (16 * 10 ** DECIMALS);
+ *   }
  */
 export function getOptimismEcotoneL1Cost(
-  txCompressed: number,
+  txSerialized: number,
   baseFee: number,
   blobBaseFee: number
 ): number {
   const weightedBaseFee = 16 * OPTIMISM_ECOTONE_BASE_FEE_SCALAR * baseFee;
   const weightedBlobBaseFee = OPTIMISM_ECOTONE_BLOB_BASE_FEE_SCALAR * blobBaseFee;
-  return txCompressed * (weightedBaseFee + weightedBlobBaseFee);
+  return (txSerialized * (weightedBaseFee + weightedBlobBaseFee)) / 16000000;
 }
 
 // ==========================
@@ -339,14 +352,13 @@ export function hexWeiToIntGwei(val: string): number {
   return hexToDecimal(val) / Math.pow(10, 9);
 }
 
-export function normalizeTxType(_type: string) {
+export function normalizeTxType(_type: string): ("legacy" | "eip1559" | "eip2930" | "eip4844") {
   switch(hexToDecimal(_type)) {
     case 0: return 'legacy';
-    case 1: return 'eip2930;'
+    case 1: return 'eip2930';
     case 2: return 'eip1559';
-
-    // This will error within viem.serializeTransaction
-    default: return _type;
+    case 3: return 'eip4844';
+    default: return 'legacy';
   }
 }
 
