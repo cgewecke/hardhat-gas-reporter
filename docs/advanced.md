@@ -126,8 +126,8 @@ const config: HardhatUserConfig = {
   gasReporter: {
     coinmarketcap: "abc...",
     L2: "optimism",
-    gasPriceApi: "https://custom.api/latest_gas_price...",
-    getBlockApi: "https://custom.api/latest_block_header..."
+    gasPriceApi: "https://custom.L2.api/latest_L2_gas_price...",
+    getBlockApi: "https://custom.L1.api/latest_L1_block_header..."
   }
 }
 ```
