@@ -136,7 +136,7 @@ API keys for the networks this plugin auto-configures via the `L1` and `L2` opti
 
 **L2**
 
-+ [optimism][100]
++ [optimism][109]
 
 **L1**
 
@@ -166,11 +166,12 @@ You can support hardhat-gas-reporter via [DRIPS][11], a public goods protocol th
 [10]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#markdown-format-example
 [11]: https://www.drips.network/app/projects/github/cgewecke/hardhat-gas-reporter
 [100]: https://optimistic.etherscan.io
-[101]: https://etherscan.io/getting-started/viewing-api-usage-statistics
-[102]: https://polygonscan.com/getting-started/viewing-api-usage-statistics
-[103]: https://bscscan.com/getting-started/viewing-api-usage-statistics
-[104]: https://ftmscan.com/getting-started/viewing-api-usage-statistics
-[105]: https://moonbeam.moonscan.io/getting-started/viewing-api-usage-statistics
-[106]: https://moonriver.moonscan.io/getting-started/viewing-api-usage-statistics
-[107]: https://gnosisscan.io/getting-started/viewing-api-usage-statistics
+[101]: https://docs.etherscan.io/getting-started/viewing-api-usage-statistics
+[102]: https://docs.polygonscan.com/getting-started/viewing-api-usage-statistics
+[103]: https://docs.bscscan.com/getting-started/viewing-api-usage-statistics
+[104]: https://docs.ftmscan.com/getting-started/viewing-api-usage-statistics
+[105]: https://docs.moonscan.io/getting-started/viewing-api-usage-statistics
+[106]: https://docs.moonscan.io/v/moonriver
+[107]: https://docs.gnosisscan.io/getting-started/viewing-api-usage-statistics
 [108]: https://snowtrace.io/
+[109]: https://docs.optimism.etherscan.io/getting-started/viewing-api-usage-statistics
