@@ -4,53 +4,44 @@ set -o errexit
 trap cleanup EXIT
 
 cleanup() {
-  if [ -n "$ganache_pid" ] && ps -p $ganache_pid > /dev/null; then
-    echo "Killing ganache."
-    kill -9 $ganache_pid
+  # Github actions kills the process
+  if [ -n "$CI" ]; then
+   echo "Exiting without killing Hardhat Node in CI"
+   return
   fi
 
-  if [ -n "$hardhatevm_pid" ] && ps -p $hardhatevm_pid > /dev/null; then
-    echo "Killing hardhatevm."
-    kill -9 $hardhatevm_pid
+  if [ -n "$hardhat_node_pid" ] && ps -p $hardhat_node_pid > /dev/null; then
+    echo "Killing Hardhat Node."
+    kill -9 $hardhat_node_pid
   fi
 }
 
-start_ganache() {
-  echo "Launching ganache..."
-  node_modules/.bin/ganache-cli > /dev/null &
-  ganache_pid=$!
-  sleep 4
-}
-
-start_hardhatevm() {
-  echo "Launching hardhatevm..."
+start_hardhat_node() {
+  echo "Launching Hardhat Node..."
   node_modules/.bin/hardhat node > /dev/null &
-  hardhatevm_pid=$!
+  hardhat_node_pid=$!
   sleep 4
 }
 
-# Merge gasRerpoterOutput.json files task
-npx mocha test/merge.ts
+########
+# Units
+########
+npx mocha test/unit/*.ts --timeout 10000
 
-# Truffle + HardhatEVM
-npx mocha test/truffle.ts --timeout 100000 --exit
+########
+# Tasks
+########
+npx mocha test/tasks/merge.ts --timeout 10000
 
-# Truffle + HardhatEVM + misc reporterOptions
-npx mocha test/truffle.options.ts --timeout 100000 --exit
+################################
+# Hardhat EVM (Default Network)
+################################
+npx mocha test/integration/*.ts --timeout 100000 --exit
 
-# Ethers + HardhatEVM
-npx mocha test/ethers.ts --timeout 100000 --exit
+##########################
+# Hardhat Node (Localhost)
+##########################
+start_hardhat_node
+STAND_ALONE=true npx mocha test/integration/node.ts --timeout 100000 --exit
 
-# Waffle + HardhatEVM
-npx mocha test/waffle.ts --timeout 100000 --exit
-
-# Forked Network + HardhatEVM
-npx mocha test/forked.ts --timeout 100000 --exit
-
-# Ethers + Hardhat Node
-start_hardhatevm
-npx mocha test/hardhatevm.node.ts --timeout 100000 --exit
-
-# Waffle + Hardhat Node
-npx mocha test/waffle.ts --timeout 100000 --exit
 cleanup

@@ -1,232 +1,178 @@
-import fs from "fs"
-import path from "path"
-import { TASK_TEST_RUN_MOCHA_TESTS } from "hardhat/builtin-tasks/task-names";
-import { task, subtask } from "hardhat/config";
-import { HARDHAT_NETWORK_NAME, HardhatPluginError } from "hardhat/plugins";
-
-import type { EGRAsyncApiProvider as EGRAsyncApiProviderT } from "./providers";
-
+import { cloneDeep } from "lodash" // used in extendConfig, cannot await import
+import { EIP1193Provider, HardhatConfig, HardhatUserConfig } from "hardhat/types";
+import { TASK_TEST, TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
 import {
-  HardhatArguments,
-  HttpNetworkConfig,
-  NetworkConfig,
-  EthereumProvider,
-  HardhatRuntimeEnvironment,
-  Artifact,
-  Artifacts
-} from "hardhat/types";
+  extendConfig,
+  extendEnvironment,
+  extendProvider,
+  task,
+  subtask
+} from "hardhat/config";
 
-import "./type-extensions"
-import { EthGasReporterConfig, EthGasReporterOutput, RemoteContract } from "./types";
-import { TASK_GAS_REPORTER_MERGE, TASK_GAS_REPORTER_MERGE_REPORTS } from "./task-names";
-import { mergeReports } from "./merge-reports";
+import "./type-extensions";
+import { GasReporterExecutionContext, GasReporterOutput } from "./types";
 
-let mochaConfig;
-let resolvedQualifiedNames: string[]
-let resolvedRemoteContracts: RemoteContract[] = [];
+import { getDefaultOptions } from './lib/options';
+import { GasReporterProvider } from "./lib/provider";
+import {
+  TASK_GAS_REPORTER_MERGE,
+  TASK_GAS_REPORTER_MERGE_REPORTS,
+  TASK_GAS_REPORTER_MERGE_LEGACY,
+  TASK_GAS_REPORTER_MERGE_REPORTS_LEGACY,
+  TASK_GAS_REPORTER_START,
+  TASK_GAS_REPORTER_STOP
+} from "./task-names"
 
-/**
- * Filters out contracts to exclude from report
- * @param  {string}   qualifiedName HRE artifact identifier
- * @param  {string[]} skippable      excludeContracts option values
- * @return {boolean}
- */
-function shouldSkipContract(qualifiedName: string, skippable: string[]): boolean {
-  for (const item of skippable){
-    if (qualifiedName.includes(item)) return true;
-  }
-  return false;
-}
+let _globalGasReporterProviderReference: GasReporterProvider;
 
-/**
- * Method passed to eth-gas-reporter to resolve artifact resources. Loads
- * and processes JSON artifacts
- * @param  {HardhatRuntimeEnvironment} hre.artifacts
- * @param  {String[]}                  skippable    contract *not* to track
- * @return {object[]}                  objects w/ abi and bytecode
- */
-function getContracts(artifacts: Artifacts, skippable: string[] = []) : any[] {
-  const contracts = [];
+// ========================
+// EXTENSIONS
+// ========================
+/* Config */
+extendConfig(
+  (config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
+    let options = getDefaultOptions(userConfig);
 
-  for (const qualifiedName of resolvedQualifiedNames) {
-    if (shouldSkipContract(qualifiedName, skippable)){
-      continue;
+    // Deep clone userConfig otherwise HH will throw unauthorized modification error
+    if (userConfig.gasReporter !== undefined) {
+      options = Object.assign(options, cloneDeep(userConfig.gasReporter));
     }
-
-    let name: string;
-    let artifact = artifacts.readArtifactSync(qualifiedName)
-
-    // Prefer simple names
-    try {
-      artifact = artifacts.readArtifactSync(artifact.contractName);
-      name = artifact.contractName;
-    } catch (e) {
-      name = qualifiedName;
-    }
-
-    contracts.push({
-      name: name,
-      artifact: {
-        abi: artifact.abi,
-        bytecode: artifact.bytecode,
-        deployedBytecode: artifact.deployedBytecode
-      }
-    });
+    (config as any).gasReporter = options;
   }
+);
 
-  for (const remoteContract of resolvedRemoteContracts){
-    contracts.push({
-      name: remoteContract.name,
-      artifact: {
-        abi: remoteContract.abi,
-        bytecode: remoteContract.bytecode,
-        bytecodeHash: remoteContract.bytecodeHash,
-        deployedBytecode: remoteContract.deployedBytecode
-      }
-    })
+/* Environment */
+extendEnvironment((hre) => {
+  hre.__hhgrec = {
+    collector: undefined,
+    task: undefined,
   }
-  return contracts;
+});
+
+/* Provider */
+extendProvider(async (provider) => {
+  const newProvider = new GasReporterProvider(provider);
+  _globalGasReporterProviderReference = newProvider;
+  return newProvider;
+});
+
+/*
+   Initialize the provider with the execution context. This is called in
+   `TASK_GAS_REPORTER_START` at the very end of setup. Provider extension above should
+   not be used on unrelated tasks.
+*/
+export async function initializeGasReporterProvider(
+  provider: EIP1193Provider,
+  context: GasReporterExecutionContext
+)  {
+  // Other plugins (ex: hardhat-tracer) may wrap the provider in a way
+  // that doesn't expose `init()`, so we init the underlying provider
+  // here by making a cheap call.
+  await provider.request({ method: "eth_blockNumber", params: []});
+  _globalGasReporterProviderReference.initializeGasReporterProvider(context);
 }
 
-/**
- * Sets reporter options to pass to eth-gas-reporter:
- * > url to connect to client with
- * > artifact format (hardhat)
- * > solc compiler info
- * @param  {HardhatRuntimeEnvironment} hre
- * @return {EthGasReporterConfig}
- */
-function getDefaultOptions(hre: HardhatRuntimeEnvironment): EthGasReporterConfig {
-  const defaultUrl = "http://localhost:8545";
-  const defaultCompiler = hre.config.solidity.compilers[0]
-
-  let url: any;
-  // Resolve URL
-  if ((<HttpNetworkConfig>hre.network.config).url) {
-    url = (<HttpNetworkConfig>hre.network.config).url;
-  } else {
-    url = defaultUrl;
-  }
-
-  return {
-    enabled: true,
-    url: <string>url,
-    metadata: {
-      compiler: {
-        version: defaultCompiler.version
-      },
-      settings: {
-        optimizer: {
-          enabled: defaultCompiler.settings.optimizer.enabled,
-          runs: defaultCompiler.settings.optimizer.runs
-        }
-      }
-    }
-  }
-}
+// ========================
+// BUILT-IN OVERRIDES
+// ========================
 
 /**
- * Merges GasReporter defaults with user's GasReporter config
- * @param  {HardhatRuntimeEnvironment} hre
- * @return {any}
+ * Overrides Hardhat built-in task TASK_TEST to report gas usage
  */
-function getOptions(hre: HardhatRuntimeEnvironment): any {
-  return { ...getDefaultOptions(hre), ...(hre.config as any).gasReporter };
-}
-
-/**
- * Fetches remote bytecode at address and hashes it so these addresses can be
- * added to the tracking at eth-gas-reporter synchronously on init.
- * @param  {EGRAsyncApiProvider}   provider
- * @param  {RemoteContract[] = []} remoteContracts
- * @return {Promise<RemoteContract[]>}
- */
-async function getResolvedRemoteContracts(
-  provider: EGRAsyncApiProviderT,
-  remoteContracts: RemoteContract[] = []
-) : Promise <RemoteContract[]> {
-  const { default : sha1 } = await import("sha1");
-  for (const contract of remoteContracts){
-    let code;
-    try {
-      contract.bytecode = await provider.getCode(contract.address);
-      contract.deployedBytecode = contract.bytecode;
-      contract.bytecodeHash = sha1(contract.bytecode);
-    } catch (error){
-      console.log(`Warning: failed to fetch bytecode for remote contract: ${contract.name}`)
-      console.log(`Error was: ${error}\n`);
-    }
-  }
-  return remoteContracts;
-}
-
-/**
- * Overrides TASK_TEST_RUN_MOCHA_TEST to (conditionally) use eth-gas-reporter as
- * the mocha test reporter and passes mocha relevant options. These are listed
- * on the `gasReporter` of the user's config.
- */
-subtask(TASK_TEST_RUN_MOCHA_TESTS).setAction(
+task(TASK_TEST).setAction(
   async (args: any, hre, runSuper) => {
+    hre.__hhgrec.task = TASK_TEST;
+    await hre.run(TASK_GAS_REPORTER_START, args);
+    await runSuper(args);
+    await hre.run(TASK_GAS_REPORTER_STOP, args);
+  }
+);
 
-    let options = getOptions(hre);
-    options.getContracts = getContracts.bind(null, hre.artifacts, options.excludeContracts);
+// ========================
+// GAS REPORTER TASKS
+// ========================
 
-    if (options.enabled) {
-      // Temporarily skipping when in parallel mode because it crashes and unsure how to resolve...
+/**
+ * Initializes gas tracking
+ */
+subtask(TASK_GAS_REPORTER_START).setAction(
+  async (args: any, hre, runSuper) => {
+    const options = hre.config.gasReporter;
+
+    if (options.enabled === true) {
+      // Lazy load all imports to minimize HH startup time
+      const { getContracts } = await import("./lib/artifacts");
+      const { Collector } = await import("./lib/collector");
+      const { warnParallel } = await import("./utils/ui");
+
+      // Temporarily skipping when in parallel mode because it crashes and
+      // unsure how to resolve...
       if (args.parallel === true) {
-        const result = await runSuper();
-        console.log(
-          "Note: Gas reporting has been skipped because plugin `hardhat-gas-reporter` does not support " +
-          "the --parallel flag."
-        );
+        const result: any = await runSuper();
+        warnParallel();
         return result;
       }
 
-
-      const { parseSoliditySources, setGasAndPriceRates } = require('eth-gas-reporter/lib/utils');
-      const InternalReporterConfig  = require('eth-gas-reporter/lib/config');
-
-      // Fetch data from gas and coin price providers
-      const originalOptions = options
-      options = new InternalReporterConfig(originalOptions);
-      await setGasAndPriceRates(options);
-
-      mochaConfig = hre.config.mocha || {};
-      mochaConfig.reporter = "eth-gas-reporter";
-      mochaConfig.reporterOptions = options;
-
-      if (hre.network.name === HARDHAT_NETWORK_NAME || options.fast){
-
-        const {
-          BackwardsCompatibilityProviderAdapter
-        } = await import("hardhat/internal/core/providers/backwards-compatibility")
-
-        const {
-          EGRDataCollectionProvider,
-          EGRAsyncApiProvider
-        } = await import("./providers");
-
-        const wrappedDataProvider= new EGRDataCollectionProvider(hre.network.provider,mochaConfig);
-        hre.network.provider = new BackwardsCompatibilityProviderAdapter(wrappedDataProvider);
-
-        const asyncProvider = new EGRAsyncApiProvider(hre.network.provider);
-        resolvedRemoteContracts = await getResolvedRemoteContracts(
-          asyncProvider,
-          originalOptions.remoteContracts
-        );
-
-        mochaConfig.reporterOptions.provider = asyncProvider;
-        mochaConfig.reporterOptions.blockLimit = (<any>hre.network.config).blockGasLimit as number;
-        mochaConfig.attachments = {};
+      // solidity-coverage disables gas reporter via mocha but that
+      // no longer works for this version. (No warning necessary)
+      if ((hre as any).__SOLIDITY_COVERAGE_RUNNING === true) {
+        return runSuper();
       }
 
-      hre.config.mocha = mochaConfig;
-      resolvedQualifiedNames = await hre.artifacts.getAllFullyQualifiedNames();
-    }
+      // Need to compile so we have access to the artifact data.
+      // This will rerun in TASK_TEST & TASK_RUN but should be a noop there.
+      if (!args.noCompile) {
+        await hre.run(TASK_COMPILE, { quiet: true });
+      }
 
-    return runSuper();
+      const contracts = await getContracts(hre, options);
+
+      hre.__hhgrec.usingCall = options.reportPureAndViewMethods;
+      hre.__hhgrec.usingViem = (hre as any).viem;
+      hre.__hhgrec.usingOZ  = (hre as any).upgrades || (hre as any).defender
+
+      hre.__hhgrec.collector = new Collector(hre, options);
+      hre.__hhgrec.collector.data.initialize(hre.network.provider, contracts);
+
+      // Custom proxy resolvers are instantiated in the config,
+      // OZ proxy resolver instantiated in Resolver constructor called by new Collector()
+      hre.__hhgrec.methodIgnoreList = (options.proxyResolver)
+        ? options.proxyResolver.ignore()
+        : [];
+
+      await initializeGasReporterProvider(hre.network.provider, hre.__hhgrec);
+    }
   }
 );
+
+/**
+ * Completes gas reporting: gets live market data, runs analysis and renders
+ */
+subtask(TASK_GAS_REPORTER_STOP).setAction(
+  async (args: any, hre) => {
+    const options = hre.config.gasReporter;
+
+    if (
+      options.enabled === true &&
+      args.parallel !== true &&
+      (hre as any).__SOLIDITY_COVERAGE_RUNNING !== true
+    ) {
+      const { setGasAndPriceRates } = await import("./utils/prices");
+      const { render } = await import("./lib/render");
+
+      const warnings = await setGasAndPriceRates(options);
+
+      await hre.__hhgrec.collector?.data.runAnalysis(hre, options);
+      render(hre, options, warnings);
+    }
+  }
+);
+
+/**
+ * ========================
+ * CLI COMMAND TASKS
+ * ========================
+ */
 
 subtask(TASK_GAS_REPORTER_MERGE_REPORTS)
   .addOptionalVariadicPositionalParam(
@@ -234,17 +180,13 @@ subtask(TASK_GAS_REPORTER_MERGE_REPORTS)
     "Path of several gasReporterOutput.json files to merge",
     []
   )
-  .setAction(async ({ inputFiles }: { inputFiles: string[] }) => {
-    const reports = inputFiles.map((input) => JSON.parse(fs.readFileSync(input, "utf-8")));
-    return mergeReports(reports);
-  })
+  .setAction(
+    async ({ inputFiles }: { inputFiles: string[] }
+  ): Promise<GasReporterOutput> => {
+    const { subtaskMergeReportsImplementation } = await import("./tasks/mergeReports")
+    return subtaskMergeReportsImplementation({ inputFiles })
+  });
 
-/**
- * Task for merging multiple gasReporterOutput.json files generated by eth-gas-reporter
- * This task is necessary when we want to generate different parts of the reports
- * parallelized on different jobs, then merge the results and upload it to codechecks.
- * Gas Report JSON file schema: https://github.com/cgewecke/eth-gas-reporter/blob/master/docs/gasReporterOutput.md
- */
 task(TASK_GAS_REPORTER_MERGE)
   .addOptionalParam(
     "output",
@@ -252,30 +194,36 @@ task(TASK_GAS_REPORTER_MERGE)
     "gasReporterOutput.json"
   )
   .addVariadicPositionalParam(
-		"input",
-		"A list of gasReporterOutput.json files generated by eth-gas-reporter. Files can be defined using glob patterns"
-	)
-  .setAction(async (taskArguments, { run }) => {
-		const output = path.resolve(process.cwd(), taskArguments.output);
+    "input",
+    "A list of JSON data files generated by the gas reporter plugin. " +
+    "Files can be defined using glob patterns"
+  )
+  .setAction(async (taskArguments, hre) => {
+    const { taskMergeImplementation } = await import("./tasks/mergeReports")
+    return taskMergeImplementation(taskArguments, hre);
+  });
 
-		// Parse input files and calculate glob patterns
-    const { globSync } = await import("hardhat/internal/util/glob");
-    const arrayUniq = require("array-uniq");
-		const inputFiles = arrayUniq(taskArguments.input.map(globSync).flat())
-      .map(inputFile => path.resolve(inputFile));
+/**
+ * ========================
+ * DEPRECATED TASKS
+ * ========================
+ */
+task(TASK_GAS_REPORTER_MERGE_LEGACY)
+.addOptionalParam(
+  "output",
+  "Target file to save the merged report",
+  "gasReporterOutput.json"
+)
+.addVariadicPositionalParam("input")
+.setAction(async () => {
+  const { warnDeprecatedTask } = await import("./utils/ui");
+  warnDeprecatedTask(TASK_GAS_REPORTER_MERGE)
+});
 
-		if (inputFiles.length === 0) {
-			throw new Error(`No files found for the given input: ${taskArguments.input.join(" ")}`);
-		}
+subtask(TASK_GAS_REPORTER_MERGE_REPORTS_LEGACY)
+.addOptionalVariadicPositionalParam("inputFiles", "", [])
+.setAction(async ({}: { inputFiles: string[] }) => {
+  const { warnDeprecatedTask } = await import("./utils/ui");
+  warnDeprecatedTask(TASK_GAS_REPORTER_MERGE_REPORTS);
+});
 
-		console.log(`Merging ${inputFiles.length} input files:`);
-		inputFiles.forEach(inputFile => {
-			console.log("  - ", inputFile);
-		});
-
-		console.log("\nOutput: ", output);
-
-		const result = await run(TASK_GAS_REPORTER_MERGE_REPORTS, { inputFiles });
-
-		fs.writeFileSync(output, JSON.stringify(result), "utf-8");
-	});
