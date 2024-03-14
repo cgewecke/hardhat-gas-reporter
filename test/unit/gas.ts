@@ -113,7 +113,7 @@ describe("Optimism: getCalldataCostForNetwork", function () {
     assert(diff < .015);
   });
 
-  it("calculates gas cost for large function call tx (ecotone)", function () {
+  it("calculates gas cost for large function call tx (ecotone) (I)", function () {
     const fn = optimismCases.ecotoneFunction_2;
     options.gasPrice = fn.l2GasPrice;
     options.baseFee = fn.l1BaseFee;
@@ -125,6 +125,21 @@ describe("Optimism: getCalldataCostForNetwork", function () {
     const diff = getPercentDiff(parseFloat(cost), fn.txFeeETH);
 
     // actual 0.0105
+    assert(diff < .015);
+  });
+
+  it("calculates gas cost for large function call tx (ecotone) (II)", function () {
+    const fn = optimismCases.ecotoneFunction_3;
+    options.gasPrice = fn.l2GasPrice;
+    options.baseFee = fn.l1BaseFee;
+    options.blobBaseFee = fn.l1BlobBaseFee;
+    options.optimismHardfork = "ecotone";
+
+    const gas = getCalldataGasForNetwork(options, fn.tx);
+    const cost = gasToCost(fn.l2GasUsed, gas, options);
+    const diff = getPercentDiff(parseFloat(cost), fn.txFeeETH);
+
+    // actual 0.0008
     assert(diff < .015);
   });
 });
