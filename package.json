@@ -42,7 +42,7 @@
     "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
     "@nomicfoundation/hardhat-verify": "^2.0.0",
     "@nomicfoundation/hardhat-viem": "^2.0.0",
-    "@openzeppelin/contracts": "3.4.1-solc-0.7-2",
+    "@openzeppelin/contracts": "4.9.6",
     "@openzeppelin/contracts-upgradeable": "^5.0.1",
     "@openzeppelin/hardhat-upgrades": "^3.0.4",
     "@types/chai": "^4.2.14",
