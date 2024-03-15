@@ -96,7 +96,7 @@ task(TASK_TEST).setAction(
  * Initializes gas tracking
  */
 subtask(TASK_GAS_REPORTER_START).setAction(
-  async (args: any, hre, runSuper) => {
+  async (args: any, hre) => {
     const options = hre.config.gasReporter;
 
     if (options.enabled === true) {
@@ -108,15 +108,14 @@ subtask(TASK_GAS_REPORTER_START).setAction(
       // Temporarily skipping when in parallel mode because it crashes and
       // unsure how to resolve...
       if (args.parallel === true) {
-        const result: any = await runSuper();
         warnParallel();
-        return result;
+        return;
       }
 
       // solidity-coverage disables gas reporter via mocha but that
       // no longer works for this version. (No warning necessary)
       if ((hre as any).__SOLIDITY_COVERAGE_RUNNING === true) {
-        return runSuper();
+        return;
       }
 
       // Need to compile so we have access to the artifact data.
