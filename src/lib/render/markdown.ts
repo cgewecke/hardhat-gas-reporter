@@ -61,7 +61,11 @@ export function generateMarkdownTable(
     } = getCommonTableVals(options));
 
     gasPrices = (options.L2)
-      ? [[`L1 Base Fee`, `${l1gwei} gwei`], [`L2 Gas Price`, `${l2gwei} gwei` ]]
+      ? [
+          [`L1 Base Fee`, `${options.baseFee!} gwei`],
+          [`L1 Blob Base Fee`, `${options.blobBaseFee!} gwei`],
+          [`L2 Gas Price`, `${l2gwei} gwei` ]
+        ]
       : [[`L1 Gas Price`, `${l1gwei} gwei`]];
 
     tokenPrice = `${rate} ${currency}/${token}`
