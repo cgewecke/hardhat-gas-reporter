@@ -24,6 +24,7 @@ const config: HardhatUserConfig = {
     L2: "optimism",
     gasPrice: 0.098775564,
     baseFee: 79,
+    blobBaseFee: 15,
     reportFormat: "markdown",
     enabled: true
   }
