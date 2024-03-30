@@ -7,6 +7,9 @@ export const DEFAULT_CURRENCY_DISPLAY_PRECISION = 2;
 export const DEFAULT_JSON_OUTPUT_FILE = "./gasReporterOutput.json";
 export const DEFAULT_GAS_PRICE_PRECISION = 5;
 
+// Selector generated with: ethersV5.Interface.encodeFunctionData("blobBaseFee()", []);
+export const DEFAULT_BLOB_BASE_FEE_API_ARGS = "action=eth_call&data=0xf8206140&tag=latest&to="
+
 export const DEFAULT_GET_BLOCK_API_ARGS = "action=eth_getBlockByNumber&tag=latest&boolean=false"
 export const DEFAULT_GAS_PRICE_API_ARGS  = "action=eth_gasPrice"
 export const DEFAULT_API_KEY_ARGS = "&apikey="
@@ -20,6 +23,7 @@ export const TOOLCHAIN_FOUNDRY = "foundry";
 
 // EVM
 export const EVM_BASE_TX_COST = 21000;
+export const DEFAULT_BLOB_BASE_FEE = 10; // gwei
 
 // Source:
 // https://docs.optimism.io/stack/transactions/fees#bedrock

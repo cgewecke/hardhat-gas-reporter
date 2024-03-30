@@ -55,7 +55,7 @@ title,
   "_bool_",
   "`false`",
   "Exclude solc generated public state vars when reporting gas for pure and view methods. " +
-  "(Incurs a performance penalty on test startup when `true`)"
+  "(Incurs a performance penalty on test startup when `true`) ⚠️ SLOW ⚠️"
 ],
 // excludeContracts
 [
@@ -77,14 +77,14 @@ title,
   "L1",
   "_string_",
   "`ethereum`",
-  "Auto-configure reporter to emulate an L1 network.  See [supported networks][6] "
+  "Auto-configure reporter to emulate an L1 network.  (See [supported networks][6])"
 ],
 // L2
 [
   "L2",
   "_string_",
   "-",
-  "Auto-configure reporter to emulate an L2 network (See [supported networks][6]"
+  "Auto-configure reporter to emulate an L2 network (See [supported networks][6])"
 ],
 // L1Etherscan
 [
@@ -113,7 +113,7 @@ title,
 [
   "optimismHardfork",
   "_string_",
-  "`bedrock`",
+  "`ecotone`",
   "Optimism hardfork to emulate L1 & L2 gas costs for."
 ],
 // proxyResolver
@@ -272,6 +272,14 @@ advancedSubtitle,
   "-",
   "Gwei blob base fee per gas unit used to calculate post-EIP-7516 L1 calldata costs for L2 transactions " +
   "(Ex: `25`). By default, this is fetched from live network when `L2` & `coinmarketcap` options are defined"
+],
+// blobBaseFeeApi
+[
+  "blobBaseFeeApi",
+  "_string_",
+  "-",
+  "URL to fetch live *execution* network blob base fee from. (By default, this is auto-configured " +
+  "based on the `L1` or `L2` setting)"
 ],
 // gasPriceApi
 [

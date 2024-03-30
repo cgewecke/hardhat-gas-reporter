@@ -27,6 +27,9 @@ export interface GasReporterOptions {
    */
   blobBaseFee?: number;
 
+  /** @property Etherscan-like url to fetch blobBasefee from */
+  blobBaseFeeApi?: string;
+
   /** @property API key to access token/currency market price data with */
   coinmarketcap?: string;
 
