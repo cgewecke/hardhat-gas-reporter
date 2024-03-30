@@ -2,9 +2,7 @@ import { serializeTransaction, Hex } from 'viem';
 import {
   EVM_BASE_TX_COST,
   OPTIMISM_BEDROCK_DYNAMIC_OVERHEAD,
-  OPTIMISM_BEDROCK_FIXED_OVERHEAD,
-  OPTIMISM_ECOTONE_BASE_FEE_SCALAR,
-  OPTIMISM_ECOTONE_BLOB_BASE_FEE_SCALAR
+  OPTIMISM_BEDROCK_FIXED_OVERHEAD
 } from "../constants";
 
 import { GasReporterOptions, JsonRpcTx } from "../types";
@@ -107,13 +105,15 @@ export function getOptimismEcotoneL1Gas(tx: JsonRpcTx) {
  *       return fee / (16 * 10 ** DECIMALS);
  *   }
  */
-export function getOptimismEcotoneL1Cost(
+export function getOPStackEcotoneL1Cost(
   txSerialized: number,
   baseFee: number,
-  blobBaseFee: number
+  blobBaseFee: number,
+  opStackBaseFeeScalar: number,
+  opStackBlobBaseFeeScalar: number
 ): number {
-  const weightedBaseFee = 16 * OPTIMISM_ECOTONE_BASE_FEE_SCALAR * baseFee;
-  const weightedBlobBaseFee = OPTIMISM_ECOTONE_BLOB_BASE_FEE_SCALAR * blobBaseFee;
+  const weightedBaseFee = 16 * opStackBaseFeeScalar * baseFee;
+  const weightedBlobBaseFee = opStackBlobBaseFeeScalar * blobBaseFee;
   return (txSerialized * (weightedBaseFee + weightedBlobBaseFee)) / 16000000;
 }
 
@@ -245,7 +245,7 @@ export function getCalldataGasForNetwork(
   options: GasReporterOptions,
   tx: JsonRpcTx
 ) : number {
-  if (options.L2 === "optimism") {
+  if (options.L2 === "optimism" || options.L2 === "base") {
     switch (options.optimismHardfork){
       case "bedrock": return getOptimismBedrockL1Gas(tx);
       case "ecotone": return getOptimismEcotoneL1Gas(tx);
@@ -277,10 +277,16 @@ export function getCalldataCostForNetwork(
   options: GasReporterOptions,
   gas: number,
 ) : number {
-  if (options.L2 === "optimism") {
+  if (options.L2 === "optimism" || options.L2 === "base") {
     switch (options.optimismHardfork){
       case "bedrock": return getOptimismBedrockL1Cost(gas, options.baseFee!);
-      case "ecotone": return getOptimismEcotoneL1Cost(gas, options.baseFee!, options.blobBaseFee!);
+      case "ecotone": return getOPStackEcotoneL1Cost(
+        gas, 
+        options.baseFee!, 
+        options.blobBaseFee!,
+        options.opStackBaseFeeScalar!,
+        options.opStackBlobBaseFeeScalar!
+      );
       default: return 0; /** This shouldn't happen */
     }
   }

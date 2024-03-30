@@ -297,6 +297,20 @@ advancedSubtitle,
   "URL to fetch L1 block header from when simulating L2. (By default, this is auto-configured " +
   "based on the `L2` setting)"
 ],
+// opStackBaseFeeScalar
+[
+  "opStackBaseFeeScalar",
+  "_number_",
+  "-",
+  "Scalar applied to L1 base fee when calculating L1 data cost (see [Advanced Usage][12])"
+],
+// opStackBlobBaseFeeScalar
+[
+  "opStackBlobBaseFeeScalar",
+  "_number_",
+  "-",
+  "Scalar applied to L1 blob base fee when calculating L1 data cost (see [Advanced Usage][12])"
+],
 // token
 [
   "token",

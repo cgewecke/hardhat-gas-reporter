@@ -5,7 +5,9 @@
   * [Proxy Resolvers](#proxy-resolvers)
   * [Remote Contracts](#remote-contracts)
   * [Intrinsic Gas](#intrinsic-gas)
+  * [OP Stack L1 Data Costs](#op-stack-l1-data-costs)
   * [JSON output](#json-output)
+  * [Markdown Format Example](#markdown-format-example)
 
 ## Config Examples
 
@@ -205,6 +207,25 @@ Gas Calculation:
 
 :warning: The execution costs minus intrinsic gas overhead reported by the plugin are **only lower bounds** of what the actual cost will be. (Read [wolfio/evm-opcodes/gas][8] for more info about the complex accounting applied to any given method invocation in reality)
 
+## OP Stack L1 Data Costs
+
+Optimism and Base networks L1 data costs are calculated using [the formulae specified in their docs][9]. If you've configured the reporter to fetch market data, the `baseFee` and `blobBaseFee` components of these equations are pulled from the live network. However, the scalar constants applied to these fees are hardcoded by default (because they're set by the operator & don't fluctuate in a demand auction).
+
+You can verify that the scalar values correctly reflect the current network by checking them at:
++ [Base GasPriceOracle][10]
++ [Optimism GasPriceOracle][11]
+
+You can override the plugin's defaults by setting the relevant options:
+```ts
+const config: HardhatUserConfig = {
+  gasReporter: {
+    opStackBaseFeeScalar: 1101,
+    opStackBlobBaseFeeScalar: 659851
+  }
+}
+```
+
+
 ## JSON Output
 
 The JSON output includes the full gas reporter option state (API keys are redacted) and all collected gas data for methods and deployments. The object has the following interface:
@@ -313,3 +334,6 @@ Example of a report produced with `reportFormat: "markdown"`:
 [4]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/src/types.ts
 [5]: https://github.com/cgewecke/hardhat-gas-reporter/issues/195
 [8]: https://github.com/wolflo/evm-opcodes/blob/main/gas.md#a0-0-intrinsic-gas
+[9]: https://docs.optimism.io/stack/transactions/fees#ecotone
+[10]: https://basescan.org/address/0x420000000000000000000000000000000000000F#readProxyContract
+[11]: https://optimistic.etherscan.io/address/0x4200000000000000000000000000000000000015#readProxyContract

@@ -128,6 +128,11 @@ export const L2 = {
     gasPriceOracle: "0x420000000000000000000000000000000000000F",
     token: "ETH"
   },
+  base: {
+    baseUrl: "https://api.basescan.org/api?module=proxy&",
+    gasPriceOracle: "0x420000000000000000000000000000000000000F",
+    token: "ETH"
+  },
   arbitrum: {
     baseUrl: "https://api.arbiscan.io/api?module=proxy&",
     token: "ETH"
