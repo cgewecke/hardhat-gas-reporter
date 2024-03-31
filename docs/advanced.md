@@ -211,7 +211,7 @@ Gas Calculation:
 
 ## OP Stack L1 Data Costs
 
-Optimism and Base networks L1 data costs are calculated using [these formulae from their docs][9]. If you've configured the reporter to fetch market data, the `baseFee` and `blobBaseFee` components of the cost equations are pulled from the live network. However, the scalar constants applied to these fees are hardcoded by default (because they're constants set by the network operator & don't fluctuate in a demand auction).
+Optimism and Base networks L1 data costs are calculated using [formulae from their docs][9]. If you've configured the reporter to fetch market data, the `baseFee` and `blobBaseFee` components of these cost equations are pulled from the live network. However, the scalar constant components are hardcoded in the plugin (because they're set by the network operator & don't fluctuate in a demand auction).
 
 You can verify that the scalar values correctly reflect the current network settings by checking them at:
 + [Base GasPriceOracle][10]
