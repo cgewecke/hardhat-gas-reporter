@@ -105,7 +105,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
 
   // blobBaseFee data: etherscan eth_call to OP Stack gas oracle on L2
   if (
-    options.L2 === "optimism" &&
+    (options.L2 === "optimism" || options.L2 === "base") &&
     options.optimismHardfork === "ecotone" &&
     !options.blobBaseFee
   ) {
@@ -115,7 +115,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
       options.blobBaseFee = Math.round(hexWeiToIntGwei(blobBaseFee.data.result))
     } catch (error) {
       options.blobBaseFee = DEFAULT_BLOB_BASE_FEE;
-      warnings.push(warnBlobBaseFeeRemoteCallFailed(error, blobBaseFeeUrl));
+      warnings.push(warnBlobBaseFeeRemoteCallFailed(error));
     }
   }
 

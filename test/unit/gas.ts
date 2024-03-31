@@ -6,6 +6,13 @@ import {
   gasToCost
 } from "../../src/utils/gas";
 import { GasReporterOptions } from "../types";
+import {
+  BASE_ECOTONE_BASE_FEE_SCALAR,
+  BASE_ECOTONE_BLOB_BASE_FEE_SCALAR,
+  OPTIMISM_ECOTONE_BASE_FEE_SCALAR,
+  OPTIMISM_ECOTONE_BLOB_BASE_FEE_SCALAR
+} from "../../src/constants";
+import { cases as baseCases } from "./cases/base";
 import { cases as optimismCases } from "./cases/optimism";
 import { cases as evmCases } from "./cases/evm";
 
@@ -55,6 +62,8 @@ describe("Optimism: getCalldataCostForNetwork", function () {
     L2: "optimism",
     tokenPrice: "1",
     currencyDisplayPrecision: 8,
+    opStackBaseFeeScalar: OPTIMISM_ECOTONE_BASE_FEE_SCALAR,
+    opStackBlobBaseFeeScalar: OPTIMISM_ECOTONE_BLOB_BASE_FEE_SCALAR
   }
 
   it("calculates gas cost for small function call tx (bedrock", function () {
@@ -141,5 +150,30 @@ describe("Optimism: getCalldataCostForNetwork", function () {
 
     // actual 0.0008
     assert(diff < .015);
+  });
+});
+
+describe("Base: getCalldataCostForNetwork", function () {
+  const options: GasReporterOptions = {
+    L2: "base",
+    tokenPrice: "1",
+    currencyDisplayPrecision: 8,
+    optimismHardfork: "ecotone",
+    opStackBaseFeeScalar: BASE_ECOTONE_BASE_FEE_SCALAR,
+    opStackBlobBaseFeeScalar: BASE_ECOTONE_BLOB_BASE_FEE_SCALAR
+  }
+
+  it("calculates gas cost for function call tx (ecotone)", function () {
+    const fn = baseCases.ecotoneFunction_1;
+    options.gasPrice = fn.l2GasPrice;
+    options.baseFee = fn.l1BaseFee;
+    options.blobBaseFee = fn.l1BlobBaseFee;
+
+    const gas = getCalldataGasForNetwork(options, fn.tx);
+    const cost = gasToCost(fn.l2GasUsed, gas, options);
+    const diff = getPercentDiff(parseFloat(cost), fn.txFeeETH);
+
+    // Actual ~ 0.0005
+    assert(diff < .01);
   });
 });

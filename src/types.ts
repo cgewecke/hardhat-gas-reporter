@@ -77,7 +77,7 @@ export interface GasReporterOptions {
 
   // TODO: Enable arbitrum when support added
   /** @property L2 Network to calculate execution costs for */
-  L2?: "optimism" // | "arbitrum"
+  L2?: "optimism" | "base" // | "arbitrum"
 
   /** @property Etherscan API key for L1 networks */
   L1Etherscan?: string;
@@ -93,6 +93,12 @@ export interface GasReporterOptions {
 
   /** @property Optimism client version to emulate gas costs for. Only applied when L2 is "optimism" */
   optimismHardfork?: OptimismHardfork,
+
+  /** @property Scalar applied to L1 base fee (see Optimism gas fee documentation for details) */
+  opStackBaseFeeScalar?: number;
+
+  /** @property Scalar applied to L1 blob base fee (see Optimism gas fee documentation for details) */
+  opStackBlobBaseFeeScalar?: number;
 
   /** @property Relative path to a file to output terminal table to (instead of stdout) */
   outputFile?: string;

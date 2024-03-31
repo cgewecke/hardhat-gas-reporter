@@ -273,6 +273,7 @@ export function generateTerminalTextTable(
   // NETWORK CONFIG
   // ==============
   let networkConfig: HorizontalTableRow = [];
+  const opStackConfig: HorizontalTableRow = [];
 
   if (options.tokenPrice && options.gasPrice) {
     const {
@@ -313,6 +314,25 @@ export function generateTerminalTextTable(
         colSpan: 2,
         content: chalk.magenta(`${rate} ${currency}/${token}`)
     });
+
+    if (options.L2 === "optimism" || options.L2 === "base") {
+      opStackConfig.push({ colSpan: 2, content: " " })
+      opStackConfig.push({
+        hAlign: "left",
+        colSpan: 2,
+        content: chalk.cyan(`L1: ${options.blobBaseFee!} gwei (blobBaseFee)`)
+      });
+      opStackConfig.push({
+        hAlign: "left",
+        colSpan: 2,
+        content: chalk.cyan(`Base Fee Scalar: ${options.opStackBaseFeeScalar!}`)
+      });
+      opStackConfig.push({
+        hAlign: "left",
+        colSpan: 2,
+        content: chalk.cyan(`Blob Fee Scalar: ${options.opStackBlobBaseFeeScalar!}`)
+      });
+    }
   } else {
     networkConfig = [
       { hAlign: "left", colSpan: numberOfCols, content: chalk.green.bold("Methods") }
@@ -362,6 +382,11 @@ export function generateTerminalTextTable(
   table.push(title);
   table.push(solcConfig);
   table.push(networkConfig);
+
+  if (opStackConfig.length > 0) {
+    table.push(opStackConfig);
+  }
+
   table.push(methodsHeader);
 
   methodRows.sort((a, b) => {

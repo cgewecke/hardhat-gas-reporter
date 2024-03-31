@@ -113,6 +113,8 @@ const config: HardhatUserConfig = {
 | blobBaseFeeApi                  |  _string_  |      -     | URL to fetch live *execution* network blob base fee from. (By default, this is auto-configured based on the `L1` or `L2` setting)                                                                               |
 | gasPriceApi                     |  _string_  |      -     | URL to fetch live *execution* network gas price from. (By default, this is auto-configured based on the `L1` or `L2` setting)                                                                                   |
 | getBlockApi                     |  _string_  |      -     | URL to fetch L1 block header from when simulating L2. (By default, this is auto-configured based on the `L2` setting)                                                                                           |
+| opStackBaseFeeScalar            |  _number_  |      -     | Scalar applied to L1 base fee when calculating L1 data cost (see [Advanced Usage][12])                                                                                                                          |
+| opStackBlobBaseFeeScalar        |  _number_  |      -     | Scalar applied to L1 blob base fee when calculating L1 data cost (see [Advanced Usage][12])                                                                                                                     |
 | token                           |  _string_  |      -     | Network token gas fees are denominated in (ex:"ETH"). (By default, this is auto-configured based on the `L1` or `L2` setting)                                                                                   |
 | tokenPrice                      |  _string_  |      -     | Network token price per nation state currency unit. (To denominate costs *in network token* set this to `"1"`)                                                                                                  |
 
@@ -132,11 +134,12 @@ npx hardhat hhgas:merge "gasReporterOutput-*.json"
 
 ## Supported Networks
 
-API keys for the networks this plugin auto-configures via the `L1` and `L2` options are available from the links below. These aren't strictly required - you only need to set them if you start seeing rate-limit warnings.
+API keys for the networks this plugin auto-configures via the `L1` and `L2` options are available from the links below. In many cases these aren't equired - you'll only need to set them if you start seeing rate-limit warnings.
 
 **L2**
 
-+ [optimism][109]
++ [base][110] (live `blobBaseFee` prices require an API key)
++ [optimism][109] (live `blobBaseFee` prices require an API key)
 
 **L1**
 
@@ -165,6 +168,7 @@ You can support hardhat-gas-reporter via [DRIPS][11], a public goods protocol th
 [9]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#json-output
 [10]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#markdown-format-example
 [11]: https://www.drips.network/app/projects/github/cgewecke/hardhat-gas-reporter
+[12]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/docs/advanced.md#op-stack-l1-data-costs
 [100]: https://optimistic.etherscan.io
 [101]: https://docs.etherscan.io/getting-started/viewing-api-usage-statistics
 [102]: https://docs.polygonscan.com/getting-started/viewing-api-usage-statistics
@@ -175,3 +179,4 @@ You can support hardhat-gas-reporter via [DRIPS][11], a public goods protocol th
 [107]: https://docs.gnosisscan.io/getting-started/viewing-api-usage-statistics
 [108]: https://snowtrace.io/
 [109]: https://docs.optimism.etherscan.io/getting-started/viewing-api-usage-statistics
+[110]: https://docs.basescan.org/getting-started/viewing-api-usage-statistics

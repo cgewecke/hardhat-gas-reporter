@@ -89,10 +89,11 @@ export function warnBaseFeeRemoteCallFailed(err: any, url: string): string {
   }${remoteCallEndMessage(err)}`;
 }
 
-export function warnBlobBaseFeeRemoteCallFailed(err: any, url: string): string {
+export function warnBlobBaseFeeRemoteCallFailed(err: any): string {
   return `${
   startWarning                                                                          }${EOL
-  }${chalk.bold(`Failed to get blob base fee from ${url}`)                           }${EOL
+  }${chalk.bold(`Failed to fetch blob base fee, defaulting to 10 gwei.`)                }${EOL
+  }${chalk.bold(`Try setting an API key for the "L2Etherscan" option.`)          }${EOL
   }${remoteCallEndMessage(err)}`;
 }
 
@@ -201,9 +202,9 @@ export function getCommonTableVals(options: GasReporterOptions) {
   const usingL1 = options.L2 === undefined;
 
   let token = "";
-  let l1gwei: string | number = (usingL1) ? options.gasPrice!: options.blobBaseFee!;
+  let l1gwei: string | number = (usingL1) ? options.gasPrice!: options.baseFee!;
   let l2gwei: string | number = (usingL1) ? "" : options.gasPrice!;
-  const l1gweiNote: string = (usingL1) ? "" : "(blobBaseFee)";
+  const l1gweiNote: string = (usingL1) ? "" : "(baseFee)";
   const l2gweiNote: string = (usingL1) ? "" : "(gasPrice)";
   const network = (usingL1) ? options.L1!.toUpperCase() : options.L2!.toUpperCase();
 

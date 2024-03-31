@@ -5,7 +5,9 @@
   * [Proxy Resolvers](#proxy-resolvers)
   * [Remote Contracts](#remote-contracts)
   * [Intrinsic Gas](#intrinsic-gas)
+  * [OP Stack L1 Data Costs](#op-stack-l1-data-costs)
   * [JSON output](#json-output)
+  * [Markdown Format Example](#markdown-format-example)
 
 ## Config Examples
 
@@ -31,6 +33,7 @@ const config: HardhatUserConfig = {
 const config: HardhatUserConfig = {
   gasReporter: {
     L2: "optimism",
+    L2Etherscan: "ABC...",
     currency: "EUR",
     coinmarketcap: "abc...",
   }
@@ -95,15 +98,16 @@ const config: HardhatUserConfig = {
 }
 ```
 
-### Offline and L2
+### L2, offline, cost in network token
 ```ts
 const config: HardhatUserConfig = {
   gasReporter: {
     offline: true,
     L2: "optimism",
-    gasPrice: .00325,     // gwei on L2
-    baseFee: 35,           // gwei on L1
-    tokenPrice: "4000.00", // USD per ETH
+    gasPrice: .00325,      // gwei (L2)
+    baseFee: 35,           // gwei (L1)
+    blobBaseFee: 20,       // gwei (L1)
+    tokenPrice: "1",       // ETH per ETH
     token: "ETH"
   }
 }
@@ -204,6 +208,25 @@ Gas Calculation:
 - `gas_cost += 16 * bytes_nonzero`: gas added to base cost for every nonzero byte of memory data
 
 :warning: The execution costs minus intrinsic gas overhead reported by the plugin are **only lower bounds** of what the actual cost will be. (Read [wolfio/evm-opcodes/gas][8] for more info about the complex accounting applied to any given method invocation in reality)
+
+## OP Stack L1 Data Costs
+
+Optimism and Base networks L1 data costs are calculated using [formulae from their docs][9]. If you've configured the reporter to fetch market data, the `baseFee` and `blobBaseFee` components of these cost equations are pulled from the live network. However, the scalar constant components are hardcoded in the plugin (because they're set by the network operator & don't fluctuate in a demand auction).
+
+You can verify that the scalar values correctly reflect the current network settings by checking them at:
++ [Base GasPriceOracle][10]
++ [Optimism GasPriceOracle][11]
+
+You can override the plugin's defaults by configuring the relevant options:
+```ts
+const config: HardhatUserConfig = {
+  gasReporter: {
+    opStackBaseFeeScalar: 1101,
+    opStackBlobBaseFeeScalar: 659851
+  }
+}
+```
+
 
 ## JSON Output
 
@@ -313,3 +336,6 @@ Example of a report produced with `reportFormat: "markdown"`:
 [4]: https://github.com/cgewecke/hardhat-gas-reporter/blob/master/src/types.ts
 [5]: https://github.com/cgewecke/hardhat-gas-reporter/issues/195
 [8]: https://github.com/wolflo/evm-opcodes/blob/main/gas.md#a0-0-intrinsic-gas
+[9]: https://docs.optimism.io/stack/transactions/fees#ecotone
+[10]: https://basescan.org/address/0x420000000000000000000000000000000000000F#readProxyContract
+[11]: https://optimistic.etherscan.io/address/0x4200000000000000000000000000000000000015#readProxyContract

@@ -31,15 +31,18 @@ export const OPTIMISM_BEDROCK_FIXED_OVERHEAD = 188;
 export const OPTIMISM_BEDROCK_DYNAMIC_OVERHEAD = 0.684;
 
 // These params are configured by node operators and may vary
-// Values are suggested default values from:
-// https://docs.optimism.io/builders/chain-operators/management/blobs
+// Values were read from the GasPriceOracle contract at:
+// https://optimistic.etherscan.io/address/0x420000000000000000000000000000000000000F
 export const OPTIMISM_ECOTONE_BASE_FEE_SCALAR = 1368
 export const OPTIMISM_ECOTONE_BLOB_BASE_FEE_SCALAR = 810949
+
+// https://basescan.org/address/0x420000000000000000000000000000000000000F
+export const BASE_ECOTONE_BASE_FEE_SCALAR = 1101;
+export const BASE_ECOTONE_BLOB_BASE_FEE_SCALAR = 659851;
 
 export const UNICODE_CIRCLE = "◯";
 export const UNICODE_TRIANGLE = "△"
 
-export const OPTIMISM_GAS_ORACLE_ADDRESS = "0xb528d11cc114e026f138fe568744c6d45ce6da7a";
 export const OPTIMISM_GAS_ORACLE_ABI_PARTIAL = [
 {
   constant: true,
