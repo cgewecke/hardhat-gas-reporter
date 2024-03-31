@@ -89,10 +89,11 @@ export function warnBaseFeeRemoteCallFailed(err: any, url: string): string {
   }${remoteCallEndMessage(err)}`;
 }
 
-export function warnBlobBaseFeeRemoteCallFailed(err: any, url: string): string {
+export function warnBlobBaseFeeRemoteCallFailed(err: any): string {
   return `${
   startWarning                                                                          }${EOL
-  }${chalk.bold(`Failed to get blob base fee from ${url}`)                           }${EOL
+  }${chalk.bold(`Failed to fetch blob base fee, defaulting to 10 gwei.`)                }${EOL
+  }${chalk.bold(`Try setting an API key for the "L2Etherscan" option.`)          }${EOL
   }${remoteCallEndMessage(err)}`;
 }
 

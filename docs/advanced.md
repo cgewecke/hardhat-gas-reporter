@@ -33,6 +33,7 @@ const config: HardhatUserConfig = {
 const config: HardhatUserConfig = {
   gasReporter: {
     L2: "optimism",
+    L2Etherscan: "ABC...",
     currency: "EUR",
     coinmarketcap: "abc...",
   }
@@ -97,15 +98,16 @@ const config: HardhatUserConfig = {
 }
 ```
 
-### Offline and L2
+### L2, offline, cost in network token
 ```ts
 const config: HardhatUserConfig = {
   gasReporter: {
     offline: true,
     L2: "optimism",
-    gasPrice: .00325,     // gwei on L2
-    baseFee: 35,           // gwei on L1
-    tokenPrice: "4000.00", // USD per ETH
+    gasPrice: .00325,      // gwei (L2)
+    baseFee: 35,           // gwei (L1)
+    blobBaseFee: 20,       // gwei (L1)
+    tokenPrice: "1",       // ETH per ETH
     token: "ETH"
   }
 }
@@ -209,13 +211,13 @@ Gas Calculation:
 
 ## OP Stack L1 Data Costs
 
-Optimism and Base networks L1 data costs are calculated using [the formulae specified in their docs][9]. If you've configured the reporter to fetch market data, the `baseFee` and `blobBaseFee` components of these equations are pulled from the live network. However, the scalar constants applied to these fees are hardcoded by default (because they're set by the operator & don't fluctuate in a demand auction).
+Optimism and Base networks L1 data costs are calculated using [these formulae from their docs][9]. If you've configured the reporter to fetch market data, the `baseFee` and `blobBaseFee` components of the cost equations are pulled from the live network. However, the scalar constants applied to these fees are hardcoded by default (because they're constants set by the network operator & don't fluctuate in a demand auction).
 
-You can verify that the scalar values correctly reflect the current network by checking them at:
+You can verify that the scalar values correctly reflect the current network settings by checking them at:
 + [Base GasPriceOracle][10]
 + [Optimism GasPriceOracle][11]
 
-You can override the plugin's defaults by setting the relevant options:
+You can override the plugin's defaults by configuring the relevant options:
 ```ts
 const config: HardhatUserConfig = {
   gasReporter: {

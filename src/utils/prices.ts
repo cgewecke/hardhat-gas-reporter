@@ -115,7 +115,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
       options.blobBaseFee = Math.round(hexWeiToIntGwei(blobBaseFee.data.result))
     } catch (error) {
       options.blobBaseFee = DEFAULT_BLOB_BASE_FEE;
-      warnings.push(warnBlobBaseFeeRemoteCallFailed(error, blobBaseFeeUrl));
+      warnings.push(warnBlobBaseFeeRemoteCallFailed(error));
     }
   }
 

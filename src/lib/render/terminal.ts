@@ -273,7 +273,7 @@ export function generateTerminalTextTable(
   // NETWORK CONFIG
   // ==============
   let networkConfig: HorizontalTableRow = [];
-  let opStackConfig: HorizontalTableRow = [];
+  const opStackConfig: HorizontalTableRow = [];
 
   if (options.tokenPrice && options.gasPrice) {
     const {
@@ -320,17 +320,17 @@ export function generateTerminalTextTable(
       opStackConfig.push({
         hAlign: "left",
         colSpan: 2,
-        content: chalk.cyan(`L1: ${options.blobBaseFee} gwei (blobBaseFee)`)
+        content: chalk.cyan(`L1: ${options.blobBaseFee!} gwei (blobBaseFee)`)
       });
       opStackConfig.push({
         hAlign: "left",
         colSpan: 2,
-        content: chalk.cyan(`Base Fee Scalar: ${options.opStackBaseFeeScalar}`)
+        content: chalk.cyan(`Base Fee Scalar: ${options.opStackBaseFeeScalar!}`)
       });
       opStackConfig.push({
         hAlign: "left",
         colSpan: 2,
-        content: chalk.cyan(`Blob Fee Scalar: ${options.opStackBlobBaseFeeScalar}`)
+        content: chalk.cyan(`Blob Fee Scalar: ${options.opStackBlobBaseFeeScalar!}`)
       });
     }
   } else {
