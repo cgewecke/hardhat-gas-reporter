@@ -129,8 +129,11 @@ export class Collector {
         ? 0
         : getCalldataGasForNetwork(this.options, tx as JsonRpcTx);
 
+      const intrinsicGas = getIntrinsicGas(tx.input);
+
       this.data.methods[id].gasData.push(executionGas);
       this.data.methods[id].callData.push(calldataGas);
+      this.data.methods[id].intrinsicGas.push(intrinsicGas);
       this.data.methods[id].numberOfCalls += 1;
       this.data.methods[id].isCall = this.data.methods[id].isCall || !this.options.includeIntrinsicGas;
     } else {

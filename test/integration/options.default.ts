@@ -108,12 +108,15 @@ describe("Default Options", function () {
     const dataItem = findMethod(methods, "VariableCosts", "addToMap");
     assert.equal(dataItem?.numberOfCalls, 4);
     assert.equal(dataItem?.gasData.length, 4);
+    assert.equal(dataItem?.intrinsicGas.length, 4);
     assert.exists(dataItem?.min);
     assert.exists(dataItem?.max);
     assert.exists(dataItem?.executionGasAverage);
     assert(dataItem!.min! < dataItem!.max!);
     assert(dataItem!.min! < dataItem!.executionGasAverage!);
-    assert(dataItem!.executionGasAverage! < dataItem!.max!)
+    assert(dataItem!.executionGasAverage! < dataItem!.max!);
+    assert(dataItem?.intrinsicGas[0]! > 21_000);
+    assert(dataItem?.gasData[0]! > dataItem?.intrinsicGas[0]!);
   });
 
   it("should collect deployment data for contracts with names that shadow each other", function(){

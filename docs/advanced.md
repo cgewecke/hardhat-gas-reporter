@@ -255,8 +255,9 @@ interface MethodDataItem {
   contract: string,  // Contract name
   method: string,    // Method name
   fnSig: string,     // Full method call signature
-  callData: number[],
-  gasData: number[],
+  callData: number[],           // L1 gas used for calldata when emulating L2
+  gasData: number[],            // L1 or L2 evm "execution" gas
+  intrinsicGas: number[],       // Intrinsic gas associated with each gasData entry
   numberOfCalls: number,
   min?: number,
   max?: number,

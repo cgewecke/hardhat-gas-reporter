@@ -96,6 +96,7 @@ export class GasData {
             contract: contract.name,
             method: methodIDs[key].name,
             fnSig: methodIDs[key].fnSig,
+            intrinsicGas: [],
             callData: [],
             gasData: [],
             numberOfCalls: 0

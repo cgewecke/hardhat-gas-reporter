@@ -205,6 +205,7 @@ export interface MethodDataItem {
   fnSig: string,
   callData: number[],
   gasData: number[],
+  intrinsicGas: number[],
   numberOfCalls: number,
   min?: number,
   max?: number,
