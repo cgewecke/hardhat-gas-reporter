@@ -1,8 +1,11 @@
 import { serializeTransaction, Hex } from 'viem';
+import { compress } from 'brotli-wasm';
 import {
   EVM_BASE_TX_COST,
   OPTIMISM_BEDROCK_DYNAMIC_OVERHEAD,
-  OPTIMISM_BEDROCK_FIXED_OVERHEAD
+  OPTIMISM_BEDROCK_FIXED_OVERHEAD,
+  RANDOM_R_COMPONENT,
+  RANDOM_S_COMPONENT
 } from "../constants";
 
 import { GasReporterOptions, JsonRpcTx } from "../types";
@@ -32,10 +35,7 @@ Source: https://docs.optimism.io/stack/transactions/fees#formula
  * @returns
  */
 export function getOptimismBedrockL1Gas(tx: JsonRpcTx): number {
-  // TODO: Am getting a small underestimate here compared to Etherscan, plus
-  // its weird to split up the overhead calc into different functions? (Just doing this
-  // so the numbers look right compared to scan but seems wrong)
-  const txDataGas = getSerializedTxDataGas(tx);
+  const txDataGas = getOPStackDataGas(tx);
   return txDataGas + OPTIMISM_BEDROCK_FIXED_OVERHEAD;
 }
 
@@ -50,47 +50,31 @@ export function getOptimismBedrockL1Cost(txDataGas: number, baseFee: number): nu
 }
 
 /*
-* ==========================
-* OPTIMISM ECOTONE
-* ==========================
-*
-* The Ecotone L1 Data Fee calculation begins with counting the number of zero bytes and non-zero bytes
-* in the transaction data. Each zero byte costs 4 gas and each non-zero byte costs 16 gas. This value,
-* when divided by 16, can be thought of as a rough estimate of the size of the transaction data after
-* compression.
-*
-* ```
-* tx_compressed_size = [(count_zero_bytes(tx_data)*4 + count_non_zero_bytes(tx_data)*16)] / 16
-* ``
-* Next, the two scalars are applied to the base fee and blob base fee parameters to compute a weighted
-* gas price multiplier.
-*
-* ```
-* weighted_gas_price = 16*base_fee_scalar*base_fee + blob_base_fee_scalar*blob_base_fee
-* ```
-
-* The l1 data fee is then:
-*
-* ```
-* l1_data_fee = tx_compressed_size * weighted_gas_price
-* ```
-*/
-
-/**
- * Gets transaction calldata gas usage (an input into the cost function below)
- * @param tx    JSONRPC formatted getTransaction response
- * @returns
- */
-export function getOptimismEcotoneL1Gas(tx: JsonRpcTx) {
-  return getSerializedTxDataGas(tx);
-}
-
-/**
- * Gets the native token denominated cost of registering tx calldata to L1
- * @param txCompressed
- * @param baseFee
- * @param blobBaseFee
- * @returns
+ * ==========================
+ * OPTIMISM ECOTONE
+ * ==========================
+ *
+ * The Ecotone L1 Data Fee calculation begins with counting the number of zero bytes and non-zero bytes
+ * in the transaction data. Each zero byte costs 4 gas and each non-zero byte costs 16 gas. This value,
+ * when divided by 16, can be thought of as a rough estimate of the size of the transaction data after
+ * compression.
+ *
+ * ```
+ * tx_compressed_size = [(count_zero_bytes(tx_data)*4 + count_non_zero_bytes(tx_data)*16)] / 16
+ * ``
+ * Next, the two scalars are applied to the base fee and blob base fee parameters to compute a weighted
+ * gas price multiplier.
+ *
+ * ```
+ * weighted_gas_price = 16*base_fee_scalar*base_fee + blob_base_fee_scalar*blob_base_fee
+ * ```
+ *
+ * The l1 data fee is then:
+ *
+ * ```
+ * l1_data_fee = tx_compressed_size * weighted_gas_price
+ * ```
+ *
  *
  * Source: https://github.com/ethereum-optimism/optimism/blob/e57787ea7d0b9782cea5f32bcb92d0fdeb7bd870/ +
  *         packages/contracts-bedrock/src/L2/GasPriceOracle.sol#L88-L92
@@ -105,6 +89,17 @@ export function getOptimismEcotoneL1Gas(tx: JsonRpcTx) {
  *       return fee / (16 * 10 ** DECIMALS);
  *   }
  */
+
+/**
+ * Gets the native token denominated cost of registering tx calldata to L1
+ * @param txSerialized
+ * @param txCompressed
+ * @param baseFee
+ * @param blobBaseFee
+ * @param opStackBaseFeeScalar
+ * @param opStackBlobBaseFeeScalar
+ * @returns
+ */
 export function getOPStackEcotoneL1Cost(
   txSerialized: number,
   baseFee: number,
@@ -115,37 +110,6 @@ export function getOPStackEcotoneL1Cost(
   const weightedBaseFee = 16 * opStackBaseFeeScalar * baseFee;
   const weightedBlobBaseFee = opStackBlobBaseFeeScalar * blobBaseFee;
   return (txSerialized * (weightedBaseFee + weightedBlobBaseFee)) / 16000000;
-}
-
-// ==========================
-// ARBITRUM OS11
-// ==========================
-
-// STUB
-// eslint-disable-next-line
-export function getArbitrum_OS11_L1Gas(tx: JsonRpcTx) {
-  return 0;
-}
-
-// eslint-disable-next-line
-export function getArbitrum_OS20_L1Gas(tx: JsonRpcTx) {
-  return 0;
-}
-
-// ==========================
-// ARBITRUM OS20
-// ==========================
-
-// STUB
-// eslint-disable-next-line
-export function getArbitrum_OS11_L1Cost(gas: number) {
-  return 0;
-}
-
-// STUB
-// eslint-disable-next-line
-export function getArbitrum_OS20_L1Cost(gas: number) {
-  return 0;
 }
 
 /**
@@ -169,7 +133,38 @@ export function getArbitrum_OS20_L1Cost(gas: number) {
  *
  * SOURCE: optimism/packages/contracts/contracts/L2/predeploys/OVM_GasPriceOracle.sol
  */
-export function getSerializedTxDataGas(tx: JsonRpcTx): number {
+export function getOPStackDataGas(tx: JsonRpcTx): number {
+  const serializedTx = getSerializedTx (tx);
+  const total = getCalldataBytesGas(serializedTx);
+  return total + (68 * 16);
+}
+
+// ==========================
+// ARBITRUM OS20
+// ==========================
+export function getArbitrumL1Bytes(tx: JsonRpcTx) {
+  const serializedTx = getSerializedTx(tx, true);
+  const compressedTx = compress(Buffer.from(serializedTx), {quality: 2});
+  const compressedLength = Buffer.from(compressedTx).toString('utf8').length;
+  return compressedLength + 140;
+}
+
+export function getArbitrumL1Cost(bytes: number, gasPrice: number, baseFeePerByte: number) {
+  // Debit 10% estimate buffer
+  const adjustedBaseFeePerByte = Math.round(baseFeePerByte - (baseFeePerByte/10))
+  const l1Gas = adjustedBaseFeePerByte * 1e9 * bytes;
+  const l1Cost = l1Gas / (gasPrice * 1e9)
+  return l1Cost;
+}
+
+/**
+ * Serializes transaction
+ * @param tx
+ * @returns
+ */
+export function getSerializedTx(tx: JsonRpcTx, emulateSignatureComponents = false): string {
+  let signature;
+
   const type = normalizeTxType(tx.type);
 
   const maxFeePerGas = (tx.maxFeePerGas)
@@ -180,7 +175,16 @@ export function getSerializedTxDataGas(tx: JsonRpcTx): number {
       ? hexToBigInt(tx.maxPriorityFeePerGas)
       : BigInt(0);
 
-  const serializedTx = serializeTransaction ({
+  // For arbitrum - part of their estimation flow at nitro
+  if (emulateSignatureComponents) {
+    signature = {
+      v: BigInt(0),
+      r: RANDOM_R_COMPONENT as `0x${string}`,
+      s: RANDOM_S_COMPONENT as `0x${string}`
+    }
+  }
+
+  return serializeTransaction ({
     to: tx.to as Hex,
     maxFeePerGas,
     maxPriorityFeePerGas,
@@ -190,10 +194,7 @@ export function getSerializedTxDataGas(tx: JsonRpcTx): number {
     type,
     accessList: tx.accessList,
     nonce: parseInt(tx.nonce)
-  })
-
-  const total = getCalldataBytesGas(serializedTx);
-  return total + (68 * 16);
+  }, signature)
 }
 
 /**
@@ -248,17 +249,13 @@ export function getCalldataGasForNetwork(
   if (options.L2 === "optimism" || options.L2 === "base") {
     switch (options.optimismHardfork){
       case "bedrock": return getOptimismBedrockL1Gas(tx);
-      case "ecotone": return getOptimismEcotoneL1Gas(tx);
+      case "ecotone": return getOPStackDataGas(tx);
       default: return 0; /** This shouldn't happen */
     }
   }
 
   if (options.L2 === "arbitrum") {
-    switch (options.arbitrumHardfork){
-      case "arbOS11": return getArbitrum_OS11_L1Gas(tx);
-      case "arbOS20": return getArbitrum_OS20_L1Gas(tx);
-      default: return 0; /** This shouldn't happen */
-    }
+    return getArbitrumL1Bytes(tx);
   }
 
   // If not configured for L2
@@ -281,8 +278,8 @@ export function getCalldataCostForNetwork(
     switch (options.optimismHardfork){
       case "bedrock": return getOptimismBedrockL1Cost(gas, options.baseFee!);
       case "ecotone": return getOPStackEcotoneL1Cost(
-        gas, 
-        options.baseFee!, 
+        gas,
+        options.baseFee!,
         options.blobBaseFee!,
         options.opStackBaseFeeScalar!,
         options.opStackBlobBaseFeeScalar!
@@ -292,11 +289,7 @@ export function getCalldataCostForNetwork(
   }
 
   if (options.L2 === "arbitrum") {
-    switch (options.arbitrumHardfork){
-      case "arbOS11": return getArbitrum_OS11_L1Cost(gas);
-      case "arbOS20": return getArbitrum_OS20_L1Cost(gas);
-      default: return 0; /** This shouldn't happen */
-    }
+    return getArbitrumL1Cost(gas, options.gasPrice!, options.baseFeePerByte!);
   }
 
   // If not configured for L2
@@ -319,9 +312,13 @@ export function gasToCost(
 
   if (options.L2) {
     const cost = getCalldataCostForNetwork(options, calldataGas);
-    calldataCost =  (cost / 1e9) * parseFloat(options.tokenPrice!);
+    if (options.L2 === "optimism" || options.L2 === "base") {
+      calldataCost =  (cost / 1e9) * parseFloat(options.tokenPrice!);
+    }
+    if (options.L2 === "arbitrum") {
+      executionGas += cost;
+    }
   }
-
   const executionCost = (options.gasPrice! / 1e9) * executionGas * parseFloat(options.tokenPrice!);
   return (executionCost + calldataCost).toFixed(options.currencyDisplayPrecision);
 }
@@ -356,6 +353,15 @@ export function hexToBigInt(val: string): bigint {
 
 export function hexWeiToIntGwei(val: string): number {
   return hexToDecimal(val) / Math.pow(10, 9);
+}
+
+/**
+ * Converts wei `l1 fee estimate` to gwei estimated price per byte
+ * @param val
+ */
+export function getArbitrumBaseFeePerByte(val: number): number {
+  const gwei = (BigInt(16) * BigInt(val)) / BigInt(Math.pow(10, 9));
+  return parseInt(gwei.toString());
 }
 
 export function normalizeTxType(_type: string): ("legacy" | "eip1559" | "eip2930" | "eip4844") {

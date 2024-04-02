@@ -72,10 +72,24 @@ describe("setGasAndPriceRates", function(){
     assert.isUndefined(options.tokenPrice);
 
     await setGasAndPriceRates(options);
-
     assert.equal(options.gasPrice, initialGasPrice);
     assert.isDefined(options.tokenPrice);
     assert.typeOf(options.tokenPrice, "string");
+  });
+
+  it("when tokenPrice and gasPrice are set but baseFeePerByte is not set (arbitrum)", async function(){
+    options.tokenPrice = "1";
+    options.gasPrice = 1;
+    options.L2 = 'arbitrum';
+    options.coinmarketcap = process.env.CMC_API_KEY;
+    options.L2Etherscan = process.env.ARBITRUM_API_KEY;
+
+    assert.isUndefined(options.baseFeePerByte);
+
+    await setGasAndPriceRates(options);
+
+    assert.isDefined(options.baseFeePerByte);
+    assert.typeOf(options.baseFeePerByte, "number");
   });
 
   it("when tokenPrice and gasPrice are set but baseFee is not set", async function(){
