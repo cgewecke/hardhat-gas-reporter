@@ -9,6 +9,7 @@ import {
   warnGasPriceRemoteCallFailed,
   warnBaseFeeRemoteCallFailed,
   warnBlobBaseFeeRemoteCallFailed,
+  warnBaseFeePerByteRemoteCallFailed,
   warnUnsupportedChainConfig,
 } from "./ui";
 import { hexWeiToIntGwei, getArbitrumBaseFeePerByte } from "./gas";
@@ -104,8 +105,8 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
       const baseFeePerByte = getArbitrumBaseFeePerByte(decoded[2]);
       options.baseFeePerByte = (baseFeePerByte >= 1 ) ? Math.round(baseFeePerByte) : baseFeePerByte;
     } catch (error) {
-      options.baseFee = 0;
-      warnings.push(warnBaseFeeRemoteCallFailed(error, blockUrl));
+      options.baseFeePerByte = 20;
+      warnings.push(warnBaseFeePerByteRemoteCallFailed(error));
     }
   }
 

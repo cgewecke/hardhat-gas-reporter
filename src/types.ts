@@ -21,7 +21,7 @@ export interface GasReporterOptions {
 
   /** @property Arbitrum-specific gwei price per byte of L1 calldata. */
   /**
-   * This is the `l1BaseFeeEstimate` value returned by NodeInterface.gasEstimateL1Component(...)
+   * This is the `l1BaseFeeEstimate` value returned by NodeInterface.gasEstimateL1Component(...) multiplied by 16.
    * See: https://docs.arbitrum.io/build-decentralized-apps/how-to-estimate-gas#an-example-of-how-to-apply-this-formula-in-your-code
    */
   baseFeePerByte?: number;

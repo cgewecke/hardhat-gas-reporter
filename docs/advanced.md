@@ -227,7 +227,6 @@ const config: HardhatUserConfig = {
 }
 ```
 
-
 ## JSON Output
 
 The JSON output includes the full gas reporter option state (API keys are redacted) and all collected gas data for methods and deployments. The object has the following interface:
@@ -340,3 +339,4 @@ Example of a report produced with `reportFormat: "markdown"`:
 [9]: https://docs.optimism.io/stack/transactions/fees#ecotone
 [10]: https://basescan.org/address/0x420000000000000000000000000000000000000F#readProxyContract
 [11]: https://optimistic.etherscan.io/address/0x4200000000000000000000000000000000000015#readProxyContract
+[12]: https://docs.arbitrum.io/build-decentralized-apps/how-to-estimate-gas#breaking-down-the-formula
