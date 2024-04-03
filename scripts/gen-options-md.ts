@@ -272,7 +272,7 @@ advancedSubtitle,
   "-",
   "Gwei fee per byte used to calculate L1 calldata costs for Arbitrum transactions (Ex: `25`). " +
   "See [arbitrum gas estimation docs for details][112]. " +
-  "By default, this is fetched from live network when `L2` is set arbitrum & `coinmarketcap` options are defined"
+  "By default, this is fetched from live network when `L2` is set to 'arbitrum' & `coinmarketcap` options are defined"
 ],
 // blobBaseFee
 [
