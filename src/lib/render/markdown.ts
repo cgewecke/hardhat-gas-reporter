@@ -37,7 +37,7 @@ export function generateMarkdownTable(
 
   const addedContracts: string[] = [];
 
-  if (options.L2 == "optimism" || options.L2 === "base") {
+  if (options.L2 === "optimism" || options.L2 === "base") {
     gasAverageTitle = ["L2 Avg (Exec)", "L1 Avg (Data)"];
   }
 
