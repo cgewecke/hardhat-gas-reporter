@@ -37,8 +37,12 @@ export function generateMarkdownTable(
 
   const addedContracts: string[] = [];
 
-  if (options.L2 !== undefined) {
+  if (options.L2 === "optimism" || options.L2 === "base") {
     gasAverageTitle = ["L2 Avg (Exec)", "L1 Avg (Data)"];
+  }
+
+  if (options.L2 === "arbitrum") {
+    gasAverageTitle = ["L2 Avg (Exec)", "L1 Avg (Bytes)"];
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -61,11 +65,17 @@ export function generateMarkdownTable(
     } = getCommonTableVals(options));
 
     gasPrices = (options.L2)
-      ? [
-          [`L1 Base Fee`, `${options.baseFee!} gwei`],
-          [`L1 Blob Base Fee`, `${options.blobBaseFee!} gwei`],
-          [`L2 Gas Price`, `${l2gwei} gwei` ]
-        ]
+      ? (options.L2 === "arbitrum")
+          ? [
+              [`L1 Base Fee Per Byte`, `${options.baseFeePerByte!} gwei`],
+              [`L2 Gas Price`, `${l2gwei} gwei` ]
+            ]
+          : [
+              [`L1 Base Fee`, `${options.baseFee!} gwei`],
+              [`L1 Blob Base Fee`, `${options.blobBaseFee!} gwei`],
+              [`L2 Gas Price`, `${l2gwei} gwei` ]
+            ]
+
       : [[`L1 Gas Price`, `${l1gwei} gwei`]];
 
     tokenPrice = `${rate} ${currency}/${token}`

@@ -58,7 +58,14 @@ export function generateTerminalTextTable(
     deploymentsTitleSpacerWidth = 3;
     contractTitleSpacerWidth = 6;
     executionGasAverageTitle = "L2 Avg (Exec)";
-    calldataGasAverageTitle = "L1 Avg (Data)"
+
+    if (options.L2 === "optimism" || options.L2 === "base") {
+      calldataGasAverageTitle = "L1 Avg (Data)";
+    }
+
+    if (options.L2 === "arbitrum") {
+      calldataGasAverageTitle = "L1 Avg (Bytes)";
+    }
   }
 
   // eslint-disable-next-line

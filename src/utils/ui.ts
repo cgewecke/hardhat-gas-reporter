@@ -97,6 +97,14 @@ export function warnBlobBaseFeeRemoteCallFailed(err: any): string {
   }${remoteCallEndMessage(err)}`;
 }
 
+export function warnBaseFeePerByteRemoteCallFailed(err: any): string {
+  return `${
+  startWarning                                                                          }${EOL
+  }${chalk.bold(`Failed to fetch Arbitrum L1 base fee data, defaulting to 20 gwei.`)    }${EOL
+  }${chalk.bold(`Try setting an API key for the "L2Etherscan" option.`)                 }${EOL
+  }${remoteCallEndMessage(err)}`;
+}
+
 export function warnUnsupportedChainConfig(chain: string): string {
   return `${
     startWarning                                                                          }${EOL
@@ -201,10 +209,18 @@ export function reportMerge(files: string[], output: string) {
 export function getCommonTableVals(options: GasReporterOptions) {
   const usingL1 = options.L2 === undefined;
 
+  let l2BaseFeeNote = "(baseFee)";
+  let l1GweiForL2 = options.baseFee;
+
+  if (options.L2 === "arbitrum"){
+    l2BaseFeeNote = "(baseFeePerByte)"
+    l1GweiForL2 = options.baseFeePerByte;
+  }
+
   let token = "";
-  let l1gwei: string | number = (usingL1) ? options.gasPrice!: options.baseFee!;
+  let l1gwei: string | number = (usingL1) ? options.gasPrice!: l1GweiForL2!;
   let l2gwei: string | number = (usingL1) ? "" : options.gasPrice!;
-  const l1gweiNote: string = (usingL1) ? "" : "(baseFee)";
+  const l1gweiNote: string = (usingL1) ? "" : l2BaseFeeNote;
   const l2gweiNote: string = (usingL1) ? "" : "(gasPrice)";
   const network = (usingL1) ? options.L1!.toUpperCase() : options.L2!.toUpperCase();
 

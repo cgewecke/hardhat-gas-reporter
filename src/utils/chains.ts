@@ -2,7 +2,8 @@ import {
   DEFAULT_API_KEY_ARGS,
   DEFAULT_GAS_PRICE_API_ARGS,
   DEFAULT_GET_BLOCK_API_ARGS,
-  DEFAULT_BLOB_BASE_FEE_API_ARGS
+  DEFAULT_BLOB_BASE_FEE_API_ARGS,
+  DEFAULT_BASE_FEE_PER_BYTE_API_ARGS,
 } from "../constants"
 import { GasReporterOptions } from "../types"
 
@@ -66,7 +67,7 @@ export function getBlockUrlForChain(options: GasReporterOptions): string {
 }
 
 /**
- * Gets Etherscan eth_call api url to read OP Stack GasPriceOracle for blobBaseFee. 
+ * Gets Etherscan eth_call api url to read OP Stack GasPriceOracle for blobBaseFee.
  * Attaches L2 apikey if configured. (This fee fetched from L2 contract b/c its the only available place at
  * time of PR - eth_blobBaseFee hasn't been implemented in geth yet)
  * @param {GasReporterOptions} options
@@ -81,6 +82,23 @@ export function getBlobBaseFeeUrlForChain(options: GasReporterOptions): string {
     : "";
 
   return `${L2[options.L2!].baseUrl}${DEFAULT_BLOB_BASE_FEE_API_ARGS}${L2[options.L2!].gasPriceOracle}${apiKey}`;
+}
+
+/**
+ * Gets Etherscan eth_call api url to read OP Stack GasPriceOracle for blobBaseFee.
+ * Attaches L2 apikey if configured. (This fee fetched from L2 contract b/c its the only available place at
+ * time of PR - eth_blobBaseFee hasn't been implemented in geth yet)
+ * @param {GasReporterOptions} options
+ * @returns
+ */
+export function getBaseFeePerByteUrlForChain(options: GasReporterOptions): string {
+  if (options.L2 !== "arbitrum") return "";
+
+  const apiKey = (options.L2Etherscan)
+    ? `${DEFAULT_API_KEY_ARGS}${options.L2Etherscan}`
+    : "";
+
+  return `${L2[options.L2!].baseUrl}${DEFAULT_BASE_FEE_PER_BYTE_API_ARGS}${apiKey}`;
 }
 
 /**
@@ -135,6 +153,7 @@ export const L2 = {
   },
   arbitrum: {
     baseUrl: "https://api.arbiscan.io/api?module=proxy&",
+    gasPriceOracle: "",
     token: "ETH"
   }
 }

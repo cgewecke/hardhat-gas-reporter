@@ -1,16 +1,19 @@
 import axios from "axios";
 
+import { defaultAbiCoder } from "@ethersproject/abi";
 import { DEFAULT_COINMARKET_BASE_URL, DEFAULT_BLOB_BASE_FEE } from "../constants";
 import { GasReporterOptions } from "../types";
+
 import {
   warnCMCRemoteCallFailed,
   warnGasPriceRemoteCallFailed,
   warnBaseFeeRemoteCallFailed,
   warnBlobBaseFeeRemoteCallFailed,
+  warnBaseFeePerByteRemoteCallFailed,
   warnUnsupportedChainConfig,
 } from "./ui";
-import { hexWeiToIntGwei } from "./gas";
-import { getTokenForChain, getGasPriceUrlForChain, getBlockUrlForChain, getBlobBaseFeeUrlForChain } from "./chains";
+import { hexWeiToIntGwei, getArbitrumBaseFeePerByte } from "./gas";
+import { getTokenForChain, getGasPriceUrlForChain, getBlockUrlForChain, getBlobBaseFeeUrlForChain, getBaseFeePerByteUrlForChain } from "./chains";
 
 /**
  * Fetches gas, base, & blob fee rates from etherscan as well as current market value of
@@ -39,6 +42,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
   let blockUrl;
   let gasPriceUrl;
   let blobBaseFeeUrl;
+  let baseFeePerByteUrl;
   const warnings: string[] = [];
 
   try {
@@ -46,6 +50,7 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     gasPriceUrl = getGasPriceUrlForChain(options);
     blockUrl = getBlockUrlForChain(options);
     blobBaseFeeUrl = getBlobBaseFeeUrlForChain(options);
+    baseFeePerByteUrl = getBaseFeePerByteUrlForChain(options);
   } catch (err: any){
     if (options.L2)
       warnings.push(warnUnsupportedChainConfig(options.L2!));
@@ -91,8 +96,22 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     }
   }
 
+  // baseFeePerByte data: etherscan eth_call to NodeInterface
+  if ((options.L2 === "arbitrum") && !options.baseFeePerByte) {
+    try {
+      const response = await axiosInstance.get(baseFeePerByteUrl);
+      checkForEtherscanError(response.data.result);
+      const decoded = defaultAbiCoder.decode(['uint256', 'uint256', 'uint256'], response.data.result);
+      const baseFeePerByte = getArbitrumBaseFeePerByte(decoded[2]);
+      options.baseFeePerByte = (baseFeePerByte >= 1 ) ? Math.round(baseFeePerByte) : baseFeePerByte;
+    } catch (error) {
+      options.baseFeePerByte = 20;
+      warnings.push(warnBaseFeePerByteRemoteCallFailed(error));
+    }
+  }
+
   // baseFee data (Etherscan)
-  if (options.L2 && !options.baseFee) {
+  if ((options.L2 === "optimism" || options.L2 === "base") && !options.baseFee) {
     try {
       block = await axiosInstance.get(blockUrl);
       checkForEtherscanError(block.data.result);

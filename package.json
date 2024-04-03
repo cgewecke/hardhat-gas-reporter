@@ -80,6 +80,7 @@
     "@ethersproject/units": "^5.7.0",
     "@solidity-parser/parser": "^0.18.0",
     "axios": "^1.6.7",
+    "brotli-wasm": "^2.0.1",
     "chalk": "4.1.2",
     "cli-table3": "^0.6.3",
     "ethereum-cryptography": "^2.1.3",

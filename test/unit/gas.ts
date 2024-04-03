@@ -12,6 +12,7 @@ import {
   OPTIMISM_ECOTONE_BASE_FEE_SCALAR,
   OPTIMISM_ECOTONE_BLOB_BASE_FEE_SCALAR
 } from "../../src/constants";
+import { cases as arbitrumCases } from "./cases/arbitrum";
 import { cases as baseCases } from "./cases/base";
 import { cases as optimismCases } from "./cases/optimism";
 import { cases as evmCases } from "./cases/evm";
@@ -175,5 +176,52 @@ describe("Base: getCalldataCostForNetwork", function () {
 
     // Actual ~ 0.0005
     assert(diff < .01);
+  });
+});
+
+describe("Arbitrum: getCalldataCostForNetwork", function () {
+  const options: GasReporterOptions = {
+    L2: "arbitrum",
+    tokenPrice: "1",
+    currencyDisplayPrecision: 8,
+  }
+
+  it("calculates gas cost for function call tx", function () {
+    const fn = arbitrumCases.arbOSFunction_1;
+    options.gasPrice = fn.l2GasPrice;
+    options.baseFeePerByte = fn.l1BaseFeePerByte;
+
+    const gas = getCalldataGasForNetwork(options, fn.tx);
+    const cost = gasToCost(fn.l2GasUsed, gas, options);
+    const diff = getPercentDiff(parseFloat(cost), fn.txFeeETH);
+
+    // Actual ~ 0.07
+    assert(diff < .1);
+  });
+
+  it("calculates gas cost for function call tx", function () {
+    const fn = arbitrumCases.arbOSFunction_2;
+    options.gasPrice = fn.l2GasPrice;
+    options.baseFeePerByte = fn.l1BaseFeePerByte;
+
+    const gas = getCalldataGasForNetwork(options, fn.tx);
+    const cost = gasToCost(fn.l2GasUsed, gas, options);
+    const diff = getPercentDiff(parseFloat(cost), fn.txFeeETH);
+
+    // Actual ~ 0.01
+    assert(diff < .1);
+  });
+
+  it("calculates gas cost for a deployment tx", function () {
+    const fn = arbitrumCases.arbOSDeployment_1;
+    options.gasPrice = fn.l2GasPrice;
+    options.baseFeePerByte = fn.l1BaseFeePerByte;
+
+    const gas = getCalldataGasForNetwork(options, fn.tx);
+    const cost = gasToCost(fn.l2GasUsed, gas, options);
+    const diff = getPercentDiff(parseFloat(cost), fn.txFeeETH);
+
+    // Actual ~ 0.089
+    assert(diff < .1);
   });
 });

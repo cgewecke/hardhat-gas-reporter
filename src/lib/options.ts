@@ -1,7 +1,5 @@
 import { HardhatUserConfig } from "hardhat/types";
 import {
-  // TODO: enable when arbitrum support added
-  // DEFAULT_ARBITRUM_HARDFORK,
   DEFAULT_CURRENCY,
   DEFAULT_CURRENCY_DISPLAY_PRECISION,
   DEFAULT_JSON_OUTPUT_FILE,
@@ -13,7 +11,7 @@ import {
   TABLE_NAME_TERMINAL
 } from "../constants";
 
-import { /* ArbitrumHardfork,*/ GasReporterOptions, OptimismHardfork } from "../types";
+import { GasReporterOptions, OptimismHardfork } from "../types";
 
 /**
  * Validates Optimism hardfork option
@@ -26,23 +24,10 @@ function isOptimismHardfork(hardfork: string | undefined) {
   return ["bedrock, ecotone"].includes(hardfork);
 }
 
-// TODO: Enabled when arbitrum support added
-/**
- * Validates Arbitrum hardfork option
- * @param hardfork
- * @returns
- */
-// function isArbitrumHardfork(hardfork: string | undefined) {
-//  if (hardfork === undefined) return false;
-
-//  return ["arbOS11"].includes(hardfork);
-// }
-
 /**
  * Sets default reporter options
  */
 export function getDefaultOptions(userConfig: Readonly<HardhatUserConfig>): GasReporterOptions {
-  // let arbitrumHardfork: ArbitrumHardfork;
   let optimismHardfork: OptimismHardfork;
   let opStackBaseFeeScalar: number = 0;
   let opStackBlobBaseFeeScalar: number = 0;
@@ -73,15 +58,9 @@ export function getDefaultOptions(userConfig: Readonly<HardhatUserConfig>): GasR
         opStackBlobBaseFeeScalar = BASE_ECOTONE_BLOB_BASE_FEE_SCALAR
       }
     }
-
-    // TODO: enable when arbitrum support added
-    // if (userOptions.L2 === "arbitrum" && !isArbitrumHardfork(userOptions.arbitrumHardfork)) {
-    //  arbitrumHardfork = DEFAULT_ARBITRUM_HARDFORK;
-    // }
   }
 
   return {
-    // arbitrumHardfork,
     currency: DEFAULT_CURRENCY,
     currencyDisplayPrecision: DEFAULT_CURRENCY_DISPLAY_PRECISION,
     darkMode: false,

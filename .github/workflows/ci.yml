@@ -15,6 +15,7 @@ env:
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
   OPTIMISTIC_API_KEY: ${{ secrets.OPTIMISTIC_API_KEY }}
   BASE_API_KEY: ${{ secrets.BASE_API_KEY }}
+  ARBITRUM_API_KEY: ${{ secrets.ARBITRUM_API_KEY }}
 
 jobs:
   lint:

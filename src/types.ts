@@ -8,7 +8,6 @@ declare module "hardhat/types/config" {
   }
 }
 
-export type ArbitrumHardfork = "arbOS11" | "arbOS20" | undefined;
 export type OptimismHardfork = "bedrock" | "ecotone" | undefined;
 
 export interface GasReporterOptions {
@@ -19,6 +18,13 @@ export interface GasReporterOptions {
    * to etherscan for the latest blockheader via option `getBlockApi`
    */
   baseFee?: number;
+
+  /** @property Arbitrum-specific gwei price per byte of L1 calldata. */
+  /**
+   * This is the `l1BaseFeeEstimate` value returned by NodeInterface.gasEstimateL1Component(...) multiplied by 16.
+   * See: https://docs.arbitrum.io/build-decentralized-apps/how-to-estimate-gas#an-example-of-how-to-apply-this-formula-in-your-code
+   */
+  baseFeePerByte?: number;
 
   /** @property Gwei blob base fee per gas unit */
   /*
@@ -75,9 +81,8 @@ export interface GasReporterOptions {
   /** @property L1 Network to calculate execution or data costs for */
   L1?: "ethereum" | "polygon" | "binance" | "fantom" | "moonbeam" | "moonriver" | "gnosis" | "avalanche";
 
-  // TODO: Enable arbitrum when support added
   /** @property L2 Network to calculate execution costs for */
-  L2?: "optimism" | "base" // | "arbitrum"
+  L2?: "optimism" | "base" | "arbitrum"
 
   /** @property Etherscan API key for L1 networks */
   L1Etherscan?: string;
@@ -150,9 +155,6 @@ export interface GasReporterOptions {
 
   /** @ignore */
   blockGasLimit?: number;
-
-  /** @ignore Arbitrum client version to emulate gas costs for. Only applied when L2 is "arbitrum" */
-  arbitrumHardfork?: ArbitrumHardfork,
 }
 
 export interface GasReporterExecutionContext {
@@ -267,6 +269,9 @@ export interface JsonRpcTx {
   hash: string
   nonce: string
   value: string
+  v? : string,
+  r? : string,
+  s? : string
   // maxFeePerBlobGas?: string // QUANTITY - max data fee for blob transactions
   // blobVersionedHashes?: string[] // DATA - array of 32 byte versioned hashes for blob transactions
 }
