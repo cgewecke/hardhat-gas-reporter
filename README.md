@@ -13,7 +13,7 @@
 
 ### Example report
 
-![Screen Shot 2024-03-14 at 12 48 35 PM](https://github.com/cgewecke/hardhat-gas-reporter/assets/7332026/4948dd7f-b0ac-4cd7-b3d1-d8f458b0c670)
+![Screen Shot 2024-04-02 at 6 04 53 PM](https://github.com/cgewecke/hardhat-gas-reporter/assets/7332026/9f1eadb0-f47b-45fe-bfdb-57d4d2f07042)
 
 + See [markdown format example][10]
 
