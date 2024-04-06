@@ -1,6 +1,6 @@
 {
   "name": "hardhat-gas-reporter",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Gas Analytics plugin for Hardhat",
   "repository": "github:cgewecke/hardhat-gas-reporter",
   "author": "cgewecke",
