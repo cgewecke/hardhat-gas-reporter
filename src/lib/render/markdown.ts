@@ -74,7 +74,7 @@ export function generateMarkdownTable(
             ]
           : [
               [`L1 Base Fee`, `${options.baseFee!} gwei`],
-              [`L1 Blob Base Fee`, `${l1GweiBlobBaseFee} gwei`],
+              [`L1 Blob Base Fee`, `${l1GweiBlobBaseFee!} gwei`],
               [`L2 Gas Price`, `${l2gwei} gwei` ]
             ]
 

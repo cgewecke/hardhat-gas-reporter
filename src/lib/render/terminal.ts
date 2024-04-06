@@ -328,7 +328,7 @@ export function generateTerminalTextTable(
       opStackConfig.push({
         hAlign: "left",
         colSpan: 2,
-        content: chalk.cyan(`L1: ${l1GweiBlobBaseFee} gwei (blobBaseFee)`)
+        content: chalk.cyan(`L1: ${l1GweiBlobBaseFee!} gwei (blobBaseFee)`)
       });
       opStackConfig.push({
         hAlign: "left",
