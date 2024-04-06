@@ -250,8 +250,6 @@ export function getCommonTableVals(options: GasReporterOptions) {
     l1GweiBlobBaseFee = parseFloat(l1GweiBlobBaseFee.toString()).toFixed(DEFAULT_GAS_PRICE_PRECISION);
   }
 
-
-
   const nonZeroMsg = "Cost was non-zero but below the precision setting for the currency display (see options)";
   const intrinsicMsg = "Execution gas for this method does not include intrinsic gas overhead ";
 
