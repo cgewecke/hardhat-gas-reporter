@@ -211,6 +211,7 @@ export function getCommonTableVals(options: GasReporterOptions) {
 
   let l2BaseFeeNote = "(baseFee)";
   let l1GweiForL2 = options.baseFee;
+  let l1GweiBlobBaseFee: string | number | undefined = options.blobBaseFee;
 
   if (options.L2 === "arbitrum"){
     l2BaseFeeNote = "(baseFeePerByte)"
@@ -245,6 +246,10 @@ export function getCommonTableVals(options: GasReporterOptions) {
     l2gwei = parseFloat(l2gwei.toString()).toFixed(DEFAULT_GAS_PRICE_PRECISION);
   }
 
+  if (typeof l1GweiBlobBaseFee === "number" && l1GweiBlobBaseFee < 1) {
+    l1GweiBlobBaseFee = parseFloat(l1GweiBlobBaseFee.toString()).toFixed(DEFAULT_GAS_PRICE_PRECISION);
+  }
+
   const nonZeroMsg = "Cost was non-zero but below the precision setting for the currency display (see options)";
   const intrinsicMsg = "Execution gas for this method does not include intrinsic gas overhead ";
 
@@ -253,6 +258,7 @@ export function getCommonTableVals(options: GasReporterOptions) {
     l2gwei,
     l1gweiNote,
     l2gweiNote,
+    l1GweiBlobBaseFee,
     network,
     rate,
     currency,

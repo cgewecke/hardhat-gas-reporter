@@ -288,6 +288,7 @@ export function generateTerminalTextTable(
       l2gwei,
       l1gweiNote,
       l2gweiNote,
+      l1GweiBlobBaseFee,
       network,
       rate,
       currency,
@@ -327,7 +328,7 @@ export function generateTerminalTextTable(
       opStackConfig.push({
         hAlign: "left",
         colSpan: 2,
-        content: chalk.cyan(`L1: ${options.blobBaseFee!} gwei (blobBaseFee)`)
+        content: chalk.cyan(`L1: ${l1GweiBlobBaseFee!} gwei (blobBaseFee)`)
       });
       opStackConfig.push({
         hAlign: "left",

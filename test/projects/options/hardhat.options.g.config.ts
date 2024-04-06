@@ -19,6 +19,7 @@ const config: HardhatUserConfig = {
   },
   gasReporter: {
     coinmarketcap: process.env.CMC_API_KEY,
+    currencyDisplayPrecision: 4,
     L2: "arbitrum",
     L1Etherscan: process.env.ETHERSCAN_API_KEY,
     L2Etherscan: process.env.ARBITRUM_API_KEY,

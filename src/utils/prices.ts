@@ -129,9 +129,10 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     !options.blobBaseFee
   ) {
     try {
-      const blobBaseFee = await axiosInstance.get(blobBaseFeeUrl);
-      checkForEtherscanError(blobBaseFee.data.result);
-      options.blobBaseFee = Math.round(hexWeiToIntGwei(blobBaseFee.data.result))
+      const response = await axiosInstance.get(blobBaseFeeUrl);
+      checkForEtherscanError(response.data.result);
+      const blobBaseFee = hexWeiToIntGwei(response.data.result);
+      options.blobBaseFee = (blobBaseFee >= 1 ) ? Math.round(blobBaseFee) : blobBaseFee;
     } catch (error) {
       options.blobBaseFee = DEFAULT_BLOB_BASE_FEE;
       warnings.push(warnBlobBaseFeeRemoteCallFailed(error));

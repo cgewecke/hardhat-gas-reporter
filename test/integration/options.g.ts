@@ -53,7 +53,7 @@ describe("Options G (Arbitrum with live pricing & `reportPureAndViewMethods`)", 
     assert.isDefined(options.gasPrice);
     assert.isDefined(options.baseFeePerByte);
     assert.isBelow(options.gasPrice!, 1);
-    assert.isAbove(options.baseFeePerByte!, 1);
+    assert.isAbove(options.baseFeePerByte!, 0);
 
     assert.isDefined(options.tokenPrice);
     assert.isAbove(parseFloat(options.tokenPrice!), 1000); // Eth-ish

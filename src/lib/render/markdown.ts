@@ -51,6 +51,7 @@ export function generateMarkdownTable(
   let gasPrices: string[][];
   let l1gwei: string | number | undefined;
   let l2gwei: string | number | undefined;
+  let l1GweiBlobBaseFee: string | number | undefined;
   const { network, currency, nonZeroMsg, intrinsicMsg } = getCommonTableVals(options);
   let tokenPrice = "-";
   let rate: string;
@@ -60,6 +61,7 @@ export function generateMarkdownTable(
     ({
       l1gwei,
       l2gwei,
+      l1GweiBlobBaseFee,
       rate,
       token
     } = getCommonTableVals(options));
@@ -72,7 +74,7 @@ export function generateMarkdownTable(
             ]
           : [
               [`L1 Base Fee`, `${options.baseFee!} gwei`],
-              [`L1 Blob Base Fee`, `${options.blobBaseFee!} gwei`],
+              [`L1 Blob Base Fee`, `${l1GweiBlobBaseFee!} gwei`],
               [`L2 Gas Price`, `${l2gwei} gwei` ]
             ]
 

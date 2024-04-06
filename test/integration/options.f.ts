@@ -54,7 +54,7 @@ describe("Options F (OPStack:base with live pricing & `reportPureAndViewMethods`
     assert.isDefined(options.gasPrice);
     assert.isDefined(options.blobBaseFee);
     assert.isBelow(options.gasPrice!, 1);
-    assert.isAbove(options.blobBaseFee!, 1);
+    assert.isAbove(options.blobBaseFee!, 0);
 
     assert.isDefined(options.tokenPrice);
     assert.isAbove(parseFloat(options.tokenPrice!), 1000); // Eth-ish
