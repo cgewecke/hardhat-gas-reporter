@@ -19,7 +19,7 @@ import { useEnvironment, findMethod, findDeployment } from "../helpers";
  * + RST titles
  * + Gas deltas
  */
-describe.only("Options A", function () {
+describe("Options A", function () {
   let output: GasReporterOutput;
   let options: GasReporterOptions;
   let methods: MethodData;
