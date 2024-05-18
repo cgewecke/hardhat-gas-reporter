@@ -36,13 +36,7 @@ export function generateJSONData(
 export function loadJSONCache(
   options: GasReporterOptions
 ): GasReporterOutput {
-  const pkg = require("../../../package.json");
-
-  const output: GasReporterOutput = JSON.parse(readFileSync(options.cachePath!).toString());
-
-  if (pkg.version != output.version) throw new Error("Old json format");
-
-  return output;
+  return JSON.parse(readFileSync(options.cachePath!).toString());
 }
 
 /**
