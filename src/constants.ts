@@ -21,6 +21,8 @@ export const DEFAULT_ARBITRUM_HARDFORK = "arbOS11";
 export const TOOLCHAIN_HARDHAT = "hardhat";
 export const TOOLCHAIN_FOUNDRY = "foundry";
 
+export const CACHE_FILE_NAME = ".hardhat_gas_reporter_output.json";
+
 // EVM
 export const EVM_BASE_TX_COST = 21000;
 export const DEFAULT_BLOB_BASE_FEE = 10; // gwei

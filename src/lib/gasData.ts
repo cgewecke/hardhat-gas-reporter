@@ -107,6 +107,35 @@ export class GasData {
   }
 
   /**
+   * Calculate gas deltas compared to previous data, if applicable
+   * @param  {GasData} previousData previous gas data
+   */
+  public addDeltas(previousData: GasData) {
+    Object.keys(this.methods).forEach(key => {
+        if (!previousData.methods[key]) return;
+
+        const currentMethod = this.methods[key];
+        const prevMethod = previousData.methods[key];
+
+        if (currentMethod.min !== undefined && prevMethod.min !== undefined) {
+          currentMethod.minDelta = currentMethod.min! - prevMethod.min!;
+        }
+
+        if (currentMethod.max !== undefined && prevMethod.max !== undefined) {
+          currentMethod.maxDelta = currentMethod.max! - prevMethod.max!;
+        }
+
+        if (currentMethod.executionGasAverage !== undefined && prevMethod.executionGasAverage !== undefined) {
+          currentMethod.executionGasAverageDelta = currentMethod.executionGasAverage! - prevMethod.executionGasAverage!;
+        }
+
+        if (currentMethod.calldataGasAverage !== undefined && prevMethod.calldataGasAverage !== undefined) {
+          currentMethod.calldataGasAverageDelta = currentMethod.calldataGasAverage! - prevMethod.calldataGasAverage!;
+        }
+     })
+  }
+
+  /**
    * Map a contract name to pre-generated hash of the code stored at an address
    * @param  {String} name    contract name
    * @param  {String} address contract address
