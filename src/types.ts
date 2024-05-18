@@ -36,7 +36,7 @@ export interface GasReporterOptions {
   /** @property Etherscan-like url to fetch blobBasefee from */
   blobBaseFeeApi?: string;
 
-  // TODO
+  /** @property Compare gas values to previous results */
   checkGasDeltas?: boolean;
 
   /** @property API key to access token/currency market price data with */
