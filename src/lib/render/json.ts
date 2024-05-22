@@ -1,4 +1,4 @@
-import { writeFileSync } from "fs";
+import { writeFileSync, readFileSync } from "fs";
 import { GasData } from "../gasData";
 import { GasReporterOptions, GasReporterOutput } from "../../types";
 
@@ -26,6 +26,17 @@ export function generateJSONData(
   };
 
   writeFileSync(options.outputJSONFile!, JSON.stringify(output, null, ' '));
+}
+
+/**
+ * Reads previous acccumulated data and options from cache so it can be used to calculate deltas
+ * @param {GasReporterOptions} options
+ * @returns {GasReporterOptions} previous data and options
+ */
+export function loadJSONCache(
+  options: GasReporterOptions
+): GasReporterOutput {
+  return JSON.parse(readFileSync(options.cachePath!).toString());
 }
 
 /**

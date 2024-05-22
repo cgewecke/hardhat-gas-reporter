@@ -10,7 +10,8 @@ import {
   getCommonTableVals,
   indentText,
   indentTextWithSymbol,
-  costIsBelowPrecision
+  costIsBelowPrecision,
+  renderWithGasDelta
 } from "../../utils/ui";
 
 import { GasReporterOptions, MethodDataItem } from "../../types";
@@ -106,6 +107,10 @@ export function generateTerminalTextTable(
         ?  commify(method.calldataGasAverage)
         : chalk.grey("-");
 
+        if (options.checkGasDeltas) {
+          stats.executionGasAverage = renderWithGasDelta(stats.executionGasAverage, method.executionGasAverageDelta || 0, true);
+          stats.calldataGasAverage = renderWithGasDelta(stats.calldataGasAverage, method.calldataGasAverageDelta || 0, true);
+        }
     } else {
       stats.executionGasAverage = chalk.grey("-");
       stats.cost = chalk.grey("-");
@@ -117,8 +122,14 @@ export function generateTerminalTextTable(
 
     if (method.min && method.max) {
       const uniform = (method.min === method.max);
-      stats.min = uniform ? chalk.grey("-") : chalk.cyan(commify(method.min!));
-      stats.max = uniform ? chalk.grey("-") : chalk.red(commify(method.max!));
+      let min = chalk.cyan(commify(method.min!));
+      let max = chalk.red(commify(method.max!));
+      if (options.checkGasDeltas) {
+        min = renderWithGasDelta(min, method.minDelta || 0, true);
+        max = renderWithGasDelta(max, method.maxDelta || 0, true);
+      }
+      stats.min = uniform ? chalk.grey("-") : min;
+      stats.max = uniform ? chalk.grey("-") : max;
     }
 
     const fnName = options.showMethodSig ? method.fnSig : method.method;

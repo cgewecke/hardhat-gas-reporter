@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import { EOL } from "os";
+import { commify } from "@ethersproject/units";
 
 import {
   DEFAULT_GAS_PRICE_PRECISION,
@@ -37,6 +38,18 @@ export function markdownBold(val: string) {
 
 export function markdownItalic(val: string) {
   return `*${val}*`
+}
+
+export function renderWithGasDelta(val: string, delta: number, withColor?: boolean) {
+  if (delta == 0) return val;
+
+  let deltaString = commify(delta);
+  if (withColor) {
+    deltaString = delta > 0 ? chalk.redBright(`+${deltaString}`) : chalk.green(`${deltaString}`);
+  } else {
+    deltaString = delta > 0 ? `+${deltaString}` : `${deltaString}`;
+  }
+  return `${val} ${deltaString}`;
 }
 
 export function getSmallestPrecisionVal(precision: number): number {

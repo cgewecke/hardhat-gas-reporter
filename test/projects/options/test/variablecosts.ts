@@ -5,7 +5,7 @@ import { Contract } from "ethers";
 
 describe("VariableCosts", function() {
   const one = [1];
-  const three = [2, 3, 4];
+  const three = process.env.GAS_DELTA === "true" ? [2, 3, 4, 5, 6, 7, 8] : [2, 3, 4]; // changing gas values if required
   const five = [5, 6, 7, 8, 9];
   let instance: Contract;
   let walletB: any;

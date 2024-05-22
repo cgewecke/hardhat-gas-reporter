@@ -36,6 +36,9 @@ export interface GasReporterOptions {
   /** @property Etherscan-like url to fetch blobBasefee from */
   blobBaseFeeApi?: string;
 
+  /** @property Compare gas values to previous results */
+  checkGasDeltas?: boolean;
+
   /** @property API key to access token/currency market price data with */
   coinmarketcap?: string;
 
@@ -155,6 +158,9 @@ export interface GasReporterOptions {
 
   /** @ignore */
   blockGasLimit?: number;
+
+  /** @ignore */
+  cachePath?: string;
 }
 
 export interface GasReporterExecutionContext {
@@ -214,6 +220,10 @@ export interface MethodDataItem {
   executionGasAverage?: number,
   calldataGasAverage?: number,
   cost?: string,
+  minDelta?: number,
+  maxDelta?: number,
+  executionGasAverageDelta? :number
+  calldataGasAverageDelta?: number,
 }
 
 export interface MethodData {[key: string]: MethodDataItem }

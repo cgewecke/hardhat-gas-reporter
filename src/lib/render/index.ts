@@ -1,11 +1,13 @@
 import type { GasData } from "../gasData";
 import { writeFileSync } from "fs";
+import path from "path";
 
 import { HardhatRuntimeEnvironment as HRE } from "hardhat/types";
 import {
   TABLE_NAME_LEGACY,
   TABLE_NAME_MARKDOWN,
-  TABLE_NAME_TERMINAL
+  TABLE_NAME_TERMINAL,
+  CACHE_FILE_NAME
 } from "../../constants";
 import { getSolcInfo } from "../../utils/sources";
 import { warnReportFormat } from "../../utils/ui";
@@ -13,7 +15,7 @@ import { GasReporterOptions } from "../../types";
 import { generateTerminalTextTable } from "./terminal";
 import { generateLegacyTextTable } from "./legacy";
 import { generateMarkdownTable} from "./markdown";
-import { generateJSONData } from "./json";
+import { generateJSONData, loadJSONCache } from "./json";
 
 
 /**
@@ -54,6 +56,18 @@ export function render(
   const data = hre.__hhgrec.collector!.data;
   options.blockGasLimit = hre.__hhgrec.blockGasLimit;
   options.solcInfo = getSolcInfo(hre.config.solidity.compilers[0]);
+
+  if (options.checkGasDeltas) {
+    options.cachePath = options.cachePath || path.resolve(
+      hre.config.paths.cache,
+      CACHE_FILE_NAME
+    );
+
+    try {
+      const previousData = loadJSONCache(options);
+      data.addDeltas(previousData.data!);
+    } catch {};
+  }
 
 
   // Get table
@@ -103,6 +117,11 @@ export function render(
   }
 
   if (options.outputJSON || process.env.CI) {
+    generateJSONData(data, options, toolchain);
+  }
+
+  if (options.checkGasDeltas) {
+    options.outputJSONFile = options.cachePath!;
     generateJSONData(data, options, toolchain);
   }
 

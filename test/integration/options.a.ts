@@ -17,6 +17,7 @@ import { useEnvironment, findMethod, findDeployment } from "../helpers";
  * + Display full method signature
  * + Dark mode
  * + RST titles
+ * + Gas deltas
  */
 describe("Options A", function () {
   let output: GasReporterOutput;
@@ -86,5 +87,26 @@ describe("Options A", function () {
 
     assert.equal(methodA?.numberOfCalls, 1);
     assert.equal(methodB?.numberOfCalls, 1);
+  });
+
+  it("calculates gas deltas for method calls", async function(){
+    process.env.GAS_DELTA = "true";
+    await this.env.run(TASK_TEST, { testFiles: [] });
+    process.env.GAS_DELTA = "";
+
+    const _output = JSON.parse(readFileSync(options.cachePath!, 'utf-8'));
+    const _methods = _output.data!.methods;
+    const _options = _output.options;
+
+    const method = findMethod(_methods, "VariableCosts", "addToMap");
+
+    if (_options.cachePath) {
+      try {
+        execSync(`rm ${_options.cachePath}`)
+      } catch {}
+    }
+
+    assert.isNumber(method!.executionGasAverageDelta!);
+    assert.notEqual(method!.executionGasAverageDelta!, 0);
   });
 });
