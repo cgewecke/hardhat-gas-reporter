@@ -41,7 +41,7 @@ export function markdownItalic(val: string) {
 }
 
 export function renderWithGasDelta(val: string, delta: number, withColor?: boolean) {
-  if (delta == 0) return val;
+  if (delta === 0) return val;
 
   let deltaString = commify(delta);
   if (withColor) {
