@@ -89,16 +89,19 @@ describe("Options A", function () {
     assert.equal(methodB?.numberOfCalls, 1);
   });
 
-  it("calculates gas deltas for method calls", async function(){
+  it("calculates gas deltas for methods and deployments", async function(){
     process.env.GAS_DELTA = "true";
     await this.env.run(TASK_TEST, { testFiles: [] });
     process.env.GAS_DELTA = "";
 
     const _output = JSON.parse(readFileSync(options.cachePath!, 'utf-8'));
     const _methods = _output.data!.methods;
+    const _deployments = _output.data!.deployments;
     const _options = _output.options;
 
     const method = findMethod(_methods, "VariableCosts", "addToMap");
+    const deployment = findDeployment(_deployments, "VariableConstructor");
+
 
     if (_options.cachePath) {
       try {
@@ -108,5 +111,9 @@ describe("Options A", function () {
 
     assert.isNumber(method!.executionGasAverageDelta!);
     assert.notEqual(method!.executionGasAverageDelta!, 0);
+
+    assert.isNumber(deployment!.executionGasAverage);
+    assert.notEqual(deployment!.executionGasAverageDelta, 0);
   });
+
 });

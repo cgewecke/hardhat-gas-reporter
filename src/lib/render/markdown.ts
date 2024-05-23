@@ -137,7 +137,7 @@ export function generateMarkdownTable(
           : commify(method.calldataGasAverage);
       };
 
-      if (options.checkGasDeltas) {
+      if (options.trackGasDeltas) {
         stats.executionGasAverage = renderWithGasDelta(stats.executionGasAverage, method.executionGasAverageDelta || 0);
         stats.calldataGasAverage = renderWithGasDelta(stats.calldataGasAverage, method.calldataGasAverageDelta || 0);
       }
@@ -154,7 +154,7 @@ export function generateMarkdownTable(
       const uniform = (method.min === method.max);
       let min = commify(method.min!);
       let max = commify(method.max!)
-      if (options.checkGasDeltas) {
+      if (options.trackGasDeltas) {
         min = renderWithGasDelta(min, method.minDelta || 0);
         max = renderWithGasDelta(max, method.maxDelta || 0);
       }

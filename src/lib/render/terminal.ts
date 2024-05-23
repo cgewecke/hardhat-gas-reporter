@@ -104,13 +104,13 @@ export function generateTerminalTextTable(
 
       // Also writes dash when average is zero
       stats.calldataGasAverage = (method.calldataGasAverage)
-        ?  commify(method.calldataGasAverage)
+        ? commify(method.calldataGasAverage)
         : chalk.grey("-");
 
-        if (options.checkGasDeltas) {
-          stats.executionGasAverage = renderWithGasDelta(stats.executionGasAverage, method.executionGasAverageDelta || 0, true);
-          stats.calldataGasAverage = renderWithGasDelta(stats.calldataGasAverage, method.calldataGasAverageDelta || 0, true);
-        }
+      if (options.trackGasDeltas) {
+        stats.executionGasAverage = renderWithGasDelta(stats.executionGasAverage, method.executionGasAverageDelta || 0, true);
+        stats.calldataGasAverage = renderWithGasDelta(stats.calldataGasAverage, method.calldataGasAverageDelta || 0, true);
+      }
     } else {
       stats.executionGasAverage = chalk.grey("-");
       stats.cost = chalk.grey("-");
@@ -124,7 +124,7 @@ export function generateTerminalTextTable(
       const uniform = (method.min === method.max);
       let min = chalk.cyan(commify(method.min!));
       let max = chalk.red(commify(method.max!));
-      if (options.checkGasDeltas) {
+      if (options.trackGasDeltas) {
         min = renderWithGasDelta(min, method.minDelta || 0, true);
         max = renderWithGasDelta(max, method.maxDelta || 0, true);
       }
@@ -183,21 +183,33 @@ export function generateTerminalTextTable(
       stats.cost = chalk.magenta.bold(UNICODE_TRIANGLE);
     }
 
+    stats.executionGasAverage = commify(deployment.executionGasAverage!);
     stats.calldataGasAverage = (deployment.calldataGasAverage === undefined )
       ? ""
       : commify(deployment.calldataGasAverage);
 
+    if (options.trackGasDeltas) {
+      stats.executionGasAverage = renderWithGasDelta(stats.executionGasAverage, deployment.executionGasAverageDelta || 0, true);
+      stats.calldataGasAverage = renderWithGasDelta(stats.calldataGasAverage, deployment.calldataGasAverageDelta || 0, true);
+    }
+
     if (deployment.min && deployment.max) {
-      const uniform = deployment.min === deployment.max;
-      stats.min = uniform ? chalk.grey("-") : chalk.cyan(commify(deployment.min!));
-      stats.max = uniform ? chalk.grey("-") : chalk.red(commify(deployment.max!));
+      const uniform = (deployment.min === deployment.max);
+      let min = chalk.cyan(commify(deployment.min!));
+      let max = chalk.red(commify(deployment.max!));
+      if (options.trackGasDeltas) {
+        min = renderWithGasDelta(min, deployment.minDelta || 0, true);
+        max = renderWithGasDelta(max, deployment.maxDelta || 0, true);
+      }
+      stats.min = uniform ? chalk.grey("-") : min;
+      stats.max = uniform ? chalk.grey("-") : max;
     }
 
     const section: any = [];
     section.push({ hAlign: "left", colSpan: 2, content: chalk.bold(deployment.name) });
     section.push({ hAlign: "right", colSpan: 1, content: stats.min });
     section.push({ hAlign: "right", colSpan: 1, content: stats.max });
-    section.push({ hAlign: "right", colSpan: 1, content: commify(deployment.executionGasAverage!) });
+    section.push({ hAlign: "right", colSpan: 1, content: stats.executionGasAverage! });
 
     if (options.L2 !== undefined) {
       section.push({ hAlign: "right", colSpan: 1, content: stats.calldataGasAverage! })

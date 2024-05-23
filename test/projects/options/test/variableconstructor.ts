@@ -2,22 +2,26 @@ import { ethers } from "hardhat";
 
 describe("VariableConstructor", function() {
   let VariableConstructor: any;
+  const short = "s";
+  const medium = process.env.GAS_DELTA === "true"
+    ? "medium_length_initializer"
+    : "medium_length_initializerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr";
+
+  const long = "looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong_initializer";
 
   before(async function(){
     VariableConstructor = await ethers.getContractFactory("VariableConstructor");
   })
+
   it("should should initialize with a short string", async () => {
-    await VariableConstructor.deploy("Exit Visa");
+    await VariableConstructor.deploy(short);
   });
 
   it("should should initialize with a medium length string", async () => {
-    await VariableConstructor.deploy("Enclosed is my application for residency");
+    await VariableConstructor.deploy(medium);
   });
 
   it("should should initialize with a long string", async () => {
-    let msg =
-      "Enclosed is my application for permanent residency in NewZealand.";
-    msg += "I am a computer programmer.";
-    await VariableConstructor.deploy(msg);
+    await VariableConstructor.deploy(long);
   });
 });

@@ -57,7 +57,7 @@ export function render(
   options.blockGasLimit = hre.__hhgrec.blockGasLimit;
   options.solcInfo = getSolcInfo(hre.config.solidity.compilers[0]);
 
-  if (options.checkGasDeltas) {
+  if (options.trackGasDeltas) {
     options.cachePath = options.cachePath || path.resolve(
       hre.config.paths.cache,
       CACHE_FILE_NAME
@@ -120,7 +120,7 @@ export function render(
     generateJSONData(data, options, toolchain);
   }
 
-  if (options.checkGasDeltas) {
+  if (options.trackGasDeltas) {
     options.outputJSONFile = options.cachePath!;
     generateJSONData(data, options, toolchain);
   }
