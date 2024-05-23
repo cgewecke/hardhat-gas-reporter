@@ -66,6 +66,17 @@ const config: HardhatUserConfig = {
 }
 ```
 
+### Gas Golfing
+*...track changes in gas usage between test runs (conditionally, using an environment variable)*
+
+```ts
+const config: HardhatUserConfig = {
+  gasReporter: {
+    trackGasDeltas: process.env.GAS_GOLF === "true"
+  }
+}
+```
+
 ### Documentation
 
 *...writing report in markdown format to file while displaying regular report on stdout*

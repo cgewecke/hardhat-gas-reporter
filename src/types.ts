@@ -36,9 +36,6 @@ export interface GasReporterOptions {
   /** @property Etherscan-like url to fetch blobBasefee from */
   blobBaseFeeApi?: string;
 
-  /** @property Compare gas values to previous results */
-  checkGasDeltas?: boolean;
-
   /** @property API key to access token/currency market price data with */
   coinmarketcap?: string;
 
@@ -150,6 +147,9 @@ export interface GasReporterOptions {
   /** @property Network token price per nation state currency unit, to two decimal places (eg: "2145.00") */
   tokenPrice?: string;
 
+  /** @property Show change in current method and deployment gas usage versus previous test run  */
+  trackGasDeltas?: boolean;
+
   // ====================================
   // INTERNAL: AUTOSET BY PLUGIN or STUBS
   // =====================================
@@ -239,7 +239,11 @@ export interface Deployment {
   executionGasAverage?: number,
   calldataGasAverage?: number,
   cost?: string,
-  percent?: number
+  percent?: number,
+  minDelta?: number,
+  maxDelta?: number,
+  executionGasAverageDelta? :number
+  calldataGasAverageDelta?: number,
 }
 
 export interface SolcInfo {

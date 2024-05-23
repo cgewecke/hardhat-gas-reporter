@@ -112,27 +112,21 @@ export class GasData {
    */
   public addDeltas(previousData: GasData) {
     Object.keys(this.methods).forEach(key => {
-        if (!previousData.methods[key]) return;
+      if (!previousData.methods[key]) return;
 
-        const currentMethod = this.methods[key];
-        const prevMethod = previousData.methods[key];
+      const currentMethod = this.methods[key];
+      const prevMethod = previousData.methods[key];
 
-        if (currentMethod.min !== undefined && prevMethod.min !== undefined) {
-          currentMethod.minDelta = currentMethod.min! - prevMethod.min!;
-        }
+      this._calculateDeltas(prevMethod, currentMethod);
+    });
 
-        if (currentMethod.max !== undefined && prevMethod.max !== undefined) {
-          currentMethod.maxDelta = currentMethod.max! - prevMethod.max!;
-        }
+    for (const currentDeployment of this.deployments) {
+      const prevDeployment = previousData.deployments.find((d)=> d.name === currentDeployment.name);
 
-        if (currentMethod.executionGasAverage !== undefined && prevMethod.executionGasAverage !== undefined) {
-          currentMethod.executionGasAverageDelta = currentMethod.executionGasAverage! - prevMethod.executionGasAverage!;
-        }
+      if (!prevDeployment) return;
 
-        if (currentMethod.calldataGasAverage !== undefined && prevMethod.calldataGasAverage !== undefined) {
-          currentMethod.calldataGasAverageDelta = currentMethod.calldataGasAverage! - prevMethod.calldataGasAverage!;
-        }
-     })
+      this._calculateDeltas(prevDeployment, currentDeployment);
+    }
   }
 
   /**
@@ -324,5 +318,28 @@ export class GasData {
             options
           )
         : undefined;
+  }
+
+  /**
+   * Calculate gas deltas for a given method or deployment item
+   * @param  {MethodDataItem | Deployment} prev
+   * @param  {MethodDataItem | Deployment} current
+   */
+  private _calculateDeltas(prev: MethodDataItem | Deployment, current: MethodDataItem | Deployment) {
+    if (current.min !== undefined && prev.min !== undefined) {
+      current.minDelta = current.min! - prev.min!;
+    }
+
+    if (current.max !== undefined && prev.max !== undefined) {
+      current.maxDelta = current.max! - prev.max!;
+    }
+
+    if (current.executionGasAverage !== undefined && prev.executionGasAverage !== undefined) {
+      current.executionGasAverageDelta = current.executionGasAverage! - prev.executionGasAverage!;
+    }
+
+    if (current.calldataGasAverage !== undefined && prev.calldataGasAverage !== undefined) {
+      current.calldataGasAverageDelta = current.calldataGasAverage! - prev.calldataGasAverage!;
+    }
   }
 }

@@ -91,7 +91,7 @@ title,
   "L1Etherscan",
   "_string_",
   "-",
-  "[API key][4] to use when fetching live gasPrice, baseFee, and blobBaseFee data " +
+  "[API key][4] to use when fetching live gasPrice and baseFee data " +
   "from an L1 network. (Optional, see [Supported Networks][6])"
 ],
 // L1Etherscan
@@ -99,7 +99,7 @@ title,
   "L2Etherscan",
   "_string_",
   "-",
-  "[API key][4] to use when fetching live gasPrice data from an L2 network " +
+  "[API key][4] to use when fetching live gasPrice and blobBaseFee data from an L2 network " +
   "(Optional, see [Supported Networks][6])"
 ],
 // offline
@@ -139,6 +139,13 @@ title,
   "`false`",
   "Track gas usage for methods invoked via `eth_call`. (Incurs a performance penalty that can be " +
   "significant for large test suites)"
+],
+// trackGasDeltas
+[
+  "trackGasDeltas",
+  "_bool_",
+  "`false`",
+  "Track and report changes in gas usage between test runs. (Useful for gas golfing)"
 ],
 displaySubtitle,
 // currencyDisplayPrecision

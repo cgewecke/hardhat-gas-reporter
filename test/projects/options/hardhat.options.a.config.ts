@@ -45,7 +45,7 @@ const config: HardhatUserConfig = {
     darkMode: true,
     proxyResolver: new EtherRouterResolver(),
     includeBytecodeInJSON: true,
-    checkGasDeltas: true
+    trackGasDeltas: true
   }
 };
 

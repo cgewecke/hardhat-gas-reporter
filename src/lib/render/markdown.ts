@@ -12,8 +12,7 @@ import {
   entitleMarkdown,
   getCommonTableVals,
   costIsBelowPrecision,
-  markdownBold,
-  renderWithGasDelta
+  markdownBold
 } from "../../utils/ui";
 
 import { GasReporterOptions, MethodDataItem } from "../../types";
@@ -136,11 +135,6 @@ export function generateMarkdownTable(
           ? "-"
           : commify(method.calldataGasAverage);
       };
-
-      if (options.checkGasDeltas) {
-        stats.executionGasAverage = renderWithGasDelta(stats.executionGasAverage, method.executionGasAverageDelta || 0);
-        stats.calldataGasAverage = renderWithGasDelta(stats.calldataGasAverage, method.calldataGasAverageDelta || 0);
-      }
     } else {
       stats.executionGasAverage = "-";
       stats.cost = "-";
@@ -152,14 +146,8 @@ export function generateMarkdownTable(
 
     if (method.min && method.max) {
       const uniform = (method.min === method.max);
-      let min = commify(method.min!);
-      let max = commify(method.max!)
-      if (options.checkGasDeltas) {
-        min = renderWithGasDelta(min, method.minDelta || 0);
-        max = renderWithGasDelta(max, method.maxDelta || 0);
-      }
-      stats.min = uniform ? "-" : min;
-      stats.max = uniform ? "-" : max;
+      stats.min = uniform ? "-" : commify(method.min!);
+      stats.max = uniform ? "-" : commify(method.max!);
     }
 
     stats.numberOfCalls = method.numberOfCalls.toString();
@@ -309,4 +297,3 @@ export function generateMarkdownTable(
   // ---------------------------------------------------------------------------------------------
   return md;
 }
-
