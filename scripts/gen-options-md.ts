@@ -145,7 +145,7 @@ title,
   "trackGasDeltas",
   "_bool_",
   "`false`",
-  "Track and report changes in gas usage versus previous test run. (Useful for gas golfing)"
+  "Track and report changes in gas usage between test runs. (Useful for gas golfing)"
 ],
 displaySubtitle,
 // currencyDisplayPrecision
