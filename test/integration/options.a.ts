@@ -81,12 +81,12 @@ describe("Options A", function () {
     assert.isNull(deployment);
   });
 
-  it("resolves shadowed method calls with the example proxy resolver", function(){
+  it("resolves shadowed method calls with the example proxy resolver, and with factory deployed contracts", function(){
     const methodA = findMethod(methods, "VersionA", "setValue");
     const methodB = findMethod(methods, "VersionB", "setValue");
 
-    assert.equal(methodA?.numberOfCalls, 1);
-    assert.equal(methodB?.numberOfCalls, 1);
+    assert.equal(methodA?.numberOfCalls, 2);
+    assert.equal(methodB?.numberOfCalls, 2);
   });
 
   it("calculates gas deltas for methods and deployments", async function(){
