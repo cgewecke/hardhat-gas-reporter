@@ -103,9 +103,10 @@ export class Collector {
     // Case: proxied call
     if (this._isProxied(contractName, tx.input!)) {
       contractName = await this.resolver.resolveByProxy(tx);
+    }
 
-      // Case: hidden contract factory deployment
-    } else if (contractName === null) {
+    // Case: hidden contract factory deployment
+    if (contractName === null) {
       contractName = await this.resolver.resolveByDeployedBytecode(
         tx.to
       );
@@ -149,7 +150,7 @@ export class Collector {
    * @return {Boolean}
    */
   private _isProxied(name: string | null, input: string): boolean {
-    if (name !== null) {
+    if (name !== null ) {
       return (this.data.methods[getMethodID(name, input)] === undefined)
     }
     return false;
