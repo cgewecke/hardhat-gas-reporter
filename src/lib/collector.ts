@@ -150,7 +150,7 @@ export class Collector {
    * @return {Boolean}
    */
   private _isProxied(name: string | null, input: string): boolean {
-    if (name !== null ) {
+    if (name !== null) {
       return (this.data.methods[getMethodID(name, input)] === undefined)
     }
     return false;
