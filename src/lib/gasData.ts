@@ -120,13 +120,13 @@ export class GasData {
       this._calculateDeltas(prevMethod, currentMethod);
     });
 
-    for (const currentDeployment of this.deployments) {
+    this.deployments.forEach((currentDeployment) => {
       const prevDeployment = previousData.deployments.find((d)=> d.name === currentDeployment.name);
 
       if (!prevDeployment) return;
 
       this._calculateDeltas(prevDeployment, currentDeployment);
-    }
+    })
   }
 
   /**
