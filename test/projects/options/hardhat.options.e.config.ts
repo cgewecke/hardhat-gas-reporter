@@ -20,6 +20,7 @@ const config: HardhatUserConfig = {
   gasReporter: {
     coinmarketcap: process.env.CMC_API_KEY,
     L2: "optimism",
+    L1Etherscan: process.env.ETHERSCAN_API_KEY,
     L2Etherscan: process.env.OPTIMISTIC_API_KEY,
     enabled: true,
     reportPureAndViewMethods: true,

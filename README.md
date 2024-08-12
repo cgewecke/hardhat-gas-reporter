@@ -148,7 +148,7 @@ API keys for the networks this plugin auto-configures via the `L1` and `L2` opti
 
 **L1**
 
-+ [ethereum][101]
++ [ethereum][101] (`gasPrice` and `baseFee` prices require an API key)
 + [polygon][102]
 + [binance][103]
 + [fantom][104]

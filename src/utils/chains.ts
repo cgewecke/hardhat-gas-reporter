@@ -28,7 +28,7 @@ export function getTokenForChain(options: GasReporterOptions): string {
  * @returns
  */
 export function getGasPriceUrlForChain(options: GasReporterOptions): string {
-  let apiKey = "";
+  let apiKey: string;
 
   if (options.gasPriceApi) return options.gasPriceApi;
 
@@ -43,6 +43,10 @@ export function getGasPriceUrlForChain(options: GasReporterOptions): string {
   }
 
   if (!L1[options.L1!]) throw new Error();
+
+  apiKey = (options.L1Etherscan)
+      ? `${DEFAULT_API_KEY_ARGS}${options.L1Etherscan}`
+      : "";
 
   return `${L1[options.L1!].baseUrl}${DEFAULT_GAS_PRICE_API_ARGS}${apiKey}`;
 }
