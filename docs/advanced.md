@@ -33,6 +33,7 @@ const config: HardhatUserConfig = {
 const config: HardhatUserConfig = {
   gasReporter: {
     L2: "optimism",
+    L1Etherscan: "ABC...",
     L2Etherscan: "ABC...",
     currency: "EUR",
     coinmarketcap: "abc...",
