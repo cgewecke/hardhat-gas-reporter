@@ -73,6 +73,7 @@ const config: HardhatUserConfig = {
 
 + Option setups for common and advanced use cases can be seen in the [Config Examples][2] docs.
 + Get a [free tier Coinmarketcap API key][3] if you want price data
++ (Also) get [free tier Etherscan API keys][#supported-networks] if you want price data for Ethereum mainnet or an L2 network.
 
 | Options                         |    Type    |   Default  | Description                                                                                                                                                                                                                                                         |
 | :------------------------------ | :--------: | :--------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -142,9 +143,11 @@ API keys for the networks this plugin auto-configures via the `L1` and `L2` opti
 
 **L2**
 
-+ [arbitrum][113] (live `baseFeePerByte` prices require an API key)
-+ [base][110] (live `blobBaseFee` prices require an API key)
-+ [optimism][109] (live `blobBaseFee` prices require an API key)
+*Note*: As of August, 2024 api keys are required for both L1 (Ethereum Mainnet) **and** the L2 network to get L2 price data. (See [this example config][2])
+
++ [arbitrum][113] (live `baseFeePerByte` prices require an L2 API key )
++ [base][110] (live `blobBaseFee` prices require an L2 API key)
++ [optimism][109] (live `blobBaseFee` prices require an L2 API key)
 
 **L1**
 
