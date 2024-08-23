@@ -139,7 +139,7 @@ npx hardhat hhgas:merge "gasReporterOutput-*.json"
 
 ## Supported Networks
 
-API keys for the networks this plugin auto-configures via the `L1` and `L2` options are available from the links below. In many cases these aren't equired - you'll only need to set them if you start seeing rate-limit warnings.
+API keys for the networks this plugin auto-configures via the `L1` and `L2` options are available from the links below. In many cases these aren't required - you'll only need to set them if you start seeing rate-limit warnings.
 
 :warning:   **UPDATE:** Etherscan now requires api keys to fetch both L1 (Ethereum Mainnet) **and** L2 gas price data. (An example config [can be found here][2])
 

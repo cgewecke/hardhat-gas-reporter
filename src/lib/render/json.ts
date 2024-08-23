@@ -3,7 +3,7 @@ import { GasData } from "../gasData";
 import { GasReporterOptions, GasReporterOutput } from "../../types";
 
 /**
- * Writes acccumulated data and the current options to gasReporterOutput.json so it
+ * Writes accumulated data and the current options to gasReporterOutput.json so it
  * can be consumed by other tools (CI etc...)
  * @param {GasData}               data
  * @param {GasReporterOptions}    options
