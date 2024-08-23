@@ -162,7 +162,7 @@ const config: HardhatUserConfig = {
 
 ## Proxy Resolvers
 
-Some contract systems route calls through proxies (for upgradeability or other reasons) which means the reporter can't know which contract is the target of a transaction without additional help. The `proxyResolver` option lets you define a custom class to help resolve these unindentified method calls.
+Some contract systems route calls through proxies (for upgradeability or other reasons) which means the reporter can't know which contract is the target of a transaction without additional help. The `proxyResolver` option lets you define a custom class to help resolve these unidentified method calls.
 
 There are two examples in the code base here to use as templates if you're writing your own:
 
