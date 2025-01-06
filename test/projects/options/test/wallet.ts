@@ -13,7 +13,7 @@ describe("Wallet", function() {
     walletB = await Wallet.deploy();
   });
 
-  it("should should allow transfers and sends", async () => {
+  it("should allow transfers and sends", async () => {
     await walletA.fallback!({ value: 100 });
     await walletA.sendPayment(50, await walletB.getAddress());
     await walletA.transferPayment(50, await walletB.getAddress());
