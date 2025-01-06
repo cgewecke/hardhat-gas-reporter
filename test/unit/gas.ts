@@ -67,7 +67,7 @@ describe("Optimism: getCalldataCostForNetwork", function () {
     opStackBlobBaseFeeScalar: OPTIMISM_ECOTONE_BLOB_BASE_FEE_SCALAR
   }
 
-  it("calculates gas cost for small function call tx (bedrock", function () {
+  it("calculates gas cost for small function call tx (bedrock)", function () {
     const fn = optimismCases.bedrockFunction_1;
     options.gasPrice = fn.l2GasPrice;
     options.baseFee = fn.l1BaseFee;
