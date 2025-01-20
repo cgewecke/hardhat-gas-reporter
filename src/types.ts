@@ -120,7 +120,7 @@ export interface GasReporterOptions {
   /** @property List of forked-network deployed contracts to track execution costs for */
   remoteContracts?: RemoteContract[];
 
-  /** @property Report format identfiers */
+  /** @property Report format identifiers */
   reportFormat?: "legacy" | "terminal" | "markdown";
 
   /** @property Track gas usage for methods using eth_call */

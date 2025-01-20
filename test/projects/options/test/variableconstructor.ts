@@ -13,15 +13,15 @@ describe("VariableConstructor", function() {
     VariableConstructor = await ethers.getContractFactory("VariableConstructor");
   })
 
-  it("should should initialize with a short string", async () => {
+  it("should initialize with a short string", async () => {
     await VariableConstructor.deploy(short);
   });
 
-  it("should should initialize with a medium length string", async () => {
+  it("should initialize with a medium length string", async () => {
     await VariableConstructor.deploy(medium);
   });
 
-  it("should should initialize with a long string", async () => {
+  it("should initialize with a long string", async () => {
     await VariableConstructor.deploy(long);
   });
 });
