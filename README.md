@@ -1,6 +1,6 @@
 [![npm version](https://badge.fury.io/js/hardhat-gas-reporter.svg)](https://badge.fury.io/js/hardhat-gas-reporter)
 ![Build Status](https://github.com/cgewecke/hardhat-gas-reporter/actions/workflows/ci.yml/badge.svg?branch=master)
-[![buidler](https://hardhat.org/buidler-plugin-badge.svg?1)](https://github.com/cgewecke/hardhat-gas-reporter)
+[![builder](https://hardhat.org/builder-plugin-badge.svg?1)](https://github.com/cgewecke/hardhat-gas-reporter)
 
 
 # hardhat-gas-reporter
