@@ -143,7 +143,7 @@ export function getOPStackDataGas(tx: JsonRpcTx): number {
 // ARBITRUM OS20
 // ==========================
 export function getArbitrumL1Bytes(tx: JsonRpcTx) {
-  const serializedTx = getSerializedTx(tx, true);
+  const serializedTx = getSerializedTx(tx);
   const compressedTx = compress(Buffer.from(serializedTx), {quality: 2});
   const compressedLength = Buffer.from(compressedTx).toString('utf8').length;
   return compressedLength + 140;
@@ -176,6 +176,7 @@ export function getSerializedTx(tx: JsonRpcTx, emulateSignatureComponents = fals
       : BigInt(0);
 
   // For arbitrum - part of their estimation flow at nitro
+  // TEMORARILY DISABLED DUE TO CRASH REPORTED IN ISSUE #258
   if (emulateSignatureComponents) {
     signature = {
       v: BigInt(0),
