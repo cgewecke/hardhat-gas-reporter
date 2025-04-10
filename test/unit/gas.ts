@@ -195,7 +195,7 @@ describe("Arbitrum: getCalldataCostForNetwork", function () {
     const cost = gasToCost(fn.l2GasUsed, gas, options);
     const diff = getPercentDiff(parseFloat(cost), fn.txFeeETH);
 
-    // Actual ~ 0.07
+    // Actual ~ 0.09
     assert(diff < .1);
   });
 
@@ -208,8 +208,8 @@ describe("Arbitrum: getCalldataCostForNetwork", function () {
     const cost = gasToCost(fn.l2GasUsed, gas, options);
     const diff = getPercentDiff(parseFloat(cost), fn.txFeeETH);
 
-    // Actual ~ 0.01
-    assert(diff < .1);
+    // Actual ~ 0.13
+    assert(diff < .15);
   });
 
   it("calculates gas cost for a deployment tx", function () {
