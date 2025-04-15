@@ -115,7 +115,8 @@ export async function setGasAndPriceRates(options: GasReporterOptions): Promise<
     try {
       block = await axiosInstance.get(blockUrl);
       checkForEtherscanError(block.data.result);
-      options.baseFee = Math.round(hexWeiToIntGwei(block.data.result.baseFeePerGas))
+      const baseFee = hexWeiToIntGwei(block.data.result.baseFeePerGas);
+      options.baseFee = (baseFee >= 1 ) ? Math.round(baseFee) : baseFee;
     } catch (error) {
       options.baseFee = 0;
       warnings.push(warnBaseFeeRemoteCallFailed(error, blockUrl));
