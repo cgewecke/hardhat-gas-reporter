@@ -1,4 +1,4 @@
-import { serializeTransaction, Hex } from 'viem';
+import { serializeTransaction, getTransactionType, Hex, TransactionSerializableGeneric, TransactionSerializableLegacy } from 'viem';
 import { compress } from 'brotli-wasm';
 import {
   EVM_BASE_TX_COST,
@@ -162,18 +162,11 @@ export function getArbitrumL1Cost(bytes: number, gasPrice: number, baseFeePerByt
  * @param tx
  * @returns
  */
-export function getSerializedTx(tx: JsonRpcTx, emulateSignatureComponents = false): string {
+export function getSerializedTx(_tx: JsonRpcTx, emulateSignatureComponents = false): string {
   let signature;
 
-  const type = normalizeTxType(tx.type);
-
-  const maxFeePerGas = (tx.maxFeePerGas)
-        ? hexToBigInt(tx.maxFeePerGas)
-        : BigInt(0);
-
-  const maxPriorityFeePerGas = (tx.maxPriorityFeePerGas)
-      ? hexToBigInt(tx.maxPriorityFeePerGas)
-      : BigInt(0);
+  const tx = toTransactionSerializable(_tx);
+  const type = getTransactionType(tx) as "eip2930" | "eip4844" | "eip7702" | "eip1559" | "legacy" | undefined;
 
   // For arbitrum - part of their estimation flow at nitro
   // TEMORARILY DISABLED DUE TO CRASH REPORTED IN ISSUE #258
@@ -186,16 +179,29 @@ export function getSerializedTx(tx: JsonRpcTx, emulateSignatureComponents = fals
   }
 
   return serializeTransaction ({
-    to: tx.to as Hex,
-    maxFeePerGas,
-    maxPriorityFeePerGas,
-    data: tx.data as Hex ? tx.data! as Hex : tx.input! as Hex,
-    value: hexToBigInt(tx.value),
-    chainId: parseInt(tx.chainId!),
+    to: tx.to,
+    maxFeePerGas: tx.maxFeePerGas,
+    maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
+    data: tx.data,
+    value: tx.value,
+    chainId: tx.chainId,
     type,
-    accessList: tx.accessList,
-    nonce: parseInt(tx.nonce)
-  }, signature)
+    nonce: tx.nonce,
+  } as TransactionSerializableLegacy, signature)
+}
+
+export function toTransactionSerializable(_tx: JsonRpcTx) : TransactionSerializableGeneric {
+
+  return {
+    data: _tx.data as Hex ? _tx.data! as Hex : _tx.input! as Hex,
+    to: _tx.to as Hex,
+    value: hexToBigInt(_tx.value),
+    nonce: parseInt(_tx.nonce),
+    gas: (_tx.gas) ? hexToBigInt(_tx.gas) : BigInt(0),
+    maxFeePerGas: (_tx.maxFeePerGas) ? hexToBigInt(_tx.maxFeePerGas) : BigInt(0),
+    maxPriorityFeePerGas: (_tx.maxPriorityFeePerGas) ? hexToBigInt(_tx.maxPriorityFeePerGas) : BigInt(0),
+    chainId: (_tx.chainId === undefined) ? 1337 : parseInt(_tx.chainId),
+  }
 }
 
 /**
@@ -365,13 +371,4 @@ export function getArbitrumBaseFeePerByte(val: number): number {
   return parseInt(gwei.toString());
 }
 
-export function normalizeTxType(_type: string): ("legacy" | "eip1559" | "eip2930" | "eip4844") {
-  switch(hexToDecimal(_type)) {
-    case 0: return 'legacy';
-    case 1: return 'eip2930';
-    case 2: return 'eip1559';
-    case 3: return 'eip4844';
-    default: return 'legacy';
-  }
-}
 
