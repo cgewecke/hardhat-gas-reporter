@@ -10,7 +10,6 @@ import {
 
 import { GasReporterOptions, JsonRpcTx } from "../types";
 
-
 /**
 ==========================
 OPTIMISM BEDROCK
@@ -185,13 +184,14 @@ export function getSerializedTx(_tx: JsonRpcTx, emulateSignatureComponents = fal
     maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
     data: tx.data,
     value: tx.value,
-    chainId: tx.chainId!,
+    chainId: tx.chainId,
     type,
     nonce: tx.nonce,
   } as TransactionSerializableLegacy, signature)
 }
 
 export function toTransactionSerializable(_tx: JsonRpcTx) : TransactionSerializableGeneric {
+
   return {
     data: _tx.data as Hex ? _tx.data! as Hex : _tx.input! as Hex,
     to: _tx.to as Hex,
@@ -200,7 +200,7 @@ export function toTransactionSerializable(_tx: JsonRpcTx) : TransactionSerializa
     gas: (_tx.gas) ? hexToBigInt(_tx.gas) : BigInt(0),
     maxFeePerGas: (_tx.maxFeePerGas) ? hexToBigInt(_tx.maxFeePerGas) : BigInt(0),
     maxPriorityFeePerGas: (_tx.maxPriorityFeePerGas) ? hexToBigInt(_tx.maxPriorityFeePerGas) : BigInt(0),
-    chainId: parseInt(_tx.chainId!),
+    chainId: (_tx.chainId === undefined) ? 1337 : parseInt(_tx.chainId),
   }
 }
 
