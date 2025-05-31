@@ -28,11 +28,9 @@ export function getTokenForChain(options: GasReporterOptions): string {
  * @returns
  */
 export function getGasPriceUrlForChain(options: GasReporterOptions): string {
-  let apiKey: string;
-
   if (options.gasPriceApi) return options.gasPriceApi;
 
-  apiKey = (options.etherscan) ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}` : "";
+  const apiKey = (options.etherscan) ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}` : "";
 
   if (options.L2) {
     if (!L2[options.L2]) throw new Error;
@@ -71,9 +69,7 @@ export function getBlobBaseFeeUrlForChain(options: GasReporterOptions): string {
   if (!options.L2) return "";
   if (options.blobBaseFeeApi) return options.blobBaseFeeApi;
 
-  const apiKey = (options.etherscan)
-    ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}`
-    : "";
+  const apiKey = (options.etherscan) ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}` : "";
 
   return `${L2[options.L2!].baseUrl}${DEFAULT_BLOB_BASE_FEE_API_ARGS}${L2[options.L2!].gasPriceOracle}${apiKey}`;
 }
@@ -88,9 +84,7 @@ export function getBlobBaseFeeUrlForChain(options: GasReporterOptions): string {
 export function getBaseFeePerByteUrlForChain(options: GasReporterOptions): string {
   if (options.L2 !== "arbitrum") return "";
 
-  const apiKey = (options.etherscan)
-    ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}`
-    : "";
+  const apiKey = (options.etherscan) ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}` : "";
 
   return `${L2[options.L2!].baseUrl}${DEFAULT_BASE_FEE_PER_BYTE_API_ARGS}${apiKey}`;
 }
