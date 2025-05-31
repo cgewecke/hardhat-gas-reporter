@@ -36,7 +36,13 @@ extendConfig(
     // Deep clone userConfig otherwise HH will throw unauthorized modification error
     if (userConfig.gasReporter !== undefined) {
       options = Object.assign(options, cloneDeep(userConfig.gasReporter));
+
+      // Use legacy Etherscan API Key if user did not migrate from deprecated options
+      if (options.L1Etherscan && !options.etherscan) {
+        options.etherscan = options.L1Etherscan
+      }
     }
+
     (config as any).gasReporter = options;
   }
 );

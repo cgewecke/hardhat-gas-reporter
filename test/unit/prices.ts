@@ -53,7 +53,7 @@ describe("setGasAndPriceRates", function(){
 
     options.tokenPrice = initialTokenPrice;
     options.coinmarketcap = process.env.CMC_API_KEY;
-    options.L1Etherscan = process.env.ETHERSCAN_API_KEY;
+    options.etherscan = process.env.ETHERSCAN_API_KEY;
 
     assert.isUndefined(options.gasPrice);
 
@@ -82,7 +82,7 @@ describe("setGasAndPriceRates", function(){
     options.gasPrice = 1;
     options.L2 = 'arbitrum';
     options.coinmarketcap = process.env.CMC_API_KEY;
-    options.L2Etherscan = process.env.ARBITRUM_API_KEY;
+    options.etherscan = process.env.ETHERSCAN_API_KEY;
 
     assert.isUndefined(options.baseFeePerByte);
 
@@ -97,7 +97,7 @@ describe("setGasAndPriceRates", function(){
     options.gasPrice = 1;
     options.L2 = 'optimism';
     options.coinmarketcap = process.env.CMC_API_KEY;
-    options.L2Etherscan = process.env.OPTIMISTIC_API_KEY;
+    options.etherscan = process.env.ETHERSCAN_API_KEY;
 
     assert.isUndefined(options.baseFee);
 
@@ -114,7 +114,7 @@ describe("setGasAndPriceRates", function(){
     options.L2 = 'optimism';
     options.optimismHardfork = "ecotone";
     options.coinmarketcap = process.env.CMC_API_KEY;
-    options.L2Etherscan = process.env.OPTIMISTIC_API_KEY;
+    options.etherscan = process.env.ETHERSCAN_API_KEY;
 
     assert.isUndefined(options.blobBaseFee);
 

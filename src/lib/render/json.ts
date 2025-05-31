@@ -62,6 +62,11 @@ function _sanitizeGasData(data: GasData, options: GasReporterOptions) {
     options.coinmarketcap = "[REDACTED]";
   }
 
+  if (options.etherscan) {
+    options.etherscan = "[REDACTED]";
+  }
+
+  // Options deprecated in 2.3.0
   if (options.L1Etherscan){
     options.L1Etherscan = "[REDACTED]";
   }

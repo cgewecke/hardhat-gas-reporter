@@ -35,7 +35,7 @@ const config: HardhatUserConfig = {
   gasReporter: {
     currency: "CHF",
     L1: "ethereum",
-    L1Etherscan: process.env.ETHERSCAN_API_KEY,
+    etherscan: process.env.ETHERSCAN_API_KEY,
     coinmarketcap: process.env.CMC_API_KEY,
     rst: true,
     rstTitle: "Ethereum Report",
