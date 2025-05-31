@@ -28,26 +28,16 @@ export function getTokenForChain(options: GasReporterOptions): string {
  * @returns
  */
 export function getGasPriceUrlForChain(options: GasReporterOptions): string {
-  let apiKey: string;
-
   if (options.gasPriceApi) return options.gasPriceApi;
+
+  const apiKey = (options.etherscan) ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}` : "";
 
   if (options.L2) {
     if (!L2[options.L2]) throw new Error;
-
-    apiKey = (options.L2Etherscan)
-      ? `${DEFAULT_API_KEY_ARGS}${options.L2Etherscan}`
-      : "";
-
     return `${L2[options.L2!].baseUrl}${DEFAULT_GAS_PRICE_API_ARGS}${apiKey}`;
   }
 
   if (!L1[options.L1!]) throw new Error();
-
-  apiKey = (options.L1Etherscan)
-      ? `${DEFAULT_API_KEY_ARGS}${options.L1Etherscan}`
-      : "";
-
   return `${L1[options.L1!].baseUrl}${DEFAULT_GAS_PRICE_API_ARGS}${apiKey}`;
 }
 
@@ -61,9 +51,7 @@ export function getBlockUrlForChain(options: GasReporterOptions): string {
   if (!options.L2) return "";
   if (options.getBlockApi) return options.getBlockApi;
 
-  const apiKey = (options.L1Etherscan)
-    ? `${DEFAULT_API_KEY_ARGS}${options.L1Etherscan}`
-    : "";
+  const apiKey = (options.etherscan) ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}` : "";
 
   if (!L1[options.L1!]) throw new Error();
 
@@ -72,7 +60,7 @@ export function getBlockUrlForChain(options: GasReporterOptions): string {
 
 /**
  * Gets Etherscan eth_call api url to read OP Stack GasPriceOracle for blobBaseFee.
- * Attaches L2 apikey if configured. (This fee fetched from L2 contract b/c its the only available place at
+ * Attaches apikey if configured. (This fee fetched from L2 contract b/c its the only available place at
  * time of PR - eth_blobBaseFee hasn't been implemented in geth yet)
  * @param {GasReporterOptions} options
  * @returns
@@ -81,16 +69,14 @@ export function getBlobBaseFeeUrlForChain(options: GasReporterOptions): string {
   if (!options.L2) return "";
   if (options.blobBaseFeeApi) return options.blobBaseFeeApi;
 
-  const apiKey = (options.L2Etherscan)
-    ? `${DEFAULT_API_KEY_ARGS}${options.L2Etherscan}`
-    : "";
+  const apiKey = (options.etherscan) ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}` : "";
 
   return `${L2[options.L2!].baseUrl}${DEFAULT_BLOB_BASE_FEE_API_ARGS}${L2[options.L2!].gasPriceOracle}${apiKey}`;
 }
 
 /**
  * Gets Etherscan eth_call api url to read OP Stack GasPriceOracle for blobBaseFee.
- * Attaches L2 apikey if configured. (This fee fetched from L2 contract b/c its the only available place at
+ * Attaches apikey if configured. (This fee fetched from L2 contract b/c its the only available place at
  * time of PR - eth_blobBaseFee hasn't been implemented in geth yet)
  * @param {GasReporterOptions} options
  * @returns
@@ -98,9 +84,7 @@ export function getBlobBaseFeeUrlForChain(options: GasReporterOptions): string {
 export function getBaseFeePerByteUrlForChain(options: GasReporterOptions): string {
   if (options.L2 !== "arbitrum") return "";
 
-  const apiKey = (options.L2Etherscan)
-    ? `${DEFAULT_API_KEY_ARGS}${options.L2Etherscan}`
-    : "";
+  const apiKey = (options.etherscan) ? `${DEFAULT_API_KEY_ARGS}${options.etherscan}` : "";
 
   return `${L2[options.L2!].baseUrl}${DEFAULT_BASE_FEE_PER_BYTE_API_ARGS}${apiKey}`;
 }
@@ -111,52 +95,52 @@ export function getBaseFeePerByteUrlForChain(options: GasReporterOptions): strin
  */
 export const L1 = {
   ethereum: {
-    baseUrl: "https://api.etherscan.io/api?module=proxy&",
+    baseUrl: "https://api.etherscan.io/v2/api?module=proxy&chainid=1&",
     token: "ETH"
   },
   polygon: {
-    baseUrl: "https://api.polygonscan.com/api?module=proxy&",
+    baseUrl: "https://api.etherscan.io/v2/api?module=proxy&chainid=137&",
     token: "POL"
   },
   binance: {
-    baseUrl: "https://api.bscscan.com/api?module=proxy&",
+    baseUrl: "https://api.etherscan.io/v2/api?module=proxy&chainid=56&",
     token: "BNB"
   },
   fantom: {
-    baseUrl: "https://api.ftmscan.com/api?module=proxy&",
+    baseUrl: "https://api.etherscan.io/v2/api?module=proxy&chainid=250&",
     token: "FTM"
   },
   moonbeam: {
-    baseUrl: "https://api-moonbeam.moonscan.io/api?module=proxy&",
+    baseUrl: "https://api.etherscan.io/v2/api?module=proxy&chainid=1284&",
     token: "GLMR"
   },
   moonriver: {
-    baseUrl: "https://api-moonriver.moonscan.io//api?module=proxy&",
+    baseUrl: "https://api.etherscan.io/v2/api?module=proxy&chainid=1285&",
     token: "MOVR"
   },
   gnosis: {
-    baseUrl: "https://api.gnosisscan.io/api?module=proxy&",
+    baseUrl: "https://api.etherscan.io/v2/api?module=proxy&chainid=100&",
     token: "XDAI"
   },
   avalanche: {
-    baseUrl: "https://api.snowtrace.io/api?module=proxy&",
+    baseUrl: "https://api.etherscan.io/v2/api?module=proxy&chainid=43114&",
     token: "AVAX"
   }
 }
 
 export const L2 = {
   optimism: {
-    baseUrl: "https://api-optimistic.etherscan.io/api?module=proxy&",
+    baseUrl: "https://api.etherscan.io/v2/api?module=proxy&chainid=10&",
     gasPriceOracle: "0x420000000000000000000000000000000000000F",
     token: "ETH"
   },
   base: {
-    baseUrl: "https://api.basescan.org/api?module=proxy&",
+    baseUrl: "https://api.etherscan.io/v2/api?module=proxy&chainid=8453&",
     gasPriceOracle: "0x420000000000000000000000000000000000000F",
     token: "ETH"
   },
   arbitrum: {
-    baseUrl: "https://api.arbiscan.io/api?module=proxy&",
+    baseUrl: "https://api.etherscan.io/v2/api?module=proxy&chainid=42161&",
     gasPriceOracle: "",
     token: "ETH"
   }
