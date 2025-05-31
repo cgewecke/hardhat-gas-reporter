@@ -19,7 +19,7 @@ Some example gas reporter option settings for different use-cases
 ```ts
 const config: HardhatUserConfig = {
   gasReporter: {
-    L1Etherscan: "ABC...",    // Etherscan api key
+    etherscan: "ABC...",    // Etherscan api key
     coinmarketcap: "abc...",  // Coinmarketcap api key
   }
 }
@@ -45,9 +45,8 @@ const config: HardhatUserConfig = {
 const config: HardhatUserConfig = {
   gasReporter: {
     L2: "optimism",
-    L1Etherscan: "ABC...",   // Requires api keys for both Ethereum Mainnet and Optimism
-    L2Etherscan: "ABC...",
     currency: "EUR",
+    etherscan: "ABC...",
     coinmarketcap: "abc...",
   }
 }
