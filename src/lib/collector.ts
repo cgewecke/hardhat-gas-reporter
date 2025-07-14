@@ -71,7 +71,7 @@ export class Collector {
    * @param  {TransactionReceipt} receipt
    */
   private async _collectDeploymentsData(tx: JsonRpcTx, receipt: RpcReceiptOutput): Promise<void> {
-    const match = this.data.getContractByDeploymentInput(tx.input!);
+    const match = tx?.input ? this.data.getContractByDeploymentInput(tx.input) : null;
 
     if (match !== null) {
       await this.data.trackNameByAddress(
